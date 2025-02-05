@@ -8,8 +8,8 @@ namespace TextShareApi.Data;
 public class AppDbContext : IdentityDbContext<AppUser> {
     
     public AppDbContext(DbContextOptions options) : base(options) { }
-    
-    public DbSet<Message> Messages { get; set; } = null!;
+
+    public DbSet<Text> Texts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder) {
         base.OnModelCreating(builder);
@@ -20,12 +20,11 @@ public class AppDbContext : IdentityDbContext<AppUser> {
             new IdentityRole { Id = "9f27a13e-4523-4b36-b9d1-981d356f0137", Name = "User", NormalizedName = "USER" }
         };
         builder.Entity<IdentityRole>().HasData(roles);
-        
-        var messages = new List<Message>
-        {
-            new Message { Id = 1, Title = "First Message", Content = "Hello World!" },
-            new Message { Id = 2, Title = "Second Message", Content = "Does it work?!" }
-        };
-        builder.Entity<Message>().HasData(messages);
+
+        builder.Entity<Text>().HasKey(t => t.Id);
+        builder.Entity<Text>()
+            .HasOne(t => t.AppUser)
+            .WithMany(u => u.Texts)
+            .HasForeignKey(t => t.AppUserId);
     }
 }
