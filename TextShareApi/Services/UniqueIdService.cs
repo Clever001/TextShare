@@ -3,7 +3,7 @@ using TextShareApi.Models;
 namespace TextShareApi.Services;
 
 public class UniqueIdService : IDisposable {
-    private readonly HashSeed _seed = null!;
+    private readonly HashSeed _seed;
     private readonly ILogger<UniqueIdService> _logger;
     private readonly object _locker = new();
     public UniqueIdService(ILogger<UniqueIdService> logger)
@@ -17,21 +17,16 @@ public class UniqueIdService : IDisposable {
         }
     }
 
-    /*public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
-    {
-        return Task.FromResult(new HelloReply
-        {
-            Message = "Hello " + request.Name
-        });
-    }*/
-
     public async Task<string> GenerateNewHash() {
         UInt64? seed = null;
         lock (_locker) {
             seed = _seed.NextSeed++;
         }
         
-        return await HashGenerator.GenerateHash(seed.Value);
+        string hash = await HashGenerator.GenerateHash(seed.Value);
+        _logger.LogInformation($"Generated new hash: \"{hash}\" for seed: \"{seed}\"");
+        
+        return hash;
     }
 
     ~UniqueIdService() {

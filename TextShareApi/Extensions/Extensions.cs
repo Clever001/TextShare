@@ -6,8 +6,8 @@ namespace TextShareApi.Extensions;
 public static class Extensions {
     public static ExceptionDto ToExceptionDto(this Exception exception) {
         return new() {
-            ExceptionType = exception.GetType().FullName ?? "Exception",
-            Message = exception.Message,
+            Code = exception.GetType().FullName ?? exception.GetType().Name,
+            Description = exception.Message,
         };
     }
 

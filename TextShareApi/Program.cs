@@ -44,6 +44,7 @@ builder.Services.AddAuthentication(options => {
 });
 
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddSingleton<UniqueIdService>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
