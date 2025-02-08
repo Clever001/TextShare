@@ -11,7 +11,7 @@ public static class Extensions {
         };
     }
 
-    public static string? GetUserName(this ClaimsPrincipal principal) {
-        return principal.FindFirst(ClaimTypes.Name)?.Value;
+    public static string GetUserName(this ClaimsPrincipal principal) {
+        return principal.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.GivenName))?.Value ?? string.Empty;
     }
 }

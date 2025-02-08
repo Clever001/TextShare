@@ -8,6 +8,7 @@ using TextShareApi.Data;
 using TextShareApi.Extensions;
 using TextShareApi.Interfaces;
 using TextShareApi.Models;
+using TextShareApi.Repositories;
 using TextShareApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,7 +45,9 @@ builder.Services.AddAuthentication(options => {
 });
 
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddSingleton<UniqueIdService>();
+builder.Services.AddScoped<ITextRepository, TextRepository>();
+builder.Services.AddScoped<IHashSeedRepository, HashSeedRepository>();
+builder.Services.AddScoped<IUniqueIdService, UniqueIdService>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

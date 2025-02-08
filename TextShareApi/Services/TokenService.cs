@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Unicode;
 using Microsoft.IdentityModel.Tokens;
 using TextShareApi.Interfaces;
 using TextShareApi.Models;
@@ -19,7 +18,7 @@ public class TokenService : ITokenService {
     
     public string CreateToken(AppUser user) {
         List<Claim> claims = [ // Информация о пользователе
-            new(JwtRegisteredClaimNames.Name, user.UserName),
+            new(JwtRegisteredClaimNames.GivenName, user.UserName),
             new(JwtRegisteredClaimNames.Email, user.Email),
         ];
         

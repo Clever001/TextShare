@@ -10,6 +10,8 @@ public class AppDbContext : IdentityDbContext<AppUser> {
     public AppDbContext(DbContextOptions options) : base(options) { }
 
     public DbSet<Text> Texts { get; set; }
+    
+    public DbSet<HashSeed> HashSeeds { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder) {
         base.OnModelCreating(builder);
