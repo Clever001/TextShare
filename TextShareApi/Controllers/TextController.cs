@@ -51,4 +51,17 @@ public class TextController : ControllerBase {
 
         return Ok(text.ToTextDto());
     }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> GetAll() {
+        string userName = User.GetUserName();
+        AppUser? user = await _userManager.FindByNameAsync(userName);
+        if (user is null) {
+            return Unauthorized("User does not exist");
+        }
+
+        var texts = await _textRepository.GetTexts(userName);
+        return Ok(texts.Select(t => t.ToTextWithoutContentDto()));
+    }
 }

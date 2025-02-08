@@ -5,6 +5,7 @@ using TextShareApi.Dtos.Accounts;
 using TextShareApi.Dtos.Additional;
 using TextShareApi.Extensions;
 using TextShareApi.Interfaces;
+using TextShareApi.Mappers;
 using TextShareApi.Models;
 
 namespace TextShareApi.Controllers;
@@ -46,7 +47,7 @@ public class AccountController : ControllerBase {
                 var appendResult = await _userManager.AddToRoleAsync(user, "User");
                 if (appendResult.Succeeded) {
                     string token = _tokenService.CreateToken(user);
-                    return Ok(new UserDto {
+                    return Ok(new UserWithTokenDto {
                         UserName = user.UserName,
                         Email = user.Email,
                         Token = token
@@ -87,7 +88,7 @@ public class AccountController : ControllerBase {
         bool passwordValid = await _userManager.CheckPasswordAsync(user, loginDto.Password);
         if (passwordValid) {
             string token = _tokenService.CreateToken(user);
-            return Ok(new UserDto {
+            return Ok(new UserWithTokenDto {
                 UserName = user.UserName,
                 Email = user.Email,
                 Token = token
@@ -96,6 +97,14 @@ public class AccountController : ControllerBase {
         
         return Unauth();
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Get() {
+        var users = await _userManager.GetUsersInRoleAsync("User");
+        return Ok(users.Select(u => u.ToUserWithoutTokenDto()));
+    }
+    
+    
     
     private bool IsEmail(string input)
     {

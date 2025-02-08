@@ -10,8 +10,9 @@ public class AppDbContext : IdentityDbContext<AppUser> {
     public AppDbContext(DbContextOptions options) : base(options) { }
 
     public DbSet<Text> Texts { get; set; }
-    
     public DbSet<HashSeed> HashSeeds { get; set; }
+    public DbSet<FriendRequest> FriendRequests { get; set; }
+    public DbSet<FriendPair> FriendPairs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder) {
         base.OnModelCreating(builder);
@@ -27,6 +28,40 @@ public class AppDbContext : IdentityDbContext<AppUser> {
         builder.Entity<Text>()
             .HasOne(t => t.AppUser)
             .WithMany(u => u.Texts)
-            .HasForeignKey(t => t.AppUserId);
+            .HasForeignKey(t => t.AppUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<Text>().HasIndex(t => t.AppUserId);
+
+        builder.Entity<FriendRequest>().HasKey(r => new { r.SenderId, r.RecipientId });
+        builder.Entity<FriendRequest>()
+            .HasOne(r => r.Sender)
+            .WithMany(u => u.FriendRequests)
+            .HasForeignKey(r => r.SenderId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<FriendRequest>()
+            .HasOne(r => r.Recipient)
+            .WithMany()
+            .HasForeignKey(r => r.RecipientId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<FriendRequest>()
+            .HasIndex(r => r.SenderId);
+        builder.Entity<FriendRequest>()
+            .HasIndex(r => r.RecipientId);
+        
+        builder.Entity<FriendPair>().HasKey(f => new { f.FirstUserId, f.SecondUserId });
+        builder.Entity<FriendPair>()
+            .HasOne(p => p.FirstUser)
+            .WithMany(u => u.FriendPairs)
+            .HasForeignKey(p => p.FirstUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<FriendPair>()
+            .HasOne(p => p.SecondUser)
+            .WithMany()
+            .HasForeignKey(p => p.SecondUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<FriendPair>()
+            .HasIndex(p => p.FirstUserId);
+        builder.Entity<FriendPair>()
+            .HasIndex(p => p.SecondUserId);
     }
 }

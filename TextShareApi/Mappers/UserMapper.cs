@@ -4,11 +4,17 @@ using TextShareApi.Models;
 namespace TextShareApi.Mappers;
 
 public static class UserMapper {
-    public static UserDto ToNewUserDto(this AppUser user, string token) {
+    public static UserWithTokenDto ToUserWithTokenDto(this AppUser user, string token) {
         return new() {
             UserName = user.UserName,
             Email = user.Email,
             Token = token,
+        };
+    }
+
+    public static UserWithoutTokenDto ToUserWithoutTokenDto(this AppUser user) {
+        return new() {
+            UserName = user.UserName,
         };
     }
 }

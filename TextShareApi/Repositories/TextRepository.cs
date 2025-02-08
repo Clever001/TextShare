@@ -27,4 +27,12 @@ public class TextRepository : ITextRepository {
             .FirstOrDefaultAsync(t => t.Id == textId);
         return text;
     }
+
+    public async Task<List<Text>> GetTexts(string userName) {
+        var texts = await _context.Texts
+            .Include(t => t.AppUser)
+            .Where(t => t.AppUser.UserName == userName)
+            .ToListAsync();
+        return texts;
+    }
 }

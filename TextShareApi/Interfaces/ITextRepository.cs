@@ -5,4 +5,5 @@ namespace TextShareApi.Interfaces;
 public interface ITextRepository {
     Task<Text> CreateText(Text text);
     Task<Text?> GetTextById(string textId);
+    Task<List<Text>> GetTexts(string userName);
 }

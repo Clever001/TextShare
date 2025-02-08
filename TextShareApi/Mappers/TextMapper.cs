@@ -17,4 +17,12 @@ public static class TextMapper {
             OwnerName = userName ?? text.AppUser.UserName,
         };
     }
+
+    public static TextWithoutContentDto ToTextWithoutContentDto(this Text text) {
+        return new() {
+            Id = text.Id,
+            CreatedOn = text.CreatedOn,
+            UpdatedOn = text.UpdatedOn,
+        };
+    }
 }
