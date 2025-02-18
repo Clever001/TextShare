@@ -10,4 +10,6 @@ public class Text {
     public DateTime? UpdatedOn { get; set; } = null;
     public string AppUserId { get; set; }
     public AppUser AppUser { get; set; }
+    
+    public TextSecuritySettings TextSecuritySettings { get; set; }
 }

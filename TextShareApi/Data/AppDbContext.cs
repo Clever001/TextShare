@@ -13,6 +13,7 @@ public class AppDbContext : IdentityDbContext<AppUser> {
     public DbSet<HashSeed> HashSeeds { get; set; }
     public DbSet<FriendRequest> FriendRequests { get; set; }
     public DbSet<FriendPair> FriendPairs { get; set; }
+    public DbSet<TextSecuritySettings> TextSecuritySettings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder) {
         base.OnModelCreating(builder);
@@ -63,5 +64,11 @@ public class AppDbContext : IdentityDbContext<AppUser> {
             .HasIndex(p => p.FirstUserId);
         builder.Entity<FriendPair>()
             .HasIndex(p => p.SecondUserId);
+
+        builder.Entity<TextSecuritySettings>().HasKey(s => s.TextId);
+        builder.Entity<TextSecuritySettings>()
+            .HasOne(s => s.Text)
+            .WithOne(t => t.TextSecuritySettings)
+            .HasForeignKey<TextSecuritySettings>(t => t.TextId);
     }
 }
