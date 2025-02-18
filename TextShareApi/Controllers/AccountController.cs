@@ -116,7 +116,7 @@ public class AccountController : ControllerBase {
     // Insert DTOs proper way.
     // Replace _context with Repository class.
 
-    [HttpGet("friend_requests/to_me")]
+    [HttpGet("friends/requests/received")]
     [Authorize]
     public async Task<IActionResult> GetMyFriendRequestsToMe() {
         var curUser = await _userManager.FindByNameAsync(User.GetUserName());
@@ -139,7 +139,7 @@ public class AccountController : ControllerBase {
         }).ToList());
     }
 
-    [HttpGet("friend_requests/from_me")]
+    [HttpGet("friends/requests/sent")]
     [Authorize]
     public async Task<IActionResult> GetMyFriendRequestsFromMe() {
         var curUser = await _userManager.FindByNameAsync(User.GetUserName());
@@ -162,7 +162,7 @@ public class AccountController : ControllerBase {
         }).ToList());
     }
 
-    [HttpPost("friend_requests/create_request/{userName}")]
+    [HttpPost("friends/requests/send/{userName}")]
     [Authorize]
     public async Task<IActionResult> CreateFriendRequest([FromRoute] string userName) {
         var sender = await _userManager.FindByNameAsync(User.GetUserName());
@@ -201,7 +201,7 @@ public class AccountController : ControllerBase {
         return Ok("Friend request created");
     }
 
-    [HttpPost("friend_requests/process_request/to_me")]
+    [HttpPost("friends/requests/receive")]
     [Authorize]
     public async Task<IActionResult> ProcessFriendRequestToMe([FromBody] ProcessFriendRequestToMeDto requestToMeDto) {
         if (!ModelState.IsValid) {
@@ -257,7 +257,7 @@ public class AccountController : ControllerBase {
         return Ok(requestToMeDto.AcceptRequest ? "Friend request accepted" : "Friend request rejected");
     }
 
-    [HttpDelete("friend_requests/process_request/from_me/{recipientName}")]
+    [HttpDelete("friends/requests/cancel/{recipientName}")]
     [Authorize]
     public async Task<IActionResult> ProcessFriendRequestFromMe([FromRoute] string recipientName) {
         if (!ModelState.IsValid) {
@@ -290,7 +290,7 @@ public class AccountController : ControllerBase {
         return Ok("Friend request deleted");
     }
 
-    [HttpGet("friendsList")]
+    [HttpGet("friends")]
     [Authorize]
     public async Task<IActionResult> GetFriendsList() {
         var userName = User.GetUserName();
