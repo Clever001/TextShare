@@ -50,6 +50,7 @@ builder.Services.AddScoped<IHashSeedRepository, HashSeedRepository>();
 builder.Services.AddScoped<IUniqueIdService, UniqueIdService>();
 builder.Services.AddScoped<ITextSecuritySettingsRepository, TextSecuritySettingsRepository>();
 builder.Services.AddScoped<IFriendsRepository, FriendsRepository>();
+builder.Services.AddScoped<ITextSecurityService, TextSecurityService>();
 builder.Services.AddScoped<PasswordHasher<AppUser>>();
 
 // Add services to the container.

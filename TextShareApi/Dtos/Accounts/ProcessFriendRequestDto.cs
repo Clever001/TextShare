@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TextShareApi.Dtos.Accounts;
 
-public class ProcessFriendRequestToMeDto {
+public class ProcessFriendRequestDto {
     [Required] 
     public string UserName { get; set; } = string.Empty;
     [Required]

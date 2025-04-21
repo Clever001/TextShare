@@ -11,18 +11,32 @@ public class TextRepository : ITextRepository {
         _context = context;
     }
     
-    public async Task<Text> CreateText(Text text, TextSecuritySettings textSecuritySettings) {
+    public async Task<Text> CreateText(Text text) {
         await _context.Texts.AddAsync(text);
-        await _context.TextSecuritySettings.AddAsync(textSecuritySettings);
         await _context.SaveChangesAsync();
         return text;
     }
 
     public async Task<Text?> GetTextWithBackground(string textId) {
-        var text = await _context.Texts
+        return await _context.Texts
             .Include(t => t.AppUser)
             .Include(t => t.TextSecuritySettings)
             .FirstOrDefaultAsync(t => t.Id == textId);
+    }
+
+    public async Task<Text?> GetText(string textId) {
+        return await _context.Texts
+            .FindAsync(textId);
+    }
+
+    public async Task<Text?> UpdateText(string textId, string content) {
+        var text = await _context.Texts.FindAsync(textId);
+        if (text is null) return null;
+
+        text.Content = content;
+        text.UpdatedOn = DateTime.UtcNow;
+        
+        await _context.SaveChangesAsync();
         return text;
     }
 

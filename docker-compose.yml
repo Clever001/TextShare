@@ -1,0 +1,6 @@
+﻿services:
+  textshareapi:
+    image: textshareapi
+    build:
+      context: .
+      dockerfile: TextShareApi/Dockerfile

@@ -19,7 +19,6 @@ public class AccountController : ControllerBase {
     private readonly ITokenService _tokenService;
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
-    private readonly AppDbContext _context;
 
     public AccountController(ITokenService tokenService, 
         UserManager<AppUser> userManager, 
@@ -28,7 +27,6 @@ public class AccountController : ControllerBase {
         _tokenService = tokenService;
         _userManager = userManager;
         _signInManager = signInManager;
-        _context = context;
     }
 
     [HttpPost("register")]
@@ -108,205 +106,9 @@ public class AccountController : ControllerBase {
 
     [HttpGet]
     public async Task<IActionResult> Get() {
+        // TODO: Добавить распределение по страницам
         var users = await _userManager.GetUsersInRoleAsync("User");
         return Ok(users.Select(u => u.ToUserWithoutTokenDto()));
-    }
-    
-    // Edit endpoints to control friends list.
-    // Insert DTOs proper way.
-    // Replace _context with Repository class.
-
-    [HttpGet("friends/requests/received")]
-    [Authorize]
-    public async Task<IActionResult> GetMyFriendRequestsToMe() {
-        var curUser = await _userManager.FindByNameAsync(User.GetUserName());
-        if (curUser is null) {
-            return StatusCode(500, "Current user not found");
-        }
-        
-        var sendersNames = await _context.FriendRequests
-            .Include(r => r.Sender)
-            .Where(r => r.RecipientId == curUser.Id)
-            .ToListAsync();
-
-        return Ok(sendersNames.Select(r => new {
-            UserName = r.Sender.UserName,
-            RequestStatus = r.IsAccepted switch {
-                true => "Accepted",
-                false => "Rejected",
-                _ => "Active Request"
-            }
-        }).ToList());
-    }
-
-    [HttpGet("friends/requests/sent")]
-    [Authorize]
-    public async Task<IActionResult> GetMyFriendRequestsFromMe() {
-        var curUser = await _userManager.FindByNameAsync(User.GetUserName());
-        if (curUser is null) {
-            return StatusCode(500, "Current user not found");
-        }
-        
-        var sendersNames = await _context.FriendRequests
-            .Include(r => r.Recipient)
-            .Where(r => r.SenderId == curUser.Id)
-            .ToListAsync();
-
-        return Ok(sendersNames.Select(r => new {
-            UserName = r.Recipient.UserName,
-            RequestStatus = r.IsAccepted switch {
-                true => "Accepted",
-                false => "Rejected",
-                _ => "Active Request"
-            }
-        }).ToList());
-    }
-
-    [HttpPost("friends/requests/send/{userName}")]
-    [Authorize]
-    public async Task<IActionResult> CreateFriendRequest([FromRoute] string userName) {
-        var sender = await _userManager.FindByNameAsync(User.GetUserName());
-        if (sender is null) {
-            return StatusCode(500, "Current user not found");
-        }
-        var recipient = await _userManager.FindByNameAsync(userName);
-        if (recipient is null) {
-            return NotFound("Recipient user not found");
-        }
-
-        if (sender.Id == recipient.Id) {
-            return BadRequest("Recipient and sender users cannot be the same");
-        }
-        
-        if (await _context.FriendPairs.AnyAsync(p => p.FirstUserId == sender.Id && p.SecondUserId == recipient.Id)) {
-            return BadRequest("Users are already friends");
-        }
-        
-        if (await _context.FriendRequests
-                .AnyAsync(r => r.SenderId == sender.Id && r.RecipientId == recipient.Id)) {
-            return BadRequest("Friend request already exists");
-        }
-
-        if (await _context.FriendRequests
-                .AnyAsync(r => r.SenderId == recipient.Id && r.RecipientId == sender.Id)) {
-            return BadRequest("Cannot create request. Recipient user already sent request to you");
-        }
-
-        var request = new FriendRequest {
-            SenderId = sender.Id,
-            RecipientId = recipient.Id,
-        };
-        await _context.FriendRequests.AddAsync(request);
-        await _context.SaveChangesAsync();
-        return Ok("Friend request created");
-    }
-
-    [HttpPost("friends/requests/receive")]
-    [Authorize]
-    public async Task<IActionResult> ProcessFriendRequestToMe([FromBody] ProcessFriendRequestToMeDto requestToMeDto) {
-        if (!ModelState.IsValid) {
-            return BadRequest(ModelState);
-        }
-        var curUser = await _userManager.FindByNameAsync(User.GetUserName());
-        if (curUser is null) {
-            return StatusCode(500, "Current user not found");
-        }
-
-        var sender = await _userManager.FindByNameAsync(requestToMeDto.UserName);
-        if (sender is null) {
-            return NotFound("Sender user not found");
-        }
-
-        var request = await _context.FriendRequests.
-            SingleOrDefaultAsync(r => r.SenderId == sender.Id && r.RecipientId == curUser.Id);
-        if (request is null) {
-            return NotFound("Request from this user not found");
-        }
-
-        if (requestToMeDto.AcceptRequest) {
-            List<FriendPair> friendPairs = [
-                new() {
-                    FirstUserId = curUser.Id,
-                    SecondUserId = sender.Id,
-                },
-                new() {
-                    FirstUserId = sender.Id,
-                    SecondUserId = curUser.Id
-                }
-            ];
-
-            await _context.FriendPairs.AddRangeAsync(friendPairs);
-        }
-        else {
-            await _context.FriendPairs
-                .Where(p => p.FirstUserId == sender.Id && p.SecondUserId == curUser.Id ||
-                            p.FirstUserId == curUser.Id && p.SecondUserId == sender.Id)
-                .ExecuteDeleteAsync();
-        }
-
-        /* // Commented. Now we cannot have two requests from both sides.
-        var reverseRequest = await _context.FriendRequests
-            .SingleOrDefaultAsync(r => r.SenderId == curUser.Id && r.RecipientId == sender.Id);
-        if (reverseRequest is not null) {
-            reverseRequest.IsAccepted = requestDto.AcceptRequest;
-        }*/
-
-        request.IsAccepted = requestToMeDto.AcceptRequest;
-            
-        await _context.SaveChangesAsync();
-        return Ok(requestToMeDto.AcceptRequest ? "Friend request accepted" : "Friend request rejected");
-    }
-
-    [HttpDelete("friends/requests/cancel/{recipientName}")]
-    [Authorize]
-    public async Task<IActionResult> ProcessFriendRequestFromMe([FromRoute] string recipientName) {
-        if (!ModelState.IsValid) {
-            return BadRequest(ModelState);
-        }
-        var curUser = await _userManager.FindByNameAsync(User.GetUserName());
-        if (curUser is null) {
-            return StatusCode(500, "Current user not found");
-        }
-
-        var recipient = await _userManager.FindByNameAsync(recipientName);
-        if (recipient is null) {
-            return NotFound("Recipient user not found");
-        }
-
-        var request = await _context.FriendRequests.
-            SingleOrDefaultAsync(r => r.SenderId == curUser.Id && r.RecipientId == recipient.Id);
-        if (request is null) {
-            return NotFound("Request to this user not found");
-        }
-        
-        await _context.FriendPairs
-            .Where(p => p.FirstUserId == recipient.Id && p.SecondUserId == curUser.Id ||
-                        p.FirstUserId == curUser.Id && p.SecondUserId == recipient.Id)
-            .ExecuteDeleteAsync();
-
-        _context.FriendRequests.Remove(request);
-            
-        await _context.SaveChangesAsync();
-        return Ok("Friend request deleted");
-    }
-
-    [HttpGet("friends")]
-    [Authorize]
-    public async Task<IActionResult> GetFriendsList() {
-        var userName = User.GetUserName();
-        var curUser = await _userManager.FindByNameAsync(userName);
-        if (curUser is null) {
-            return StatusCode(500, "Current user not found");
-        }
-        var friends = await _context.FriendPairs
-            .Include(p => p.SecondUser)
-            .Where(p => p.FirstUserId == curUser.Id)
-            .Select(p => p.SecondUser.UserName)
-            .ToListAsync();
-
-        return Ok(friends.Select(n => new UserWithoutTokenDto {
-            UserName = n,
-        }).ToList());
     }
     
     private bool IsEmail(string input) {
