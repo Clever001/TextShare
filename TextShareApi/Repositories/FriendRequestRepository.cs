@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using TextShareApi.Data;
 using TextShareApi.Interfaces;
@@ -21,11 +22,23 @@ public class FriendRequestRepository : IFriendRequestRepository {
 
     public async Task<FriendRequest?> GetRequest(string userId, string recipientId) {
         return await _context.FriendRequests
-            .Include(r => r.Sender.UserName)
-            .Include(r => r.Recipient.UserName)
+            .Include(r => r.Sender)
+                .ThenInclude(u => u.UserName)
+            .Include(r => r.Recipient)
+                .ThenInclude(u => u.UserName)
             .FirstOrDefaultAsync(r => r.SenderId == userId && r.RecipientId == recipientId);
     }
-    
+
+    public async Task<List<FriendRequest>> GetFriendRequests(Expression<Func<FriendRequest, bool>> predicate) {
+        return await _context.FriendRequests
+            .Include(r => r.Sender)
+                .ThenInclude(u => u.UserName)
+            .Include(r => r.Recipient)
+                .ThenInclude(u => u.UserName)
+            .Where(predicate)
+            .ToListAsync();
+    }
+
     public async Task<FriendRequest?> UpdateRequest(string userId, string recipientId, bool isAccepted) {
         var request = await GetRequest(userId, recipientId);
         if (request is null) {

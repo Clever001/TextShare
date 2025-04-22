@@ -24,7 +24,7 @@ public class FriendRequestService : IFriendRequestService {
 
         bool exists = await _frRepo.ContainsRequest(senderId, recipientId);
         if (exists) {
-            return Result<FriendRequest>.Failure("Already exists");
+            return Result<FriendRequest>.Failure("Already exists", true);
         }
         
         var request = await _frRepo.CreateRequest(senderId, recipientId);
@@ -40,7 +40,7 @@ public class FriendRequestService : IFriendRequestService {
         
         bool isDeleted = await _frRepo.DeleteRequest(senderId, recipientId);
         if (!isDeleted) {
-            return Result.Failure("Did not exist from the beginning");
+            return Result.Failure("Did not exist from the beginning", true);
         }
         return Result.Success();
     }
@@ -54,7 +54,7 @@ public class FriendRequestService : IFriendRequestService {
         
         var request = await _frRepo.UpdateRequest(senderId, recipientId, acceptRequest);
         if (request is null) {
-            return Result<FriendRequest>.Failure("Does not exist");
+            return Result<FriendRequest>.Failure("Does not exist", true);
         }
 
         return Result<FriendRequest>.Success(request);
@@ -71,6 +71,26 @@ public class FriendRequestService : IFriendRequestService {
         return Result<FriendRequest?>.Success(request);
     }
 
+    public async Task<Result<List<FriendRequest>>> GetSentFriendRequests(string senderName) {
+        var idResult = await GetId(senderName);
+        if (!idResult.IsSuccess) {
+            return Result<List<FriendRequest>>.Failure(idResult.Error);
+        }
+        string senderId = idResult.Value;
+        
+        return Result<List<FriendRequest>>.Success(await _frRepo.GetFriendRequests(fr => fr.SenderId == senderId));
+    }
+
+    public async Task<Result<List<FriendRequest>>> GetReceivedFriendRequests(string recipientName) {
+        var idResult = await GetId(recipientName);
+        if (!idResult.IsSuccess) {
+            return Result<List<FriendRequest>>.Failure(idResult.Error);
+        }
+        string recipientId = idResult.Value;
+        
+        return Result<List<FriendRequest>>.Success(await _frRepo.GetFriendRequests(fr => fr.RecipientId == recipientId));
+    }
+
     private async Task<Result<(string, string)>> GetId(string userName, string recipientName) {
         var sender = await _userManager.FindByNameAsync(userName);
         var recipient = await _userManager.FindByNameAsync(recipientName);
@@ -84,5 +104,15 @@ public class FriendRequestService : IFriendRequestService {
         }
 
         return Result<(string, string)>.Success((sender.Id, recipient.Id));
+    }
+
+    private async Task<Result<string>> GetId(string userName) {
+        var user = await _userManager.FindByNameAsync(userName);
+
+        if (user == null) {
+            return Result<string>.Failure("User does not exist");
+        }
+
+        return Result<string>.Success(user.Id);
     }
 }

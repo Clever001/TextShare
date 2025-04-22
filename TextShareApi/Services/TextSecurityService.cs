@@ -11,14 +11,14 @@ namespace TextShareApi.Services;
 
 public class TextSecurityService : ITextSecurityService {
     private readonly AppDbContext _context;
-    private readonly IFriendsRepository _friendsRepo;
+    private readonly IFriendPairsRepository _friendPairsRepo;
     private readonly PasswordHasher<AppUser> _passwordHasher;
 
     public TextSecurityService(AppDbContext context, 
-        IFriendsRepository friendsRepo,
+        IFriendPairsRepository friendPairsRepo,
         PasswordHasher<AppUser> passwordHasher) {
         _context = context;
-        _friendsRepo = friendsRepo;
+        _friendPairsRepo = friendPairsRepo;
         _passwordHasher = passwordHasher;
     }
 
@@ -62,7 +62,7 @@ public class TextSecurityService : ITextSecurityService {
             case AccessType.OnlyFriends: {
                 if (sender is null) return new(SecurityCheckResult.Forbidden);
                 var ownerId = text.AppUserId;
-                var friendsIds = await _friendsRepo.GetFriendsIds(ownerId);
+                var friendsIds = await _friendPairsRepo.GetFriendsIds(ownerId);
                 if (!friendsIds.Contains(sender.Id)) return new(SecurityCheckResult.Forbidden);
                 break;
             }

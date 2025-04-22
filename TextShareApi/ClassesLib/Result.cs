@@ -4,42 +4,46 @@ public class Result<T> {
     public bool IsSuccess { get; }
     public T Value { get; }
     public string Error { get; }
+    public bool IsClientError { get; }
 
-    private Result(bool isSuccess, T value, string error) {
+    private Result(bool isSuccess, T value, string error, bool isClientError) {
         IsSuccess = isSuccess;
         Value = value;
         Error = error;
+        IsClientError = isClientError;
     }
 
     public static Result<T> Success(T value) {
-        return new Result<T>(true, value, null!);
+        return new Result<T>(true, value, null!, default);
     }
 
-    public static Result<T> Failure(string message) {
+    public static Result<T> Failure(string message, bool isClientError = false) {
         if (string.IsNullOrWhiteSpace(message)) {
             throw new ArgumentException("Error message cannot be null or empty.", nameof(message));
         }
-        return new Result<T>(false, default!, message);
+        return new Result<T>(false, default!, message, isClientError);
     }
 }
 
 public class Result {
     public bool IsSuccess { get; }
     public string Error { get; }
+    public bool IsClientError { get; }
 
-    private Result(bool isSuccess, string error) {
+    private Result(bool isSuccess, string error, bool isClientError) {
         IsSuccess = isSuccess;
         Error = error;
+        IsClientError = isClientError;
     }
 
     public static Result Success() {
-        return new Result(true, null!);
+        return new Result(true, null!, default);
     }
 
-    public static Result Failure(string error) {
-        if (string.IsNullOrWhiteSpace(error)) {
-            throw new ArgumentException("Error message cannot be null or empty.", nameof(error));
+    public static Result Failure(string message, bool isClientError = false) {
+        if (string.IsNullOrWhiteSpace(message)) {
+            throw new ArgumentException("Error message cannot be null or empty.", nameof(message));
         }
-        return new Result(false, error);
+        return new Result(false, message, isClientError);
     }
 }

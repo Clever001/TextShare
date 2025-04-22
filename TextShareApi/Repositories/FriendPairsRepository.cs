@@ -5,10 +5,10 @@ using TextShareApi.Models;
 
 namespace TextShareApi.Repositories;
 
-public class FriendsRepository : IFriendsRepository {
+public class FriendPairsRepository : IFriendPairsRepository {
     private readonly AppDbContext _context;
 
-    public FriendsRepository(AppDbContext context) {
+    public FriendPairsRepository(AppDbContext context) {
         _context = context;
     }
     

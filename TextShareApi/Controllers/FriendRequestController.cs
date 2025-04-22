@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +16,8 @@ namespace TextShareApi.Controllers;
 [ApiController]
 public class FriendRequestController : ControllerBase {
     private IFriendRequestService _frService;
-    private AppDbContext _context;
-
-    public FriendRequestController(IFriendRequestService frService, AppDbContext context) {
+    public FriendRequestController(IFriendRequestService frService) {
         _frService = frService;
-        _context = context;
     }
     
     
@@ -49,17 +47,35 @@ public class FriendRequestController : ControllerBase {
         return NoContent();
     }
     
-    [HttpGet("requests/{userName}")]
+    [HttpGet("requests/fromMe/")]
     [Authorize]
-    public async Task<IActionResult> GetFriendRequests([FromRoute] string userName) {
-        // TODO: Implement this!
-        throw new NotImplementedException();
+    public async Task<IActionResult> GetRequestsFromMe() {
+        var curUser = User.GetUserName();
+
+        var getResult = await _frService.GetSentFriendRequests(curUser);
+        if (!getResult.IsSuccess) {
+            return BadRequest(getResult.Error);
+        }
+        
+        return Ok(getResult.Value.Select(x => x.ToDto()));
+    }
+
+    [HttpGet("requests/toMe/")]
+    [Authorize]
+    public async Task<IActionResult> GetRequestsToMe() {
+        var curUser = User.GetUserName();
+
+        var getResult = await _frService.GetReceivedFriendRequests(curUser);
+        if (!getResult.IsSuccess) {
+            return BadRequest(getResult.Error);
+        }
+        
+        return Ok(getResult.Value.Select(x => x.ToDto()));
     }
 
     [HttpPut("requests/{senderName}")]
     [Authorize]
     public async Task<IActionResult> ProcessFriendRequest([FromRoute] string senderName, [FromBody] ProcessFriendRequestDto requestDto) {
-        // TODO: Check request dto.
         var curUser = User.GetUserName();
 
         var processionResult = await _frService.Process(senderName, curUser, requestDto.AcceptRequest);
