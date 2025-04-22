@@ -26,7 +26,7 @@ public class TextController : ControllerBase {
     public TextController(ITextRepository textRepository,
         ITextSecuritySettingsRepository securitySettingsRepository,
         IUniqueIdService uniqueIdService,
-        IFriendPairsRepository friendPairsRepository,
+        IFriendPairRepository friendPairRepository,
         UserManager<AppUser> userManager,
         PasswordHasher<AppUser> passwordHasher,
         ITextSecurityService textSecurityService) {

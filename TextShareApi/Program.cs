@@ -49,9 +49,10 @@ builder.Services.AddScoped<ITextRepository, TextRepository>();
 builder.Services.AddScoped<IHashSeedRepository, HashSeedRepository>();
 builder.Services.AddScoped<IUniqueIdService, UniqueIdService>();
 builder.Services.AddScoped<ITextSecuritySettingsRepository, TextSecuritySettingsRepository>();
-builder.Services.AddScoped<IFriendPairsRepository, FriendPairsRepository>();
+builder.Services.AddScoped<IFriendPairRepository, FriendPairRepository>();
 builder.Services.AddScoped<ITextSecurityService, TextSecurityService>();
 builder.Services.AddScoped<PasswordHasher<AppUser>>();
+// TODO: Insert interfaces impls here.
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
