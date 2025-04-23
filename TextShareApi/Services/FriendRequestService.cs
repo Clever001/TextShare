@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using TextShareApi.ClassesLib;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
@@ -18,15 +19,28 @@ public class FriendRequestService : IFriendRequestService {
     }
     
     public async Task<Result<FriendRequest>> Create(string senderName, string recipientName) {
+        if (senderName == recipientName) {
+            return Result<FriendRequest>.Failure("Sender name and recipient name cannot be the same", true);
+        }
+        
         var idResult = await GetIds(senderName, recipientName);
         if (!idResult.IsSuccess) {
             return Result<FriendRequest>.Failure(idResult.Error, false);
         }
         var (senderId, recipientId) = idResult.Value;
-
+        
+        var areFriends = await _friendService.AreFriends(senderId, recipientId);
+        Debug.Assert(areFriends.IsSuccess, $"Check of \"{nameof(areFriends)}\" was not successful");
+        if (areFriends.Value) {
+            return Result<FriendRequest>.Failure("Users are friends already", true);
+        }
         bool exists = await _frRepo.ContainsRequest(senderId, recipientId);
         if (exists) {
             return Result<FriendRequest>.Failure("Already exists", true);
+        }
+        exists = await _frRepo.ContainsRequest(recipientId, senderId);
+        if (exists) {
+            return Result<FriendRequest>.Failure("Reverse request already exists", true);
         }
         
         var request = await _frRepo.CreateRequest(senderId, recipientId);
@@ -34,6 +48,10 @@ public class FriendRequestService : IFriendRequestService {
     }
 
     public async Task<Result> Delete(string senderName, string recipientName) {
+        if (senderName == recipientName) {
+            return Result.Failure("Sender name and recipient name cannot be the same", true);
+        }
+        
         var idResult = await GetIds(senderName, recipientName);
         if (!idResult.IsSuccess) {
             return Result.Failure(idResult.Error, false);
@@ -48,27 +66,45 @@ public class FriendRequestService : IFriendRequestService {
     }
 
     public async Task<Result<FriendRequest>> Process(string senderName, string recipientName, bool acceptRequest) {
+        if (senderName == recipientName) {
+            return Result<FriendRequest>.Failure("Sender name and recipient name cannot be the same", true);
+        }
+        
         var idResult = await GetIds(senderName, recipientName);
         if (!idResult.IsSuccess) {
             return Result<FriendRequest>.Failure(idResult.Error, false);
         }
         var (senderId, recipientId) = idResult.Value;
         
-        var request = await _frRepo.UpdateRequest(senderId, recipientId, acceptRequest);
+        var request = await _frRepo.GetRequest(senderId, recipientId);
+        if (request == null) {
+            return Result<FriendRequest>.Failure("Request does not exist", true);
+        }
+
+        if (acceptRequest) {
+            var result = await _friendService.AddFriend(senderId, recipientId);
+            if (!result.IsSuccess) {
+                return Result<FriendRequest>.Failure($"Error while adding recipient to friends list: {result.Error}", false);
+            }
+            request.IsAccepted = true;
+            bool deleted = await _frRepo.DeleteRequest(senderId, recipientId);
+            Debug.Assert(deleted, $"Failed to delete request after adding friend");
+            return Result<FriendRequest>.Success(request);
+        }
+        
+        // Not accepted
+        request = await _frRepo.UpdateRequest(senderId, recipientId, false);
         if (request is null) {
             return Result<FriendRequest>.Failure("Does not exist", true);
         }
-        // TODO: Разобраться с изменениями в запросах в друзья и в парах друзей при добавлении и удалении пользователей из списка друзей.
-        // Add To Friend List
-        var result = await _friendService.AddFriend(senderId, recipientId);
-        if (!result.IsSuccess) {
-            return Result<FriendRequest>.Failure($"Error while adding recipient to friends list: {result.Error}", false);
-        }
-
         return Result<FriendRequest>.Success(request);
     }
 
     public async Task<Result<FriendRequest?>> GetFriendRequest(string senderName, string recipientName) {
+        if (senderName == recipientName) {
+            return Result<FriendRequest?>.Failure("Sender name and recipient name cannot be the same", true);
+        }
+        
         var idResult = await GetIds(senderName, recipientName);
         if (!idResult.IsSuccess) {
             return Result<FriendRequest?>.Failure(idResult.Error, false);

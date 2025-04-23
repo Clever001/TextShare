@@ -23,7 +23,10 @@ public class FriendRequestController : ControllerBase {
         
         var frResult = await _frService.Create(curUser, recipientName);
         if (!frResult.IsSuccess) {
-            return BadRequest(frResult.Error);
+            if (frResult.IsClientError) {
+                return BadRequest(frResult.Error);
+            }
+            return StatusCode(500, frResult.Error);
         }
 
         return Ok(frResult.Value.ToDto());
@@ -36,7 +39,10 @@ public class FriendRequestController : ControllerBase {
         
         var deletionResult = await _frService.Delete(curUser, recipientName);
         if (!deletionResult.IsSuccess) {
-            return BadRequest(deletionResult.Error);
+            if (deletionResult.IsClientError) {
+                return BadRequest(deletionResult.Error);
+            }
+            return StatusCode(500, deletionResult.Error);
         }
         
         return NoContent();
@@ -49,10 +55,13 @@ public class FriendRequestController : ControllerBase {
 
         var getResult = await _frService.GetSentFriendRequests(curUser);
         if (!getResult.IsSuccess) {
-            return BadRequest(getResult.Error);
+            if (getResult.IsSuccess) {
+                return BadRequest(getResult.Error);
+            }
+            return StatusCode(500, getResult.Error);
         }
         
-        return Ok(getResult.Value.Select(x => x.ToDto()));
+        return Ok(getResult.Value.Select(x => x.ToDto()).ToArray());
     }
 
     [HttpGet("requests/toMe/")]
@@ -62,10 +71,13 @@ public class FriendRequestController : ControllerBase {
 
         var getResult = await _frService.GetReceivedFriendRequests(curUser);
         if (!getResult.IsSuccess) {
-            return BadRequest(getResult.Error);
+            if (getResult.IsSuccess) {
+                return BadRequest(getResult.Error);
+            }
+            return StatusCode(500, getResult.Error);
         }
         
-        return Ok(getResult.Value.Select(x => x.ToDto()));
+        return Ok(getResult.Value.Select(x => x.ToDto()).ToArray());
     }
 
     [HttpPut("requests/{senderName}")]
@@ -75,7 +87,10 @@ public class FriendRequestController : ControllerBase {
 
         var processionResult = await _frService.Process(senderName, curUser, requestDto.AcceptRequest);
         if (!processionResult.IsSuccess) {
-            return BadRequest(processionResult.Error);
+            if (processionResult.IsSuccess) {
+                return BadRequest(processionResult.Error);
+            }
+            return StatusCode(500, processionResult.Error);
         }
         
         return Ok(processionResult.Value.ToDto());

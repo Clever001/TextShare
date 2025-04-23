@@ -30,7 +30,7 @@ public class FriendController : ControllerBase {
             return StatusCode(500, result.Error);
         }
         
-        return Ok(result.Value.Select(u => u.ToUserWithoutTokenDto()));
+        return Ok(result.Value.Select(u => u.ToUserWithoutTokenDto()).ToArray());
     }
 
     [HttpGet("{userName}")]
