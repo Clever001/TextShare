@@ -1,6 +1,6 @@
 using TextShareApi.Models;
 
-namespace TextShareApi.Interfaces;
+namespace TextShareApi.Interfaces.Repositories;
 
 public interface IHashSeedRepository {
     Task<HashSeed> GetHashSeed();

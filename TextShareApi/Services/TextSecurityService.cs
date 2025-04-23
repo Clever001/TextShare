@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using TextShareApi.ClassesLib;
 using TextShareApi.Data;
-using TextShareApi.Interfaces;
+using TextShareApi.Interfaces.Repositories;
+using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
 using TextShareApi.Models.Enums;
-using TextShareApi.Repositories;
-using TextShareApi.ResponseClasses;
 
 namespace TextShareApi.Services;
 

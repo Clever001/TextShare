@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TextShareApi.Data;
-using TextShareApi.Interfaces;
+using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Models;
 
 namespace TextShareApi.Repositories;

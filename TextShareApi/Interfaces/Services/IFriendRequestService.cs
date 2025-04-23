@@ -1,7 +1,7 @@
-using TextShareApi.Dtos.FriendRequest;
+using TextShareApi.ClassesLib;
 using TextShareApi.Models;
 
-namespace TextShareApi.Interfaces;
+namespace TextShareApi.Interfaces.Services;
 
 public interface IFriendRequestService {
     Task<Result<FriendRequest>> Create(string senderName, string recipientName);

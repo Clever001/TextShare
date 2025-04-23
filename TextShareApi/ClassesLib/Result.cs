@@ -1,4 +1,4 @@
-namespace TextShareApi.Models;
+namespace TextShareApi.ClassesLib;
 
 public class Result<T> {
     public bool IsSuccess { get; }
@@ -17,7 +17,7 @@ public class Result<T> {
         return new Result<T>(true, value, null!, default);
     }
 
-    public static Result<T> Failure(string message, bool isClientError = false) {
+    public static Result<T> Failure(string message, bool isClientError) {
         if (string.IsNullOrWhiteSpace(message)) {
             throw new ArgumentException("Error message cannot be null or empty.", nameof(message));
         }
@@ -40,7 +40,7 @@ public class Result {
         return new Result(true, null!, default);
     }
 
-    public static Result Failure(string message, bool isClientError = false) {
+    public static Result Failure(string message, bool isClientError) {
         if (string.IsNullOrWhiteSpace(message)) {
             throw new ArgumentException("Error message cannot be null or empty.", nameof(message));
         }

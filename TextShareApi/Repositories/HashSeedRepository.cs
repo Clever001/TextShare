@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TextShareApi.Data;
-using TextShareApi.Interfaces;
+using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Models;
 
 namespace TextShareApi.Repositories;

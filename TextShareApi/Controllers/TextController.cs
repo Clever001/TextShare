@@ -1,15 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TextShareApi.Dtos.Text;
 using TextShareApi.Extensions;
-using TextShareApi.Interfaces;
+using TextShareApi.Interfaces.Repositories;
+using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;
 using TextShareApi.Models;
 using TextShareApi.Models.Enums;
-using TextShareApi.Services;
 
 namespace TextShareApi.Controllers;
 

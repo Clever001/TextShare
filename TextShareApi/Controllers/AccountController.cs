@@ -1,13 +1,11 @@
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using TextShareApi.Data;
 using TextShareApi.Dtos.Accounts;
 using TextShareApi.Dtos.Additional;
 using TextShareApi.Extensions;
-using TextShareApi.Interfaces;
+using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;
 using TextShareApi.Models;
 

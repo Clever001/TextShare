@@ -1,10 +1,11 @@
+using TextShareApi.ClassesLib;
 using TextShareApi.Models;
 
-namespace TextShareApi.Interfaces;
+namespace TextShareApi.Interfaces.Services;
 
 public interface IFriendService {
-    Task<Result<bool>> AddFriend(string firstUserName, string secondUserName);
+    Task<Result> AddFriend(string firstUserName, string secondUserName);
     Task<Result<List<AppUser>>> GetFriends(string userName);
-    Task<Result<bool>> RemoveFriend(string firstUserName, string secondUserName);
+    Task<Result> RemoveFriend(string firstUserName, string secondUserName);
     Task<Result<bool>> AreFriends(string firstUserName, string secondUserName);
 }

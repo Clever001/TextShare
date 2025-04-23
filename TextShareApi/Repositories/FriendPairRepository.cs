@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using TextShareApi.Data;
-using TextShareApi.Interfaces;
+using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Models;
 
 namespace TextShareApi.Repositories;
@@ -54,8 +54,6 @@ public class FriendPairRepository : IFriendPairRepository {
 
     public async Task<FriendPair?> GetFriendPair(string firstUserId, string secondUserId) {
         return await _context.FriendPairs
-            .Include(p => p.FirstUser)
-                .ThenInclude(u => u.UserName)
             .Include(p => p.SecondUser)
                 .ThenInclude(u => u.UserName)
             .FirstOrDefaultAsync(p => p.FirstUserId == firstUserId && p.SecondUserId == secondUserId);
@@ -63,7 +61,7 @@ public class FriendPairRepository : IFriendPairRepository {
 
     public async Task<List<FriendPair>> GetFriendPairs(Expression<Func<FriendPair, bool>> predicate) {
         return await _context.FriendPairs
-            .Include(p => p.FirstUser)
+            .Include(p => p.SecondUser)
                 .ThenInclude(u => u.UserName)
             .Where(predicate)
             .ToListAsync();

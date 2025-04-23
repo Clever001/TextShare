@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
+namespace TextShareApi.Attributes;
+
 [AttributeUsage(AttributeTargets.Class)]
 public class OneOfRequiredAttribute : ValidationAttribute {
     private readonly string _firstProperty;

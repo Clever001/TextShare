@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using TextShareApi.Models;
 
-namespace TextShareApi.Interfaces;
+namespace TextShareApi.Interfaces.Repositories;
 
 public interface IFriendPairRepository {
     // TODO: After implementing of FriendService include GetFriendsIds there.

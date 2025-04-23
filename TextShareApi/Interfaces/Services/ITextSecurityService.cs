@@ -1,8 +1,8 @@
+using TextShareApi.ClassesLib;
 using TextShareApi.Models;
 using TextShareApi.Models.Enums;
-using TextShareApi.ResponseClasses;
 
-namespace TextShareApi.Interfaces;
+namespace TextShareApi.Interfaces.Services;
 
 public interface ITextSecurityService {
     Task<TextSecuritySettings> ProvideTextSecuritySettings(Text text, AccessType accessType, string? password);

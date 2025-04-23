@@ -1,8 +1,7 @@
 using System.Linq.Expressions;
 using TextShareApi.Models;
-using TextShareApi.Repositories;
 
-namespace TextShareApi.Interfaces;
+namespace TextShareApi.Interfaces.Repositories;
 
 public interface IFriendRequestRepository {
     Task<FriendRequest> CreateRequest(string senderId, string recipientId);

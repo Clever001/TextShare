@@ -1,8 +1,7 @@
-using System.Net.Mime;
 using TextShareApi.Models;
 using TextShareApi.Models.Enums;
 
-namespace TextShareApi.ResponseClasses;
+namespace TextShareApi.ClassesLib;
 
 public class SecurityResponse : ResponseBase {
     public SecurityCheckResult Details { get; }

@@ -1,4 +1,4 @@
-namespace TextShareApi.ResponseClasses;
+namespace TextShareApi.ClassesLib;
 
 public abstract class ResponseBase {
     public bool IsSuccess { get; }

@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using TextShareApi.Interfaces;
+using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
 
 namespace TextShareApi.Services;

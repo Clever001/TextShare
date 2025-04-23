@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Buffers.Text;
-using TextShareApi.Interfaces;
+using TextShareApi.Interfaces.Repositories;
+using TextShareApi.Interfaces.Services;
 
 namespace TextShareApi.Services;
 

@@ -1,24 +1,26 @@
-using Microsoft.AspNetCore.Identity;
-using TextShareApi.Dtos.FriendRequest;
-using TextShareApi.Interfaces;
-using TextShareApi.Mappers;
+using TextShareApi.ClassesLib;
+using TextShareApi.Interfaces.Repositories;
+using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
 
 namespace TextShareApi.Services;
 
 public class FriendRequestService : IFriendRequestService {
     private readonly IFriendRequestRepository _frRepo;
-    private readonly UserManager<AppUser> _userManager;
+    private readonly IAccountRepository _accountRepository;
+    private readonly IFriendService _friendService;
 
-    public FriendRequestService(IFriendRequestRepository frRepo, UserManager<AppUser> userManager) {
+    public FriendRequestService(IFriendRequestRepository frRepo, IAccountRepository accountRepository,
+        IFriendService friendService) {
         _frRepo = frRepo;
-        _userManager = userManager;
+        _accountRepository = accountRepository;
+        _friendService = friendService;
     }
     
     public async Task<Result<FriendRequest>> Create(string senderName, string recipientName) {
-        var idResult = await GetId(senderName, recipientName);
+        var idResult = await GetIds(senderName, recipientName);
         if (!idResult.IsSuccess) {
-            return Result<FriendRequest>.Failure(idResult.Error);
+            return Result<FriendRequest>.Failure(idResult.Error, false);
         }
         var (senderId, recipientId) = idResult.Value;
 
@@ -32,9 +34,9 @@ public class FriendRequestService : IFriendRequestService {
     }
 
     public async Task<Result> Delete(string senderName, string recipientName) {
-        var idResult = await GetId(senderName, recipientName);
+        var idResult = await GetIds(senderName, recipientName);
         if (!idResult.IsSuccess) {
-            return Result.Failure(idResult.Error);
+            return Result.Failure(idResult.Error, false);
         }
         var (senderId, recipientId) = idResult.Value;
         
@@ -46,9 +48,9 @@ public class FriendRequestService : IFriendRequestService {
     }
 
     public async Task<Result<FriendRequest>> Process(string senderName, string recipientName, bool acceptRequest) {
-        var idResult = await GetId(senderName, recipientName);
+        var idResult = await GetIds(senderName, recipientName);
         if (!idResult.IsSuccess) {
-            return Result<FriendRequest>.Failure(idResult.Error);
+            return Result<FriendRequest>.Failure(idResult.Error, false);
         }
         var (senderId, recipientId) = idResult.Value;
         
@@ -56,14 +58,20 @@ public class FriendRequestService : IFriendRequestService {
         if (request is null) {
             return Result<FriendRequest>.Failure("Does not exist", true);
         }
+        // TODO: Разобраться с изменениями в запросах в друзья и в парах друзей при добавлении и удалении пользователей из списка друзей.
+        // Add To Friend List
+        var result = await _friendService.AddFriend(senderId, recipientId);
+        if (!result.IsSuccess) {
+            return Result<FriendRequest>.Failure($"Error while adding recipient to friends list: {result.Error}", false);
+        }
 
         return Result<FriendRequest>.Success(request);
     }
 
     public async Task<Result<FriendRequest?>> GetFriendRequest(string senderName, string recipientName) {
-        var idResult = await GetId(senderName, recipientName);
+        var idResult = await GetIds(senderName, recipientName);
         if (!idResult.IsSuccess) {
-            return Result<FriendRequest?>.Failure(idResult.Error);
+            return Result<FriendRequest?>.Failure(idResult.Error, false);
         }
         var (senderId, recipientId) = idResult.Value;
         
@@ -72,47 +80,35 @@ public class FriendRequestService : IFriendRequestService {
     }
 
     public async Task<Result<List<FriendRequest>>> GetSentFriendRequests(string senderName) {
-        var idResult = await GetId(senderName);
-        if (!idResult.IsSuccess) {
-            return Result<List<FriendRequest>>.Failure(idResult.Error);
+        var senderId = await _accountRepository.GetAccountId(senderName);
+        if (senderId == null) {
+            return Result<List<FriendRequest>>.Failure("Sender does not exist", false);
         }
-        string senderId = idResult.Value;
         
         return Result<List<FriendRequest>>.Success(await _frRepo.GetFriendRequests(fr => fr.SenderId == senderId));
     }
 
     public async Task<Result<List<FriendRequest>>> GetReceivedFriendRequests(string recipientName) {
-        var idResult = await GetId(recipientName);
-        if (!idResult.IsSuccess) {
-            return Result<List<FriendRequest>>.Failure(idResult.Error);
+        var recipientId = await _accountRepository.GetAccountId(recipientName);
+        if (recipientId == null) {
+            return Result<List<FriendRequest>>.Failure("Recipient does not exist", false);
         }
-        string recipientId = idResult.Value;
         
         return Result<List<FriendRequest>>.Success(await _frRepo.GetFriendRequests(fr => fr.RecipientId == recipientId));
     }
 
-    private async Task<Result<(string, string)>> GetId(string userName, string recipientName) {
-        var sender = await _userManager.FindByNameAsync(userName);
-        var recipient = await _userManager.FindByNameAsync(recipientName);
+    private async Task<Result<(string, string)>> GetIds(string senderName, string recipientName) {
+        var senderId = await _accountRepository.GetAccountId(senderName);
+        var recipientId = await _accountRepository.GetAccountId(recipientName);
 
-        if (sender == null) {
-            return Result<(string, string)>.Failure("Sender does not exist");
+        if (senderId == null) {
+            return Result<(string, string)>.Failure("Sender does not exist", false);
         }
         
-        if (recipient == null) {
-            return Result<(string, string)>.Failure("Recipient does not exist");
+        if (recipientId == null) {
+            return Result<(string, string)>.Failure("Recipient does not exist", false);
         }
 
-        return Result<(string, string)>.Success((sender.Id, recipient.Id));
-    }
-
-    private async Task<Result<string>> GetId(string userName) {
-        var user = await _userManager.FindByNameAsync(userName);
-
-        if (user == null) {
-            return Result<string>.Failure("User does not exist");
-        }
-
-        return Result<string>.Success(user.Id);
+        return Result<(string, string)>.Success((senderId, recipientId));
     }
 }

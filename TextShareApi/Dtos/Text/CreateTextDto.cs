@@ -1,7 +1,4 @@
-using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Identity;
 using TextShareApi.Attributes;
-using TextShareApi.Models.Enums;
 
 namespace TextShareApi.Dtos.Text;
 
