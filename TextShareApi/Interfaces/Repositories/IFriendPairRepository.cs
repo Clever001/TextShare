@@ -4,7 +4,6 @@ using TextShareApi.Models;
 namespace TextShareApi.Interfaces.Repositories;
 
 public interface IFriendPairRepository {
-    // TODO: After implementing of FriendService include GetFriendsIds there.
     Task<List<string>> GetFriendsIds(string userId);
     Task<ValueTuple<FriendPair, FriendPair>> CreateFriendPairs(string firstUserId, string secondUserId);
     Task<FriendPair?> GetFriendPair(string firstUserId, string secondUserId);

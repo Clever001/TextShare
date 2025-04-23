@@ -14,7 +14,6 @@ public class FriendPairRepository : IFriendPairRepository {
     }
     
     public async Task<List<string>> GetFriendsIds(string userId) {
-        // TODO: Replace to Service.
         var friends = await _context.FriendPairs
             .Where(p => p.FirstUserId == userId)
             .Select(p => p.SecondUserId)

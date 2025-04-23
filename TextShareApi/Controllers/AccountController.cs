@@ -1,112 +1,86 @@
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TextShareApi.Data;
 using TextShareApi.Dtos.Accounts;
 using TextShareApi.Dtos.Additional;
-using TextShareApi.Extensions;
+using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;
-using TextShareApi.Models;
 
 namespace TextShareApi.Controllers;
 
 [Route("api/accounts")]
 [ApiController]
 public class AccountController : ControllerBase {
-    private readonly ITokenService _tokenService;
-    private readonly UserManager<AppUser> _userManager;
-    private readonly SignInManager<AppUser> _signInManager;
+    private readonly IAccountService _accountService;
+    private readonly IAccountRepository _accountRepository;
 
-    public AccountController(ITokenService tokenService, 
-        UserManager<AppUser> userManager, 
-        SignInManager<AppUser> signInManager,
-        AppDbContext context) {
-        _tokenService = tokenService;
-        _userManager = userManager;
-        _signInManager = signInManager;
+    public AccountController(IAccountService accountService,
+        IAccountRepository accountRepository) {
+        _accountService = accountService;
+        _accountRepository = accountRepository;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto) {
-        try {
-            if (!ModelState.IsValid) {
-                return BadRequest(ModelState);
-            }
-
-            if (IsEmail(registerDto.UserName)) {
-                return BadRequest(new ExceptionDto {
-                    Code = "InvalidUserName",
-                    Description = "UserName cannot represent email address"
-                });
-            }
-
-            var user = new AppUser {
-                UserName = registerDto.UserName,
-                Email = registerDto.Email
-            };
-            
-            var createResult = await _userManager.CreateAsync(user, registerDto.Password);
-            if (createResult.Succeeded) {
-                var appendResult = await _userManager.AddToRoleAsync(user, "User");
-                if (appendResult.Succeeded) {
-                    string token = _tokenService.CreateToken(user);
-                    return Ok(new UserWithTokenDto {
-                        UserName = user.UserName,
-                        Email = user.Email,
-                        Token = token
-                    });
-                }
-                
-                return StatusCode(500, appendResult.Errors);
-            }
-            return StatusCode(500, createResult.Errors);
+        if (!ModelState.IsValid) {
+            return BadRequest(ModelState);
         }
-        catch (Exception e) {
-            return StatusCode(500, e.ToExceptionDto());
+
+        if (IsEmail(registerDto.UserName)) {
+            return BadRequest(new ExceptionDto {
+                Code = "InvalidUserName",
+                Description = "UserName cannot represent email address"
+            });
         }
+        
+        var result = await _accountService.Register(
+            registerDto.UserName, registerDto.Email, registerDto.Password);
+
+        if (!result.IsSuccess) {
+            if (result.IsClientError) {
+                return BadRequest(result.Error);
+            }
+            return StatusCode(500, result.Error);
+        }
+
+        var (user, token) = result.Value;
+
+        return Ok(new UserWithTokenDto {
+            UserName = user.UserName,
+            Email = user.Email,
+            Token = token
+        });
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto) {
-        IActionResult Unauth() {
+        if (!ModelState.IsValid) {
+            return BadRequest(ModelState);
+        }
+        
+        var result = await _accountService.Login(loginDto.UserNameOrEmail, loginDto.Password);
+
+        if (!result.IsSuccess) {
             return Unauthorized(new ExceptionDto {
                 Code = "ExceptionDuringLogin",
                 Description = "Check your registration details for correctness"
             });
         }
-        
-        if (!ModelState.IsValid) {
-            return BadRequest(ModelState);
-        }
 
-        AppUser? user = await _userManager.FindByNameAsync(loginDto.UserNameOrEmail);
-        if (user is null) {
-            user = await _userManager.FindByEmailAsync(loginDto.UserNameOrEmail);
-        }
-
-        if (user is null) {
-            return Unauth();
-        }
+        var (user, token) = result.Value;
         
-        bool passwordValid = await _userManager.CheckPasswordAsync(user, loginDto.Password);
-        if (passwordValid) {
-            string token = _tokenService.CreateToken(user);
-            return Ok(new UserWithTokenDto {
-                UserName = user.UserName,
-                Email = user.Email,
-                Token = token
-            });
-        }
-        
-        return Unauth();
+        return Ok(new UserWithTokenDto {
+            UserName = user.UserName,
+            Email = user.Email,
+            Token = token
+        });
     }
 
     [HttpGet]
     public async Task<IActionResult> Get() {
         // TODO: Добавить распределение по страницам
-        var users = await _userManager.GetUsersInRoleAsync("User");
-        return Ok(users.Select(u => u.ToUserWithoutTokenDto()));
+        var users = await _accountRepository.GetUsers();
+        return Ok(users.Select(u => u.ToUserWithoutTokenDto()).ToArray());
     }
     
     private bool IsEmail(string input) {

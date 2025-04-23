@@ -1,6 +1,9 @@
-namespace TextShareApi.Interfaces.Services;
+using TextShareApi.Models;
+
+namespace TextShareApi.Interfaces.Repositories;
 
 public interface IAccountRepository {
-    // TODO: Дополни репозиторий методами.
     Task<string?> GetAccountId(string userName);
+    Task<string?> GetUserName(string userId);
+    Task<IList<AppUser>> GetUsers();
 }

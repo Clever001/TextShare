@@ -1,5 +1,5 @@
+using System.Diagnostics;
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TextShareApi.Data;
 using TextShareApi.Interfaces.Repositories;
@@ -9,24 +9,22 @@ namespace TextShareApi.Repositories;
 
 public class FriendRequestRepository : IFriendRequestRepository {
     private readonly AppDbContext _context;
-    private readonly UserManager<AppUser> _userManager;
+    private readonly IAccountRepository _accountRepository;
 
-    public FriendRequestRepository(AppDbContext context, UserManager<AppUser> userManager) {
+    public FriendRequestRepository(AppDbContext context, IAccountRepository accountRepository) {
         _context = context;
-        _userManager = userManager;
+        _accountRepository = accountRepository;
     }
     
     public async Task<FriendRequest> CreateRequest(string senderId, string recipientId) {
-        // TODO: Может здесь стоит использовать репозиторий пользователей?
-        var senderData = await _context.Users
-            .Select(u => new {u.Id, u.UserName})
-            .FirstOrDefaultAsync(u => u.Id == senderId);
-        var recipientData = await _context.Users
-            .Select(u => new {u.Id, u.UserName})
-            .FirstOrDefaultAsync(u => u.Id == recipientId);
+        string? senderName = await _accountRepository.GetUserName(senderId);
+        string? recipientName = await _accountRepository.GetUserName(recipientId);
+        
+        Debug.Assert(senderName != null, nameof(senderName) + " != null");
+        Debug.Assert(recipientName != null, nameof(recipientName) + " != null");
 
-        var sender = new AppUser { Id = senderData!.Id, UserName = senderData.UserName };
-        var recipient = new AppUser { Id = recipientData!.Id, UserName = recipientData.UserName };
+        var sender = new AppUser { Id = senderId, UserName = senderName };
+        var recipient = new AppUser { Id = recipientId, UserName = recipientName };
         
         var request = new FriendRequest {
             SenderId = senderId, 
@@ -65,6 +63,7 @@ public class FriendRequestRepository : IFriendRequestRepository {
         }
         
         request.IsAccepted = isAccepted;
+        _context.FriendRequests.Update(request);
         await _context.SaveChangesAsync();
         return request;
     }
