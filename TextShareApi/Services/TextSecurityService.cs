@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TextShareApi.ClassesLib;
@@ -13,15 +14,19 @@ public class TextSecurityService : ITextSecurityService {
     private readonly AppDbContext _context;
     private readonly IFriendPairRepository _friendPairRepo;
     private readonly PasswordHasher<AppUser> _passwordHasher;
+    private readonly IFriendService _friendService;
 
     public TextSecurityService(AppDbContext context, 
         IFriendPairRepository friendPairRepo,
-        PasswordHasher<AppUser> passwordHasher) {
+        PasswordHasher<AppUser> passwordHasher,
+        IFriendService friendService) {
         _context = context;
         _friendPairRepo = friendPairRepo;
         _passwordHasher = passwordHasher;
+        _friendService = friendService;
     }
 
+    /*
     public async Task<TextSecuritySettings> ProvideTextSecuritySettings(Text text, AccessType accessType, string? password) {
         var settings = new TextSecuritySettings {
             TextId = text.Id,
@@ -78,5 +83,54 @@ public class TextSecurityService : ITextSecurityService {
         }
 
         return new (SecurityCheckResult.Allowed, text);
+    }*/
+
+    public async Task<Result> PassSecurityChecks(Text text, AppUser? appUser, string? password) {
+        var textSecSettings = text.TextSecuritySettings;
+        Debug.Assert(textSecSettings != null);
+
+        switch (textSecSettings.AccessType) {
+            case AccessType.ByReferencePublic: {
+                return Result.Success();
+            }
+            case AccessType.ByReferenceAuthorized: {
+                if (appUser == null) {
+                    return Result.Failure("You need to be authorized to access this text.", true);
+                }
+
+                return Result.Success();
+            }
+            case AccessType.OnlyFriends: {
+                if (appUser == null) {
+                    return Result.Failure("You need to be authorized to access this text.", true);
+                }
+
+                var areFriendsResult = await _friendService.AreFriends(text.AppUser.UserName!, appUser.UserName!);
+                
+                if (!areFriendsResult.IsSuccess) {
+                    return Result.Failure(areFriendsResult.Error, areFriendsResult.IsClientError);
+                }
+
+                if (!areFriendsResult.Value) {
+                    return Result.Failure("You don't have enough rights to view this text.", true);
+                }
+
+                return Result.Success();
+            }
+            case AccessType.Personal: {
+                if (appUser == null) {
+                    return Result.Failure("You need to be authorized to access this text.", true);
+                }
+
+                if (text.AppUserId != appUser.Id) {
+                    return Result.Failure("You don't have enough rights to view this text.", true);
+                }
+                
+                return Result.Success();
+            }
+            default: {
+                return Result.Failure("This text has unknown access type.", false);
+            }
+        }
     }
 }

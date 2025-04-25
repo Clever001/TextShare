@@ -1,13 +1,17 @@
+using System.Linq.Expressions;
+using TextShareApi.Dtos.Text;
 using TextShareApi.Models;
 
 namespace TextShareApi.Interfaces.Repositories;
 
+/// <summary>
+/// В возвращаемые тексты включены параметры безопасности и имя пользователя.
+/// </summary>
 public interface ITextRepository {
-    Task<Text> CreateText(Text text);
-    Task<Text?> GetTextWithBackground(string textId);
+    Task AddText(Text text, TextSecuritySettings textSecuritySettings);
     Task<Text?> GetText(string textId);
-    Task<Text?> UpdateText(string textId, string content);
+    Task<List<Text>> GetTexts(Expression<Func<Text, bool>> predicate, int skipCnt = 0, int? maxCnt = null);
+    Task<Text?> UpdateText(string textId, UpdateTextDto dto);
+    Task<bool> DeleteText(string textId);
     Task<bool> ContainsText(string textId);
-    Task<List<Text>> GetUsersTexts(string userName);
-    Task<AppUser?> GetTextOwner(string textId);
 }

@@ -13,6 +13,13 @@ public class Result<T> {
         IsClientError = isClientError;
     }
 
+    public Result ToSimpleResult() {
+        if (IsSuccess) {
+            return Result.Success();
+        }
+        return Result.Failure(Error, IsClientError);
+    }
+
     public static Result<T> Success(T value) {
         return new Result<T>(true, value, null!, default);
     }
@@ -34,6 +41,13 @@ public class Result {
         IsSuccess = isSuccess;
         Error = error;
         IsClientError = isClientError;
+    }
+
+    public Result<T> ToGenericResult<T>(T value) {
+        if (IsSuccess) {
+            return Result<T>.Success(value);
+        }
+        return Result<T>.Failure(Error, IsClientError);
     }
 
     public static Result Success() {

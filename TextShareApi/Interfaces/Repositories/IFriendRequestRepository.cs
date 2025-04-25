@@ -4,7 +4,7 @@ using TextShareApi.Models;
 namespace TextShareApi.Interfaces.Repositories;
 
 public interface IFriendRequestRepository {
-    Task<FriendRequest> CreateRequest(string senderId, string recipientId);
+    Task<FriendRequest> CreateRequest(string senderId, string recipientId); // TODO: Вынести логику создания в сервис.
     Task<FriendRequest?> GetRequest(string senderId, string recipientId);
     Task<List<FriendRequest>> GetFriendRequests(Expression<Func<FriendRequest, bool>> predicate);
     Task<FriendRequest?> UpdateRequest(string senderId, string recipientId, bool isAccepted);

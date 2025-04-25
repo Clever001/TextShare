@@ -84,6 +84,12 @@ public class FriendService : IFriendService {
         return Result<bool>.Success(areFriends);
     }
 
+    public async Task<Result<List<string>>> GetFriendsIds(string userId) {
+        var ids = (await _fpRepo.GetFriendPairs(p => p.FirstUserId == userId))
+            .Select(p => p.SecondUserId).ToList();
+        return Result<List<string>>.Success(ids);
+    }
+
     private async Task<Result<(string, string)>> GetIds(string firstUserName, string secondUserName) {
         var firstId = await _accountRepository.GetAccountId(firstUserName);
         var secondId = await _accountRepository.GetAccountId(secondUserName);
