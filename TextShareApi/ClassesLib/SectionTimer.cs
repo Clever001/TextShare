@@ -17,8 +17,8 @@ public class SectionTimer<T> : IDisposable where T : ILogger {
 
         var elapsed = ms > 1000 ? $"{ms / 1000} s. {ms % 1000} ms." : $"{ms} ms.";
 
-        if (_message is null) _logger.LogError("Elapsed Time: " + elapsed);
-        _logger.LogInformation(_message + " - " + "Elapsed Time: " + elapsed);
+        if (_message is null) _logger.LogInformation("Ended with user side error. - Elapsed Time: " + elapsed);
+        else _logger.LogInformation(_message + " - " + "Elapsed Time: " + elapsed);
     }
 
     public void SetMessage(string message) {

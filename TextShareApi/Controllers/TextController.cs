@@ -51,6 +51,11 @@ public class TextController : ControllerBase {
         using var sectionTimer = SectionTimer.StartNew(_logger);
 
         var senderName = User.GetUserName();
+        
+        var existenceCheck = await _textService.Contains(id);
+        if (!existenceCheck.IsSuccess) {
+            return NotFound(existenceCheck.Error);
+        }
 
         var getResult = await _textService.GetById(id, senderName, requestPassword);
         if (!getResult.IsSuccess) {
@@ -116,7 +121,11 @@ public class TextController : ControllerBase {
             _logger.LogCritical("Sender name is null");
             throw new ArgumentNullException(nameof(senderName));
         }
-
+        
+        var existenceCheck = await _textService.Contains(id);
+        if (!existenceCheck.IsSuccess) {
+            return NotFound(existenceCheck.Error);
+        }
 
         var contentDto = new UpdateTextDto {
             Text = updateDto.Text,
@@ -147,7 +156,11 @@ public class TextController : ControllerBase {
             _logger.LogCritical("Sender name is null");
             throw new ArgumentNullException(nameof(senderName));
         }
-
+        
+        var existenceCheck = await _textService.Contains(id);
+        if (!existenceCheck.IsSuccess) {
+            return NotFound(existenceCheck.Error);
+        }
 
         var updateDto = new UpdateTextDto {
             Password = secSetsDto.Password,

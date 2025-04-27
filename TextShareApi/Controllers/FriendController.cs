@@ -36,7 +36,7 @@ public class FriendController : ControllerBase {
         return Ok(result.Value.Select(u => u.ToUserWithoutTokenDto()).ToArray());
     }
 
-    [HttpGet("{userName}")]
+    [HttpGet("areFriends/{userName}")]
     [Authorize]
     public async Task<IActionResult> AreFriends([FromRoute] string userName) {
         using var sectionTimer = SectionTimer.StartNew(_logger);

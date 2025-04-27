@@ -11,4 +11,6 @@ public interface ITextService {
     Task<Result<List<Text>>> GetAllAvailable(string? curUserName);
     Task<Result<Text>> Update(string textId, string curUserName, string? requestPassword, UpdateTextDto dto);
     Task<Result> Delete(string textId, string curUserName, string? requestPassword);
+
+    Task<Result> Contains(string textId);
 }

@@ -118,6 +118,15 @@ public class TextService : ITextService {
         return Result.Success();
     }
 
+    public async Task<Result> Contains(string textId) {
+        var exists = await _textRepository.ContainsText(textId);
+        if (!exists) {
+            return Result.Failure("Text does not exist", true);
+        }
+        
+        return Result.Success();
+    }
+
     private async Task<Result> PerformWriteSecurityChecks(string textId, string curUserName, string? requestPassword) {
         var text = await _textRepository.GetText(textId);
         if (text == null) return Result.Failure("Text not found", true);

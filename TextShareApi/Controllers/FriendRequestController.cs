@@ -22,7 +22,7 @@ public class FriendRequestController : ControllerBase {
     }
 
 
-    [HttpPost("requests/{recipientName}")]
+    [HttpPost("{recipientName}")]
     [Authorize]
     public async Task<IActionResult> CreateFriendRequest([FromRoute] string recipientName) {
         using var sectionTimer = SectionTimer.StartNew(_logger);
@@ -42,7 +42,7 @@ public class FriendRequestController : ControllerBase {
         return Ok(frResult.Value.ToDto());
     }
 
-    [HttpDelete("requests/{recipientName}")]
+    [HttpDelete("{recipientName}")]
     [Authorize]
     public async Task<IActionResult> DeleteFriendRequest([FromRoute] string recipientName) {
         using var sectionTimer = SectionTimer.StartNew(_logger);
@@ -61,7 +61,7 @@ public class FriendRequestController : ControllerBase {
         return NoContent();
     }
 
-    [HttpGet("requests/fromMe/")]
+    [HttpGet("fromMe/")]
     [Authorize]
     public async Task<IActionResult> GetRequestsFromMe() {
         using var sectionTimer = SectionTimer.StartNew(_logger);
@@ -80,7 +80,7 @@ public class FriendRequestController : ControllerBase {
         return Ok(getResult.Value.Select(x => x.ToDto()).ToArray());
     }
 
-    [HttpGet("requests/toMe/")]
+    [HttpGet("toMe/")]
     [Authorize]
     public async Task<IActionResult> GetRequestsToMe() {
         using var sectionTimer = SectionTimer.StartNew(_logger);
@@ -99,7 +99,7 @@ public class FriendRequestController : ControllerBase {
         return Ok(getResult.Value.Select(x => x.ToDto()).ToArray());
     }
 
-    [HttpPut("requests/{senderName}")]
+    [HttpPut("{senderName}")]
     [Authorize]
     public async Task<IActionResult> ProcessFriendRequest([FromRoute] string senderName,
         [FromBody] ProcessFriendRequestDto requestDto) {
