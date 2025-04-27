@@ -7,5 +7,5 @@ public class TextSecuritySettings {
     public Text Text { get; set; } = null!;
     
     public AccessType AccessType { get; set; }
-    public string? Password { get; set; }
+    public string? Password { get; set; } = null;
 }

@@ -28,8 +28,12 @@ public class AccountRepository : IAccountRepository {
         return await _userManager.GetUsersInRoleAsync("User");
     }
 
-    public async Task<AppUser?> GetAccount(string userId) {
+    public async Task<AppUser?> GetAccountById(string userId) {
         return await _userManager.FindByIdAsync(userId);
+    }
+
+    public async Task<AppUser?> GetAccountByName(string userName) {
+        return await _userManager.FindByNameAsync(userName);
     }
 
     public async Task<AppUser?> GetTextOwner(string textId) {

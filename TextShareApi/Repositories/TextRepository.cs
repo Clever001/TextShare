@@ -4,9 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TextShareApi.Data;
 using TextShareApi.Dtos.Text;
 using TextShareApi.Interfaces.Repositories;
-using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
-using TextShareApi.Models.Enums;
 
 namespace TextShareApi.Repositories;
 
@@ -61,7 +59,7 @@ public class TextRepository : ITextRepository {
         if (dto.UpdatePassword) {
             text.TextSecuritySettings.Password = dto.Password;
         }
-        
+
         await _context.SaveChangesAsync();
         
         return text;
@@ -78,7 +76,7 @@ public class TextRepository : ITextRepository {
 
         var securitySettings = await _context.TextSecuritySettings.FindAsync(textId);
         
-        Debug.Assert(securitySettings != null);
+        Debug.Assert(securitySettings != null, "SecuritySettings does not exist. Cannot delete");
         
         if (securitySettings != null) _context.TextSecuritySettings.Remove(securitySettings);
         _context.Texts.Remove(text);

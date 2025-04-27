@@ -22,46 +22,31 @@ public class FriendPairRepository : IFriendPairRepository {
     }
 
     public async Task<(FriendPair, FriendPair)> CreateFriendPairs(string firstUserId, string secondUserId) {
-        var firstUserData = _context.Users
-            .Select(u => new {u.Id, u.UserName})
-            .FirstOrDefault(u => u.Id == firstUserId);
-        var secondUserData = _context.Users
-            .Select(u => new {u.Id, u.UserName})
-            .FirstOrDefault(u => u.Id == secondUserId);
-
-        var firstUser = new AppUser { Id = firstUserData!.Id, UserName = firstUserData.UserName };
-        var secondUser = new AppUser { Id = secondUserData!.Id, UserName = secondUserData.UserName };
-        
         var firstPair = new FriendPair {
             FirstUserId = firstUserId, 
             SecondUserId = secondUserId,
-            FirstUser = firstUser,
-            SecondUser = secondUser
         };
         var secondPair = new FriendPair {
             FirstUserId = secondUserId, 
             SecondUserId = firstUserId,
-            FirstUser = secondUser,
-            SecondUser = firstUser
         };
         
         await _context.FriendPairs.AddAsync(firstPair);
         await _context.FriendPairs.AddAsync(secondPair);
         await _context.SaveChangesAsync();
+        
         return (firstPair, secondPair);
     }
 
     public async Task<FriendPair?> GetFriendPair(string firstUserId, string secondUserId) {
         return await _context.FriendPairs
             .Include(p => p.SecondUser)
-                .ThenInclude(u => u.UserName)
             .FirstOrDefaultAsync(p => p.FirstUserId == firstUserId && p.SecondUserId == secondUserId);
     }
 
     public async Task<List<FriendPair>> GetFriendPairs(Expression<Func<FriendPair, bool>> predicate) {
         return await _context.FriendPairs
             .Include(p => p.SecondUser)
-                .ThenInclude(u => u.UserName)
             .Where(predicate)
             .ToListAsync();
     }

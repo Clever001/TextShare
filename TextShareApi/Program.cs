@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -45,15 +47,23 @@ builder.Services.AddAuthentication(options => {
     };
 });
 
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<ITextRepository, TextRepository>();
-builder.Services.AddScoped<IHashSeedRepository, HashSeedRepository>();
-builder.Services.AddScoped<IUniqueIdService, UniqueIdService>();
-builder.Services.AddScoped<ITextSecuritySettingsRepository, TextSecuritySettingsRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IFriendPairRepository, FriendPairRepository>();
+builder.Services.AddScoped<IFriendRequestRepository, FriendRequestRepository>();
+builder.Services.AddScoped<IHashSeedRepository, HashSeedRepository>();
+builder.Services.AddScoped<ITextRepository, TextRepository>();
+
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IFriendRequestService, FriendRequestService>();
+builder.Services.AddScoped<IFriendService, FriendService>();
 builder.Services.AddScoped<ITextSecurityService, TextSecurityService>();
+builder.Services.AddScoped<ITextService, TextService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IUniqueIdService, UniqueIdService>();
 builder.Services.AddScoped<PasswordHasher<AppUser>>();
-// TODO: Insert interfaces impls here.
+
+builder.Logging.AddDebug();
+
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

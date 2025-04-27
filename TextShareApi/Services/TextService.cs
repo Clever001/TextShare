@@ -1,4 +1,4 @@
-using System.Linq.Expressions;
+using System.Diagnostics;
 using TextShareApi.ClassesLib;
 using TextShareApi.Data;
 using TextShareApi.Dtos.Text;
@@ -15,7 +15,7 @@ public class TextService : ITextService {
     private readonly IAccountRepository _accountRepository;
     private readonly IFriendService _friendService;
     private readonly IUniqueIdService _uniqueIdService;
-
+    
     public TextService(ITextRepository textRepository,
         ITextSecurityService textSecurityService,
         IAccountRepository accountRepository,
@@ -42,7 +42,6 @@ public class TextService : ITextService {
             TextId = text.Id,
             Text = text,
             AccessType = AccessType.Personal,
-            Password = string.Empty,
         };
         
         await _textRepository.AddText(text, securitySettings);
@@ -50,15 +49,15 @@ public class TextService : ITextService {
         return Result<Text>.Success(text);
     }
 
-    public async Task<Result<Text>> GetById(string id, string? curUserName, string? requestPassword) {
-        var text = await _textRepository.GetText(id);
+    public async Task<Result<Text>> GetById(string textId, string? curUserName, string? requestPassword) {
+        var text = await _textRepository.GetText(textId);
         if (text == null) {
-            return Result<Text>.Failure("Text not found", false);
+            return Result<Text>.Failure("Text not found", true);
         }
 
-        var user = await _accountRepository.GetAccount(id);
+        var user = curUserName == null ? null : await _accountRepository.GetAccountByName(curUserName);
         
-        var securityCheckResult = await _textSecurityService.PassSecurityChecks(text, user, requestPassword);
+        var securityCheckResult = await _textSecurityService.PassReadSecurityChecks(text, user, requestPassword);
         
         return securityCheckResult.ToGenericResult(text);
     }
@@ -98,11 +97,51 @@ public class TextService : ITextService {
         return Result<List<Text>>.Success(texts);
     }
 
-    public async Task<Result<Text>> Update(string id, UpdateTextDto dto) {
-        
+    public async Task<Result<Text>> Update(string textId, string curUserName, string? requestPassword, UpdateTextDto dto) {
+        var checkResult = await PerformWriteSecurityChecks(textId, curUserName, requestPassword);
+        if (!checkResult.IsSuccess) {
+            return checkResult.ToGenericResult(new Text());
+        }
+
+        var curUser = await _accountRepository.GetAccountByName(curUserName);
+
+        if (dto is { UpdatePassword: true, Password: not null }) {
+            dto.Password = _textSecurityService.HashPassword(curUser!, dto.Password);
+        }
+
+        var text = await _textRepository.UpdateText(textId, dto);
+        Debug.Assert(text != null, "Text does not exist. Cannot update");
+
+        return Result<Text>.Success(text);
     }
 
-    public async Task<Result> Delete(string id) {
-        throw new NotImplementedException();
+    public async Task<Result> Delete(string textId, string curUserName, string? requestPassword) {
+        var checkResult = await PerformWriteSecurityChecks(textId, curUserName, requestPassword);
+        if (!checkResult.IsSuccess) {
+            return checkResult;
+        }
+        
+        var deleted = await _textRepository.DeleteText(textId);
+        Debug.Assert(deleted, "Text does not exist from the beginning. Text not deleted");
+
+        return Result.Success();
+    }
+
+    private async Task<Result> PerformWriteSecurityChecks(string textId, string curUserName, string? requestPassword) {
+        var text = await _textRepository.GetText(textId);
+        if (text == null) {
+            return Result.Failure("Text not found", true);
+        }
+        var curUser = await _accountRepository.GetAccountByName(curUserName);
+        if (curUser == null) {
+            return Result.Failure("Current user not found", false);
+        }
+        
+        var securityCheck = _textSecurityService.PassWriteSecurityChecks(text, curUser, requestPassword);
+        if (!securityCheck.IsSuccess) {
+            return Result.Failure(securityCheck.Error, securityCheck.IsClientError);
+        }
+
+        return Result.Success();
     }
 }

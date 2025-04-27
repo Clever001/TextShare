@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TextShareApi.Extensions;
@@ -18,9 +19,10 @@ public class FriendController : ControllerBase {
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> GetFriends() {
-        string curUser = User.GetUserName();
+        string? senderName = User.GetUserName();
+        Debug.Assert(senderName != null);
 
-        var result = await _friendService.GetFriends(curUser);
+        var result = await _friendService.GetFriends(senderName);
         if (!result.IsSuccess) {
             return StatusCode(500, result.Error);
         }
@@ -31,9 +33,10 @@ public class FriendController : ControllerBase {
     [HttpGet("{userName}")]
     [Authorize]
     public async Task<IActionResult> AreFriends([FromRoute] string userName) {
-        string curUser = User.GetUserName();
+        string? senderName = User.GetUserName();
+        Debug.Assert(senderName != null);
         
-        var result = await _friendService.AreFriends(curUser, userName);
+        var result = await _friendService.AreFriends(senderName, userName);
         if (!result.IsSuccess) {
             if (result.IsClientError) {
                 return BadRequest(result.Error);
@@ -45,10 +48,12 @@ public class FriendController : ControllerBase {
     }
 
     [HttpDelete("{userName}")]
+    [Authorize]
     public async Task<IActionResult> Delete([FromRoute] string userName) {
-        string curUser = User.GetUserName();
+        string? senderName = User.GetUserName();
+        Debug.Assert(senderName != null);
         
-        var result = await _friendService.RemoveFriend(curUser, userName);
+        var result = await _friendService.RemoveFriend(senderName, userName);
         if (!result.IsSuccess) {
             if (result.IsClientError) {
                 return BadRequest(result.Error);

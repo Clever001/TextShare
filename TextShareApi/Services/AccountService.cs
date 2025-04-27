@@ -66,7 +66,8 @@ public class AccountService : IAccountService {
         return Result<(AppUser, string)>.Success((user, token));
     }
 
+    /*
     public async Task<Result> Logout(string nameOrEmail) {
         throw new NotImplementedException();
-    }
+    }*/
 }

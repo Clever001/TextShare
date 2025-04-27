@@ -8,9 +8,9 @@ namespace TextShareApi.Services;
 
 public class FriendService : IFriendService {
     private readonly IFriendPairRepository _fpRepo;
-    private readonly AccountRepository _accountRepository;
+    private readonly IAccountRepository _accountRepository;
 
-    public FriendService(IFriendPairRepository fpRepo, AccountRepository accountRepository) {
+    public FriendService(IFriendPairRepository fpRepo, IAccountRepository accountRepository) {
         _fpRepo = fpRepo;
         _accountRepository = accountRepository;
     }

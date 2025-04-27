@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TextShareApi.Dtos.Accounts;
@@ -19,9 +20,11 @@ public class FriendRequestController : ControllerBase {
     [HttpPost("requests/{recipientName}")]
     [Authorize]
     public async Task<IActionResult> CreateFriendRequest([FromRoute] string recipientName) {
-        var curUser = User.GetUserName();
-        
-        var frResult = await _frService.Create(curUser, recipientName);
+        var senderName = User.GetUserName();
+        Debug.Assert(senderName != null);
+
+        Debug.WriteLine("Started fr controller");
+        var frResult = await _frService.Create(senderName, recipientName);
         if (!frResult.IsSuccess) {
             if (frResult.IsClientError) {
                 return BadRequest(frResult.Error);
@@ -35,9 +38,10 @@ public class FriendRequestController : ControllerBase {
     [HttpDelete("requests/{recipientName}")]
     [Authorize]
     public async Task<IActionResult> DeleteFriendRequest([FromRoute] string recipientName) {
-        var curUser = User.GetUserName();
+        var senderName = User.GetUserName();
+        Debug.Assert(senderName != null);
         
-        var deletionResult = await _frService.Delete(curUser, recipientName);
+        var deletionResult = await _frService.Delete(senderName, recipientName);
         if (!deletionResult.IsSuccess) {
             if (deletionResult.IsClientError) {
                 return BadRequest(deletionResult.Error);
@@ -51,9 +55,10 @@ public class FriendRequestController : ControllerBase {
     [HttpGet("requests/fromMe/")]
     [Authorize]
     public async Task<IActionResult> GetRequestsFromMe() {
-        var curUser = User.GetUserName();
+        var senderName = User.GetUserName();
+        Debug.Assert(senderName != null);
 
-        var getResult = await _frService.GetSentFriendRequests(curUser);
+        var getResult = await _frService.GetSentFriendRequests(senderName);
         if (!getResult.IsSuccess) {
             if (getResult.IsSuccess) {
                 return BadRequest(getResult.Error);
@@ -67,9 +72,10 @@ public class FriendRequestController : ControllerBase {
     [HttpGet("requests/toMe/")]
     [Authorize]
     public async Task<IActionResult> GetRequestsToMe() {
-        var curUser = User.GetUserName();
+        var senderName = User.GetUserName();
+        Debug.Assert(senderName != null);
 
-        var getResult = await _frService.GetReceivedFriendRequests(curUser);
+        var getResult = await _frService.GetReceivedFriendRequests(senderName);
         if (!getResult.IsSuccess) {
             if (getResult.IsSuccess) {
                 return BadRequest(getResult.Error);
@@ -83,11 +89,12 @@ public class FriendRequestController : ControllerBase {
     [HttpPut("requests/{senderName}")]
     [Authorize]
     public async Task<IActionResult> ProcessFriendRequest([FromRoute] string senderName, [FromBody] ProcessFriendRequestDto requestDto) {
-        var curUser = User.GetUserName();
+        var curUserName = User.GetUserName();
+        Debug.Assert(curUserName != null);
 
-        var processionResult = await _frService.Process(senderName, curUser, requestDto.AcceptRequest);
+        var processionResult = await _frService.Process(senderName, curUserName, requestDto.AcceptRequest);
         if (!processionResult.IsSuccess) {
-            if (processionResult.IsSuccess) {
+            if (processionResult.IsClientError) {
                 return BadRequest(processionResult.Error);
             }
             return StatusCode(500, processionResult.Error);

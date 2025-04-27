@@ -9,13 +9,13 @@ namespace TextShareApi.Services;
 public class FriendRequestService : IFriendRequestService {
     private readonly IFriendRequestRepository _frRepo;
     private readonly IAccountRepository _accountRepository;
-    private readonly IFriendService _friendService;
+    private readonly IFriendPairRepository _friendPairRepository;
 
     public FriendRequestService(IFriendRequestRepository frRepo, IAccountRepository accountRepository,
-        IFriendService friendService) {
+        IFriendPairRepository friendPairRepository) {
         _frRepo = frRepo;
         _accountRepository = accountRepository;
-        _friendService = friendService;
+        _friendPairRepository = friendPairRepository;
     }
     
     public async Task<Result<FriendRequest>> Create(string senderName, string recipientName) {
@@ -23,15 +23,16 @@ public class FriendRequestService : IFriendRequestService {
             return Result<FriendRequest>.Failure("Sender name and recipient name cannot be the same", true);
         }
         
+        Debug.WriteLine("Started fr Service");
+        
         var idResult = await GetIds(senderName, recipientName);
         if (!idResult.IsSuccess) {
             return Result<FriendRequest>.Failure(idResult.Error, false);
         }
         var (senderId, recipientId) = idResult.Value;
         
-        var areFriends = await _friendService.AreFriends(senderId, recipientId);
-        Debug.Assert(areFriends.IsSuccess, $"Check of \"{nameof(areFriends)}\" was not successful");
-        if (areFriends.Value) {
+        var areFriends = await _friendPairRepository.ContainsFriendPair(senderId, recipientId);
+        if (areFriends) {
             return Result<FriendRequest>.Failure("Users are friends already", true);
         }
         bool exists = await _frRepo.ContainsRequest(senderId, recipientId);
@@ -43,7 +44,15 @@ public class FriendRequestService : IFriendRequestService {
             return Result<FriendRequest>.Failure("Reverse request already exists", true);
         }
         
+        Debug.WriteLine("Fr Service Passed all checks");
+        
         var request = await _frRepo.CreateRequest(senderId, recipientId);
+
+        var sender = new AppUser { Id = senderId, UserName = senderName };
+        var recipient = new AppUser { Id = recipientId, UserName = recipientName };
+        request.Sender = sender;
+        request.Recipient = recipient;
+        
         return Result<FriendRequest>.Success(request);
     }
 
@@ -82,13 +91,10 @@ public class FriendRequestService : IFriendRequestService {
         }
 
         if (acceptRequest) {
-            var result = await _friendService.AddFriend(senderId, recipientId);
-            if (!result.IsSuccess) {
-                return Result<FriendRequest>.Failure($"Error while adding recipient to friends list: {result.Error}", false);
-            }
-            request.IsAccepted = true;
+            await _friendPairRepository.CreateFriendPairs(senderId, recipientId);
             bool deleted = await _frRepo.DeleteRequest(senderId, recipientId);
             Debug.Assert(deleted, $"Failed to delete request after adding friend");
+            request.IsAccepted = true;
             return Result<FriendRequest>.Success(request);
         }
         
