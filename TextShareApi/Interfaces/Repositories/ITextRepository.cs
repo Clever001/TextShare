@@ -5,7 +5,7 @@ using TextShareApi.Models;
 namespace TextShareApi.Interfaces.Repositories;
 
 /// <summary>
-/// В возвращаемые тексты включены параметры безопасности и имя пользователя.
+///     В возвращаемые тексты включены параметры безопасности и имя пользователя.
 /// </summary>
 public interface ITextRepository {
     Task AddText(Text text, TextSecuritySettings textSecuritySettings);

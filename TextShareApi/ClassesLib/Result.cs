@@ -1,11 +1,6 @@
 namespace TextShareApi.ClassesLib;
 
 public class Result<T> {
-    public bool IsSuccess { get; }
-    public T Value { get; }
-    public string Error { get; }
-    public bool IsClientError { get; }
-
     private Result(bool isSuccess, T value, string error, bool isClientError) {
         IsSuccess = isSuccess;
         Value = value;
@@ -13,10 +8,13 @@ public class Result<T> {
         IsClientError = isClientError;
     }
 
+    public bool IsSuccess { get; }
+    public T Value { get; }
+    public string Error { get; }
+    public bool IsClientError { get; }
+
     public Result ToSimpleResult() {
-        if (IsSuccess) {
-            return Result.Success();
-        }
+        if (IsSuccess) return Result.Success();
         return Result.Failure(Error, IsClientError);
     }
 
@@ -25,28 +23,25 @@ public class Result<T> {
     }
 
     public static Result<T> Failure(string message, bool isClientError) {
-        if (string.IsNullOrWhiteSpace(message)) {
+        if (string.IsNullOrWhiteSpace(message))
             throw new ArgumentException("Error message cannot be null or empty.", nameof(message));
-        }
         return new Result<T>(false, default!, message, isClientError);
     }
 }
 
 public class Result {
-    public bool IsSuccess { get; }
-    public string Error { get; }
-    public bool IsClientError { get; }
-
     private Result(bool isSuccess, string error, bool isClientError) {
         IsSuccess = isSuccess;
         Error = error;
         IsClientError = isClientError;
     }
 
+    public bool IsSuccess { get; }
+    public string Error { get; }
+    public bool IsClientError { get; }
+
     public Result<T> ToGenericResult<T>(T value) {
-        if (IsSuccess) {
-            return Result<T>.Success(value);
-        }
+        if (IsSuccess) return Result<T>.Success(value);
         return Result<T>.Failure(Error, IsClientError);
     }
 
@@ -55,9 +50,8 @@ public class Result {
     }
 
     public static Result Failure(string message, bool isClientError) {
-        if (string.IsNullOrWhiteSpace(message)) {
+        if (string.IsNullOrWhiteSpace(message))
             throw new ArgumentException("Error message cannot be null or empty.", nameof(message));
-        }
         return new Result(false, message, isClientError);
     }
 }

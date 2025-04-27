@@ -12,7 +12,7 @@ public class FriendPairRepository : IFriendPairRepository {
     public FriendPairRepository(AppDbContext context) {
         _context = context;
     }
-    
+
     public async Task<List<string>> GetFriendsIds(string userId) {
         var friends = await _context.FriendPairs
             .Where(p => p.FirstUserId == userId)
@@ -23,18 +23,18 @@ public class FriendPairRepository : IFriendPairRepository {
 
     public async Task<(FriendPair, FriendPair)> CreateFriendPairs(string firstUserId, string secondUserId) {
         var firstPair = new FriendPair {
-            FirstUserId = firstUserId, 
-            SecondUserId = secondUserId,
+            FirstUserId = firstUserId,
+            SecondUserId = secondUserId
         };
         var secondPair = new FriendPair {
-            FirstUserId = secondUserId, 
-            SecondUserId = firstUserId,
+            FirstUserId = secondUserId,
+            SecondUserId = firstUserId
         };
-        
+
         await _context.FriendPairs.AddAsync(firstPair);
         await _context.FriendPairs.AddAsync(secondPair);
         await _context.SaveChangesAsync();
-        
+
         return (firstPair, secondPair);
     }
 
@@ -57,10 +57,8 @@ public class FriendPairRepository : IFriendPairRepository {
         var secondPair = await _context.FriendPairs
             .FirstOrDefaultAsync(p => p.FirstUserId == secondUserId && p.SecondUserId == firstUserId);
 
-        if (firstPair == null || secondPair == null) {
-            return false;
-        }
-        
+        if (firstPair == null || secondPair == null) return false;
+
         _context.FriendPairs.Remove(firstPair);
         _context.FriendPairs.Remove(secondPair);
         await _context.SaveChangesAsync();

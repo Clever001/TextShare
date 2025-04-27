@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using TextShareApi.Data;
@@ -10,8 +9,12 @@ namespace TextShareApi.Repositories;
 
 public class TextRepository : ITextRepository {
     private readonly AppDbContext _context;
-    public TextRepository(AppDbContext context) {
+    private readonly ILogger<TextRepository> _logger;
+
+    public TextRepository(AppDbContext context,
+        ILogger<TextRepository> logger) {
         _context = context;
+        _logger = logger;
     }
 
     public async Task AddText(Text text, TextSecuritySettings textSecuritySettings) {
@@ -19,7 +22,7 @@ public class TextRepository : ITextRepository {
         await _context.TextSecuritySettings.AddAsync(textSecuritySettings);
         await _context.SaveChangesAsync();
     }
-    
+
     public async Task<Text?> GetText(string textId) {
         return await _context.Texts
             .Include(t => t.TextSecuritySettings)
@@ -27,16 +30,15 @@ public class TextRepository : ITextRepository {
             .FirstOrDefaultAsync(t => t.Id == textId);
     }
 
-    public async Task<List<Text>> GetTexts(Expression<Func<Text, bool>> predicate, int skipCnt = 0, int? maxCnt = null) {
+    public async Task<List<Text>> GetTexts(Expression<Func<Text, bool>> predicate, int skipCnt = 0,
+        int? maxCnt = null) {
         var query = _context.Texts
             .Include(t => t.TextSecuritySettings)
             .Include(t => t.AppUser)
             .Where(predicate)
             .Skip(skipCnt);
 
-        if (maxCnt != null) {
-            query = query.Take(maxCnt.Value);
-        }
+        if (maxCnt != null) query = query.Take(maxCnt.Value);
         return await query.ToListAsync();
     }
 
@@ -45,23 +47,15 @@ public class TextRepository : ITextRepository {
             .Include(t => t.TextSecuritySettings)
             .FirstOrDefaultAsync(t => t.Id == textId);
 
-        if (text == null) {
-            return null;
-        }
+        if (text == null) return null;
 
-        if (dto.Text != null) {
-            text.Content = dto.Text;
-        }
-        if (dto.AccessType != null) {
-            text.TextSecuritySettings.AccessType = dto.AccessType.Value;
-        }
+        if (dto.Text != null) text.Content = dto.Text;
+        if (dto.AccessType != null) text.TextSecuritySettings.AccessType = dto.AccessType.Value;
 
-        if (dto.UpdatePassword) {
-            text.TextSecuritySettings.Password = dto.Password;
-        }
+        if (dto.UpdatePassword) text.TextSecuritySettings.Password = dto.Password;
 
         await _context.SaveChangesAsync();
-        
+
         return text;
     }
 
@@ -70,14 +64,12 @@ public class TextRepository : ITextRepository {
             .Include(t => t.TextSecuritySettings)
             .FirstOrDefaultAsync(t => t.Id == textId);
 
-        if (text == null) {
-            return false;
-        }
+        if (text == null) return false;
 
         var securitySettings = await _context.TextSecuritySettings.FindAsync(textId);
-        
-        Debug.Assert(securitySettings != null, "SecuritySettings does not exist. Cannot delete");
-        
+
+        if (securitySettings == null) _logger.LogError("SecuritySettings does not exist. Cannot delete");
+
         if (securitySettings != null) _context.TextSecuritySettings.Remove(securitySettings);
         _context.Texts.Remove(text);
         await _context.SaveChangesAsync();

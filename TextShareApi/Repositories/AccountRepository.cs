@@ -7,15 +7,15 @@ using TextShareApi.Models;
 namespace TextShareApi.Repositories;
 
 public class AccountRepository : IAccountRepository {
-    private readonly UserManager<AppUser> _userManager;
     private readonly AppDbContext _context;
+    private readonly UserManager<AppUser> _userManager;
 
     public AccountRepository(UserManager<AppUser> userManager,
         AppDbContext context) {
         _userManager = userManager;
         _context = context;
     }
-    
+
     public async Task<string?> GetAccountId(string userName) {
         return (await _userManager.FindByNameAsync(userName))?.Id;
     }

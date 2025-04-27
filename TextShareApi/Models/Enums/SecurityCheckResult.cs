@@ -5,5 +5,5 @@ public enum SecurityCheckResult {
     Forbidden,
     NoPasswordProvided,
     PasswordIsNotValid,
-    NotFound,
+    NotFound
 }

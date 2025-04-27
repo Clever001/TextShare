@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using TextShareApi.Data;
@@ -9,16 +8,17 @@ namespace TextShareApi.Repositories;
 
 public class FriendRequestRepository : IFriendRequestRepository {
     private readonly AppDbContext _context;
+
     public FriendRequestRepository(AppDbContext context) {
         _context = context;
     }
-    
+
     public async Task<FriendRequest> CreateRequest(string senderId, string recipientId) {
         var request = new FriendRequest {
-            SenderId = senderId, 
-            RecipientId = recipientId,
+            SenderId = senderId,
+            RecipientId = recipientId
         };
-        
+
         await _context.FriendRequests.AddAsync(request);
         await _context.SaveChangesAsync();
         return request;
@@ -41,10 +41,8 @@ public class FriendRequestRepository : IFriendRequestRepository {
 
     public async Task<FriendRequest?> UpdateRequest(string senderId, string recipientId, bool isAccepted) {
         var request = await _context.FriendRequests.FindAsync(senderId, recipientId);
-        if (request is null) {
-            return null;
-        }
-        
+        if (request is null) return null;
+
         request.IsAccepted = isAccepted;
         _context.FriendRequests.Update(request);
         await _context.SaveChangesAsync();
@@ -53,9 +51,7 @@ public class FriendRequestRepository : IFriendRequestRepository {
 
     public async Task<bool> DeleteRequest(string senderId, string recipientId) {
         var request = await _context.FriendRequests.FindAsync(senderId, recipientId);
-        if (request is null) {
-            return false;
-        }
+        if (request is null) return false;
 
         _context.Remove(request);
         await _context.SaveChangesAsync();

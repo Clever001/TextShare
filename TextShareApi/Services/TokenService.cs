@@ -13,15 +13,15 @@ public class TokenService : ITokenService {
 
     public TokenService(IConfiguration config) {
         _config = config;
-        _key = new(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+        _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
     }
-    
+
     public string CreateToken(AppUser user) {
         List<Claim> claims = [ // Информация о пользователе
             new(JwtRegisteredClaimNames.GivenName, user.UserName),
-            new(JwtRegisteredClaimNames.Email, user.Email),
+            new(JwtRegisteredClaimNames.Email, user.Email)
         ];
-        
+
         // Секретный ключ для создания токена и алгоритм хеширования.
         var signingCredentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256Signature);
         // Информация о токене.
@@ -30,7 +30,7 @@ public class TokenService : ITokenService {
             Expires = DateTime.UtcNow.AddHours(2),
             SigningCredentials = signingCredentials,
             Issuer = _config["Jwt:Issuer"],
-            Audience = _config["Jwt:Audience"],
+            Audience = _config["Jwt:Audience"]
         };
         // Создание объекта, управляющего токенами
         var tokenHandler = new JwtSecurityTokenHandler();

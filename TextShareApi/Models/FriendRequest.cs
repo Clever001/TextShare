@@ -8,5 +8,5 @@ public class FriendRequest {
     public AppUser Sender { get; set; }
     public string RecipientId { get; set; }
     public AppUser Recipient { get; set; }
-    public bool? IsAccepted { get; set; } // TODO: Change to bool IsAborted = false;
+    public bool? IsAccepted { get; set; }
 }

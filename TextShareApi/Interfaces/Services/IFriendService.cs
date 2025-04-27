@@ -8,7 +8,7 @@ public interface IFriendService {
     Task<Result<List<AppUser>>> GetFriends(string userName);
     Task<Result> RemoveFriend(string firstUserName, string secondUserName);
     Task<Result<bool>> AreFriends(string firstUserName, string secondUserName);
-    
+
     // Additional
     Task<Result<List<string>>> GetFriendsIds(string userId);
 }

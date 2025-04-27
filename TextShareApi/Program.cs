@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -62,7 +60,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUniqueIdService, UniqueIdService>();
 builder.Services.AddScoped<PasswordHasher<AppUser>>();
 
-builder.Logging.AddDebug();
+builder.Logging.AddConsole();
 
 
 // Add services to the container.
