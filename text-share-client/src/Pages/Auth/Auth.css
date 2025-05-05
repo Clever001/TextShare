@@ -1,0 +1,92 @@
+/* Global */
+
+.auth {
+    margin-top:60px;
+}
+
+.auth .title {
+    font-size:18px;
+    font-weight:500;
+    width:100%;
+    border-bottom:1px solid #BABABA;
+}
+
+.auth form {
+    display: flex;
+    flex-direction: column;
+    justify-content:space-evenly;
+    margin:25px auto;
+    font-size:16px;
+}
+
+.auth form > div {
+    display:flex;
+    flex-direction:row;
+    justify-content:space-around;
+    margin:5px auto;
+    width:100%;
+}
+
+.auth form > div:last-child {
+    display:flex;
+    flex-direction:column;
+}
+
+.auth form label {
+    width:30%;
+    text-align:right;
+    min-width:170px;
+}
+
+.auth form input {
+    width:30%;
+    min-width:170px;
+    height:30px;
+    margin:auto 0;
+    border:1px solid #bababa;
+    border-radius:5px;
+    outline:none;
+}
+
+@media (max-width: 400px) {
+    .auth form label {
+        min-width:140px;
+    }
+
+    .auth form input {
+        min-width:140px;
+    }
+}
+
+.auth .error-messages {
+    color: red;
+}
+
+.auth p {
+    text-align:center;
+    margin:0;
+}
+
+.auth button {
+    width: auto;
+    padding: 8px 16px;
+    margin: 10px auto;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.auth button:hover {
+    background-color: #0056b3;
+}
+
+/* Login */
+
+
+
+/* Register */
+

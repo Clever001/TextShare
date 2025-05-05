@@ -10,21 +10,20 @@ import Auth from '../Pages/Auth/Auth';
 import ProfileContentChange from '../Pages/ProfileContentChange/ProfileContentChange';
 import CreateText from '../Pages/CreateText/CreateText';
 
-type Props = {}
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <App />,
+        element: <App/>,
         children: [
-            { index: true, element: <CreateText />},
+            { index: true, element: <TextSearch />},
             { path: "reader/:textId", element: <Reader />},
             { path: "editor/:textId", element: <Editor />},
             { path: "profile/:userId", element: <Profile />},
             { path: "profile/", element: <Profile />},
-            { path: "textSearch/", element: <TextSearch />},
+            { path: "createText/", element: <CreateText />},
             { path: "userSearch/", element: <UserSearch />},
-            { path: "auth/", element: <Auth />},
+            { path: "auth/", element: <Auth/>},
             { path: "profileContentChange/", element: <ProfileContentChange />}
         ]
     }
