@@ -1,4 +1,5 @@
 using TextShareApi.ClassesLib;
+using TextShareApi.Exceptions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
@@ -15,14 +16,18 @@ public class FriendService : IFriendService {
     }
 
     public async Task<Result> AddFriend(string firstUserName, string secondUserName) {
-        if (firstUserName == secondUserName) return Result.Failure("First and second users cannot be same", true);
-
-        var idsResult = await GetIds(firstUserName, secondUserName);
-        if (!idsResult.IsSuccess) return Result.Failure(idsResult.Error, idsResult.IsClientError);
-        var (firstId, secondId) = idsResult.Value;
+        if (firstUserName == secondUserName) return Result.Failure(new BadRequestException("First and second users cannot be same."));
+        
+        var (firstId, secondId) = await _accountRepository.GetAccountIds(firstUserName, secondUserName);
+        if (firstId == null) {
+            return Result.Failure(new NotFoundException("First user not found."));
+        }
+        if (secondId == null) {
+            return Result.Failure(new NotFoundException("Second user not found."));
+        }
 
         var areFriends = await _fpRepo.ContainsFriendPair(firstId, secondId);
-        if (areFriends) return Result.Failure("User is already in friends list", true);
+        if (areFriends) return Result.Failure(new BadRequestException("User is already in friends list."));
 
         await _fpRepo.CreateFriendPairs(firstId, secondId);
         return Result.Success();
@@ -31,7 +36,7 @@ public class FriendService : IFriendService {
     public async Task<Result<List<AppUser>>> GetFriends(string userName) {
         var userId = await _accountRepository.GetAccountId(userName);
 
-        if (userId == null) return Result<List<AppUser>>.Failure("Current user not found", true);
+        if (userId == null) return Result<List<AppUser>>.Failure(new NotFoundException("Current user not found."));
 
         var friends =
             (await _fpRepo.GetFriendPairs(fp => fp.FirstUserId == userId))
@@ -42,25 +47,33 @@ public class FriendService : IFriendService {
     }
 
     public async Task<Result> RemoveFriend(string firstUserName, string secondUserName) {
-        if (firstUserName == secondUserName) return Result.Failure("First and second user name cannot be same", true);
+        if (firstUserName == secondUserName) return Result.Failure(new BadRequestException("First and second user name cannot be same."));
 
-        var idsResult = await GetIds(firstUserName, secondUserName);
-        if (!idsResult.IsSuccess) return Result.Failure(idsResult.Error, idsResult.IsClientError);
-        var (firstId, secondId) = idsResult.Value;
+        var (firstId, secondId) = await _accountRepository.GetAccountIds(firstUserName, secondUserName);
+        if (firstId == null) {
+            return Result.Failure(new NotFoundException("First user not found."));
+        }
+        if (secondId == null) {
+            return Result.Failure(new NotFoundException("Second user not found."));
+        }
 
         var isDeleted = await _fpRepo.DeleteFriendPairs(firstId, secondId);
-        if (!isDeleted) return Result.Failure("User is not in friends list", true);
+        if (!isDeleted) return Result.Failure(new BadRequestException("User is not in friends list."));
 
         return Result.Success();
     }
 
     public async Task<Result<bool>> AreFriends(string firstUserName, string secondUserName) {
         if (firstUserName == secondUserName)
-            return Result<bool>.Failure("First and second user name cannot be same", true);
+            return Result<bool>.Failure(new BadRequestException("First and second user name cannot be same."));
 
-        var idsResult = await GetIds(firstUserName, secondUserName);
-        if (!idsResult.IsSuccess) return Result<bool>.Failure(idsResult.Error, idsResult.IsClientError);
-        var (firstId, secondId) = idsResult.Value;
+        var (firstId, secondId) = await _accountRepository.GetAccountIds(firstUserName, secondUserName);
+        if (firstId == null) {
+            return Result<bool>.Failure(new NotFoundException("First user not found."));
+        }
+        if (secondId == null) {
+            return Result<bool>.Failure(new NotFoundException("Second user not found."));
+        }
 
         var areFriends = await _fpRepo.ContainsFriendPair(firstId, secondId);
         return Result<bool>.Success(areFriends);
@@ -70,17 +83,5 @@ public class FriendService : IFriendService {
         var ids = (await _fpRepo.GetFriendPairs(p => p.FirstUserId == userId))
             .Select(p => p.SecondUserId).ToList();
         return Result<List<string>>.Success(ids);
-    }
-
-    private async Task<Result<(string, string)>> GetIds(string firstUserName, string secondUserName) {
-        var firstId = await _accountRepository.GetAccountId(firstUserName);
-        var secondId = await _accountRepository.GetAccountId(secondUserName);
-
-        if (firstId == null) return Result<(string, string)>.Failure("Couldn't find current user", false);
-
-        if (secondId == null)
-            return Result<(string, string)>.Failure("Couldn't find user to add to friends list", true);
-
-        return Result<(string, string)>.Success((firstId, secondId));
     }
 }

@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace TextShareApi.Filters;
+namespace TextShareApi.Attributes;
 
 public class LogExecutionTimeFilter : IActionFilter {
     private readonly ILogger<LogExecutionTimeFilter> _logger;

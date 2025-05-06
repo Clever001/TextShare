@@ -7,7 +7,6 @@ using Scalar.AspNetCore;
 using TextShareApi.Attributes;
 using TextShareApi.Data;
 using TextShareApi.Extensions;
-using TextShareApi.Filters;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;

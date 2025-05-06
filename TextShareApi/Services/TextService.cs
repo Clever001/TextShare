@@ -1,5 +1,6 @@
 using TextShareApi.ClassesLib;
 using TextShareApi.Dtos.Text;
+using TextShareApi.Exceptions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
@@ -31,7 +32,7 @@ public class TextService : ITextService {
 
     public async Task<Result<Text>> Create(string curUserName) {
         var userId = await _accountRepository.GetAccountId(curUserName);
-        if (userId == null) return Result<Text>.Failure("Current user not found", false);
+        if (userId == null) return Result<Text>.Failure(new NotFoundException("Current user not found."));
 
         var text = new Text {
             Id = await _uniqueIdService.GenerateNewHash(),
@@ -50,7 +51,7 @@ public class TextService : ITextService {
 
     public async Task<Result<Text>> GetById(string textId, string? curUserName, string? requestPassword) {
         var text = await _textRepository.GetText(textId);
-        if (text == null) return Result<Text>.Failure("Text not found", true);
+        if (text == null) return Result<Text>.Failure(new NotFoundException("Text not found."));
 
         var user = curUserName == null ? null : await _accountRepository.GetAccountByName(curUserName);
 
@@ -61,7 +62,7 @@ public class TextService : ITextService {
 
     public async Task<Result<List<Text>>> GetAccountTexts(string curUserName) {
         var accountId = await _accountRepository.GetAccountId(curUserName);
-        if (accountId == null) return Result<List<Text>>.Failure("Current user not found", false);
+        if (accountId == null) return Result<List<Text>>.Failure(new NotFoundException("Current user not found."));
 
         var texts = await _textRepository.GetTexts(t => t.AppUserId == accountId);
         return Result<List<Text>>.Success(texts);
@@ -76,7 +77,7 @@ public class TextService : ITextService {
         }
 
         var curUserId = await _accountRepository.GetAccountId(curUserName);
-        if (curUserId == null) return Result<List<Text>>.Failure("Current user not found", false);
+        if (curUserId == null) return Result<List<Text>>.Failure(new NotFoundException("Current user not found."));
         var friendsIds = (await _friendService.GetFriendsIds(curUserId)).Value;
 
         // TODO: Здесь надо будет возвращать dto. Иначе очень большой объем данных.
@@ -121,7 +122,7 @@ public class TextService : ITextService {
     public async Task<Result> Contains(string textId) {
         var exists = await _textRepository.ContainsText(textId);
         if (!exists) {
-            return Result.Failure("Text does not exist", true);
+            return Result.Failure(new NotFoundException("Text does not exist"));
         }
         
         return Result.Success();
@@ -129,12 +130,12 @@ public class TextService : ITextService {
 
     private async Task<Result> PerformWriteSecurityChecks(string textId, string curUserName, string? requestPassword) {
         var text = await _textRepository.GetText(textId);
-        if (text == null) return Result.Failure("Text not found", true);
+        if (text == null) return Result.Failure(new NotFoundException("Text not found"));
         var curUser = await _accountRepository.GetAccountByName(curUserName);
-        if (curUser == null) return Result.Failure("Current user not found", false);
+        if (curUser == null) return Result.Failure(new NotFoundException("Current user not found"));
 
         var securityCheck = _textSecurityService.PassWriteSecurityChecks(text, curUser, requestPassword);
-        if (!securityCheck.IsSuccess) return Result.Failure(securityCheck.Error, securityCheck.IsClientError);
+        if (!securityCheck.IsSuccess) return Result.Failure(securityCheck.Exception);
 
         return Result.Success();
     }

@@ -1,4 +1,5 @@
 using TextShareApi.ClassesLib;
+using TextShareApi.Exceptions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
@@ -22,18 +23,23 @@ public class FriendRequestService : IFriendRequestService {
 
     public async Task<Result<FriendRequest>> Create(string senderName, string recipientName) {
         if (senderName == recipientName)
-            return Result<FriendRequest>.Failure("Sender name and recipient name cannot be the same", true);
-
-        var idResult = await GetIds(senderName, recipientName);
-        if (!idResult.IsSuccess) return Result<FriendRequest>.Failure(idResult.Error, false);
-        var (senderId, recipientId) = idResult.Value;
+            return Result<FriendRequest>.Failure(new BadRequestException("Sender name and recipient name cannot be the same."));
+        
+        var (senderId, recipientId) = await _accountRepository.GetAccountIds(senderName, recipientName);
+        if (senderId == null) {
+            return Result<FriendRequest>.Failure(new NotFoundException("Sender not found."));
+        }
+        if (recipientId == null) {
+            return Result<FriendRequest>.Failure(new NotFoundException("Recipient not found."));
+        }
+        
 
         var areFriends = await _friendPairRepository.ContainsFriendPair(senderId, recipientId);
-        if (areFriends) return Result<FriendRequest>.Failure("Users are friends already", true);
+        if (areFriends) return Result<FriendRequest>.Failure(new BadRequestException("Users are friends already."));
         var exists = await _frRepo.ContainsRequest(senderId, recipientId);
-        if (exists) return Result<FriendRequest>.Failure("Already exists", true);
+        if (exists) return Result<FriendRequest>.Failure(new BadRequestException("Request already exists."));
         exists = await _frRepo.ContainsRequest(recipientId, senderId);
-        if (exists) return Result<FriendRequest>.Failure("Reverse request already exists", true);
+        if (exists) return Result<FriendRequest>.Failure(new BadRequestException("Reverse request already exists."));
 
         var request = await _frRepo.CreateRequest(senderId, recipientId);
 
@@ -47,48 +53,60 @@ public class FriendRequestService : IFriendRequestService {
 
     public async Task<Result> Delete(string senderName, string recipientName) {
         if (senderName == recipientName)
-            return Result.Failure("Sender name and recipient name cannot be the same", true);
-
-        var idResult = await GetIds(senderName, recipientName);
-        if (!idResult.IsSuccess) return Result.Failure(idResult.Error, false);
-        var (senderId, recipientId) = idResult.Value;
+            return Result.Failure(new BadRequestException("Sender name and recipient name cannot be the same."));
+        
+        var (senderId, recipientId) = await _accountRepository.GetAccountIds(senderName, recipientName);
+        if (senderId == null) {
+            return Result.Failure(new NotFoundException("Sender not found."));
+        }
+        if (recipientId == null) {
+            return Result.Failure(new NotFoundException("Recipient not found."));
+        }
 
         var isDeleted = await _frRepo.DeleteRequest(senderId, recipientId);
-        if (!isDeleted) return Result.Failure("Did not exist from the beginning", true);
+        if (!isDeleted) return Result.Failure(new BadRequestException("Did not exist from the beginning."));
         return Result.Success();
     }
 
     public async Task<Result<FriendRequest>> Process(string senderName, string recipientName, bool acceptRequest) {
         if (senderName == recipientName)
-            return Result<FriendRequest>.Failure("Sender name and recipient name cannot be the same", true);
+            return Result<FriendRequest>.Failure(new BadRequestException("Sender name and recipient name cannot be the same."));
 
-        var idResult = await GetIds(senderName, recipientName);
-        if (!idResult.IsSuccess) return Result<FriendRequest>.Failure(idResult.Error, false);
-        var (senderId, recipientId) = idResult.Value;
+        var (senderId, recipientId) = await _accountRepository.GetAccountIds(senderName, recipientName);
+        if (senderId == null) {
+            return Result<FriendRequest>.Failure(new NotFoundException("Sender not found."));
+        }
+        if (recipientId == null) {
+            return Result<FriendRequest>.Failure(new NotFoundException("Recipient not found."));
+        }
 
         var request = await _frRepo.GetRequest(senderId, recipientId);
-        if (request == null) return Result<FriendRequest>.Failure("Request does not exist", true);
+        if (request == null) return Result<FriendRequest>.Failure(new NotFoundException("Request not found."));
 
         if (acceptRequest) {
             await _friendPairRepository.CreateFriendPairs(senderId, recipientId);
             var deleted = await _frRepo.DeleteRequest(senderId, recipientId);
-            if (!deleted) _logger.LogError($"Failed to delete processed request from {senderName} to {recipientName}");
+            if (!deleted) _logger.LogError($"Failed to delete processed request from {senderName} to {recipientName}.");
             request.IsAccepted = true;
             return Result<FriendRequest>.Success(request);
         }
 
         request = await _frRepo.UpdateRequest(senderId, recipientId, false);
-        if (request is null) return Result<FriendRequest>.Failure("Does not exist", true);
+        if (request is null) return Result<FriendRequest>.Failure(new ServerException());
         return Result<FriendRequest>.Success(request);
     }
 
     public async Task<Result<FriendRequest?>> GetFriendRequest(string senderName, string recipientName) {
         if (senderName == recipientName)
-            return Result<FriendRequest?>.Failure("Sender name and recipient name cannot be the same", true);
+            return Result<FriendRequest?>.Failure(new BadRequestException("Sender name and recipient name cannot be the same."));
 
-        var idResult = await GetIds(senderName, recipientName);
-        if (!idResult.IsSuccess) return Result<FriendRequest?>.Failure(idResult.Error, false);
-        var (senderId, recipientId) = idResult.Value;
+        var (senderId, recipientId) = await _accountRepository.GetAccountIds(senderName, recipientName);
+        if (senderId == null) {
+            return Result<FriendRequest?>.Failure(new NotFoundException("Sender not found."));
+        }
+        if (recipientId == null) {
+            return Result<FriendRequest?>.Failure(new NotFoundException("Recipient not found."));
+        }
 
         var request = await _frRepo.GetRequest(senderId, recipientId);
         return Result<FriendRequest?>.Success(request);
@@ -96,27 +114,16 @@ public class FriendRequestService : IFriendRequestService {
 
     public async Task<Result<List<FriendRequest>>> GetSentFriendRequests(string senderName) {
         var senderId = await _accountRepository.GetAccountId(senderName);
-        if (senderId == null) return Result<List<FriendRequest>>.Failure("Sender does not exist", false);
+        if (senderId == null) return Result<List<FriendRequest>>.Failure(new BadRequestException("Sender does not exist."));
 
         return Result<List<FriendRequest>>.Success(await _frRepo.GetFriendRequests(fr => fr.SenderId == senderId));
     }
 
     public async Task<Result<List<FriendRequest>>> GetReceivedFriendRequests(string recipientName) {
         var recipientId = await _accountRepository.GetAccountId(recipientName);
-        if (recipientId == null) return Result<List<FriendRequest>>.Failure("Recipient does not exist", false);
+        if (recipientId == null) return Result<List<FriendRequest>>.Failure(new BadRequestException("Recipient does not exist."));
 
         return Result<List<FriendRequest>>.Success(
             await _frRepo.GetFriendRequests(fr => fr.RecipientId == recipientId));
-    }
-
-    private async Task<Result<(string, string)>> GetIds(string senderName, string recipientName) {
-        var senderId = await _accountRepository.GetAccountId(senderName);
-        var recipientId = await _accountRepository.GetAccountId(recipientName);
-
-        if (senderId == null) return Result<(string, string)>.Failure("Sender does not exist", false);
-
-        if (recipientId == null) return Result<(string, string)>.Failure("Recipient does not exist", false);
-
-        return Result<(string, string)>.Success((senderId, recipientId));
     }
 }

@@ -1,9 +1,9 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using TextShareApi.Attributes;
-using TextShareApi.ClassesLib;
 using TextShareApi.Dtos.Accounts;
-using TextShareApi.Dtos.Additional;
+using TextShareApi.Dtos.Exception;
+using TextShareApi.Exceptions;
 using TextShareApi.Extensions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
@@ -27,7 +27,6 @@ public class AccountController : ControllerBase {
         _logger = logger;
     }
 
-    [ValidateModelState]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto) {
         if (IsEmail(registerDto.UserName))
@@ -40,10 +39,7 @@ public class AccountController : ControllerBase {
         var result = await _accountService.Register(
             registerDto.UserName, registerDto.Email, registerDto.Password);
 
-        if (!result.IsSuccess) {
-            if (result.IsClientError) return BadRequest(result.ToExceptionDto());
-            return StatusCode(500, result.ToExceptionDto());
-        }
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
         var (user, token) = result.Value;
         
@@ -54,16 +50,11 @@ public class AccountController : ControllerBase {
         });
     }
 
-    [ValidateModelState]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto) {
         var result = await _accountService.Login(loginDto.UserNameOrEmail, loginDto.Password);
 
-        if (!result.IsSuccess)
-            return Unauthorized(new ExceptionDto {
-                Code = "ExceptionDuringLogin",
-                Description = "Check your registration details for correctness"
-            });
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
         var (user, token) = result.Value;
         

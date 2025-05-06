@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TextShareApi.ClassesLib;
 using TextShareApi.Dtos.Accounts;
 using TextShareApi.Extensions;
 using TextShareApi.Interfaces.Services;
@@ -28,14 +27,11 @@ public class FriendRequestController : ControllerBase {
         var senderName = User.GetUserName();
         Debug.Assert(senderName != null);
 
-        Debug.WriteLine("Started fr controller");
-        var frResult = await _frService.Create(senderName, recipientName);
-        if (!frResult.IsSuccess) {
-            if (frResult.IsClientError) return BadRequest(frResult.Error);
-            return StatusCode(500, frResult.Error);
-        }
+        var result = await _frService.Create(senderName, recipientName);
         
-        return Ok(frResult.Value.ToDto());
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        
+        return Ok(result.Value.ToDto());
     }
 
     [HttpDelete("{recipientName}")]
@@ -44,11 +40,9 @@ public class FriendRequestController : ControllerBase {
         var senderName = User.GetUserName();
         Debug.Assert(senderName != null);
 
-        var deletionResult = await _frService.Delete(senderName, recipientName);
-        if (!deletionResult.IsSuccess) {
-            if (deletionResult.IsClientError) return BadRequest(deletionResult.Error);
-            return StatusCode(500, deletionResult.Error);
-        }
+        var result = await _frService.Delete(senderName, recipientName);
+        
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
         
         return NoContent();
     }
@@ -59,13 +53,11 @@ public class FriendRequestController : ControllerBase {
         var senderName = User.GetUserName();
         Debug.Assert(senderName != null);
 
-        var getResult = await _frService.GetSentFriendRequests(senderName);
-        if (!getResult.IsSuccess) {
-            if (getResult.IsSuccess) return BadRequest(getResult.Error);
-            return StatusCode(500, getResult.Error);
-        }
+        var result = await _frService.GetSentFriendRequests(senderName);
         
-        return Ok(getResult.Value.Select(x => x.ToDto()).ToArray());
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        
+        return Ok(result.Value.Select(x => x.ToDto()).ToArray());
     }
 
     [HttpGet("toMe/")]
@@ -74,13 +66,11 @@ public class FriendRequestController : ControllerBase {
         var senderName = User.GetUserName();
         Debug.Assert(senderName != null);
 
-        var getResult = await _frService.GetReceivedFriendRequests(senderName);
-        if (!getResult.IsSuccess) {
-            if (getResult.IsSuccess) return BadRequest(getResult.Error);
-            return StatusCode(500, getResult.Error);
-        }
+        var result = await _frService.GetReceivedFriendRequests(senderName);
         
-        return Ok(getResult.Value.Select(x => x.ToDto()).ToArray());
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        
+        return Ok(result.Value.Select(x => x.ToDto()).ToArray());
     }
 
     [HttpPut("{senderName}")]
@@ -90,12 +80,10 @@ public class FriendRequestController : ControllerBase {
         var curUserName = User.GetUserName();
         Debug.Assert(curUserName != null);
 
-        var processionResult = await _frService.Process(senderName, curUserName, requestDto.AcceptRequest);
-        if (!processionResult.IsSuccess) {
-            if (processionResult.IsClientError) return BadRequest(processionResult.Error);
-            return StatusCode(500, processionResult.Error);
-        }
+        var result = await _frService.Process(senderName, curUserName, requestDto.AcceptRequest);
+
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
         
-        return Ok(processionResult.Value.ToDto());
+        return Ok(result.Value.ToDto());
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using TextShareApi.ClassesLib;
+using TextShareApi.Exceptions;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
 
@@ -32,18 +33,21 @@ public class AccountService : IAccountService {
                     var token = _tokenService.CreateToken(user);
                     return Result<(AppUser, string)>.Success((user, token));
                 }
+                
+                await _userManager.DeleteAsync(user);
 
-                return Result<(AppUser, string)>.Failure(appendResult.ToString(), false);
+                return Result<(AppUser, string)>.Failure(new ServerException());
             }
-
-            return Result<(AppUser, string)>.Failure(createResult.ToString(), false);
+            /*new BadRequestException {
+                Description = "Cannot create user with provided information.",
+                Details = createResult.Errors.Select(e => e.Description).ToList()
+            }*/
+            return Result<(AppUser, string)>.Failure(new BadRequestException(
+                "Cannot create user with provided information.",
+                createResult.Errors.Select(e => e.Description).ToList()));
         }
         catch (Exception e) {
-#if DEBUG
-            return Result<(AppUser, string)>.Failure(e.ToString(), false);
-#else
-                return Result<(AppUser, string)>.Failure(e.Message, false);
-#endif
+            return Result<(AppUser, string)>.Failure(new ServerException());
         }
     }
 
@@ -51,10 +55,10 @@ public class AccountService : IAccountService {
         var user = await _userManager.FindByNameAsync(nameOrEmail);
         if (user == null) user = await _userManager.FindByEmailAsync(nameOrEmail);
 
-        if (user == null) return Result<(AppUser, string)>.Failure("Invalid username or password.", true);
+        if (user == null) return Result<(AppUser, string)>.Failure(new UnauthorizedException());
 
         var validPassword = await _userManager.CheckPasswordAsync(user, password);
-        if (!validPassword) return Result<(AppUser, string)>.Failure("Invalid username or password.", true);
+        if (!validPassword) return Result<(AppUser, string)>.Failure(new UnauthorizedException());
 
         var token = _tokenService.CreateToken(user);
         return Result<(AppUser, string)>.Success((user, token));

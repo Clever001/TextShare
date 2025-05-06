@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using TextShareApi.ClassesLib;
+using TextShareApi.Exceptions;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
 using TextShareApi.Models.Enums;
@@ -21,40 +22,43 @@ public class TextSecurityService : ITextSecurityService {
 
     public async Task<Result> PassReadSecurityChecks(Text text, AppUser? requestSender, string? password) {
         var textSecSettings = text.TextSecuritySettings;
-        if (textSecSettings == null) _logger.LogError("TextSecuritySettings is null");
+        if (textSecSettings == null) {
+            _logger.LogError("TextSecuritySettings is null");
+            return Result.Failure(new ServerException());
+        }
 
         switch (textSecSettings.AccessType) {
             case AccessType.ByReferencePublic: {
                 return Result.Success();
             }
             case AccessType.ByReferenceAuthorized: {
-                if (requestSender == null) return UnAuthorizedResult();
+                if (requestSender == null) return ForbiddenResult();
 
                 break;
             }
             case AccessType.OnlyFriends: {
-                if (requestSender == null) return UnAuthorizedResult();
+                if (requestSender == null) return ForbiddenResult();
 
                 var areFriendsResult = await _friendService.AreFriends(text.AppUser.UserName!, requestSender.UserName!);
 
                 if (text.AppUserId == requestSender.Id) break;
 
                 if (!areFriendsResult.IsSuccess)
-                    return Result.Failure(areFriendsResult.Error, areFriendsResult.IsClientError);
+                    return Result.Failure(areFriendsResult.Exception);
 
                 if (!areFriendsResult.Value) return ForbiddenResult();
 
                 break;
             }
             case AccessType.Personal: {
-                if (requestSender == null) return UnAuthorizedResult();
+                if (requestSender == null) return ForbiddenResult();
 
                 if (text.AppUserId != requestSender.Id) return ForbiddenResult();
 
                 break;
             }
             default: {
-                return Result.Failure("This text has unknown access type.", false);
+                return Result.Failure(new ServerException());
             }
         }
 
@@ -73,14 +77,12 @@ public class TextSecurityService : ITextSecurityService {
         var user = text.AppUser;
 
         if (securitySettings.Password == null) return Result.Success();
-
-        Console.WriteLine("!!!Password: " + securitySettings.Password);
-
-        if (password == null) return Result.Failure("Password is not provided.", false);
+        
+        if (password == null) return Result.Failure(new BadRequestException("Password is not provided."));
 
         var passwordCheck = _passwordHasher.VerifyHashedPassword(user,
             securitySettings.Password!, password);
-        if (passwordCheck == PasswordVerificationResult.Failed) return PasswordNotCorrect();
+        if (passwordCheck == PasswordVerificationResult.Failed) return Result.Failure(new BadRequestException("Provided password is not correct."));
 
         return Result.Success();
     }
@@ -89,16 +91,7 @@ public class TextSecurityService : ITextSecurityService {
         return _passwordHasher.HashPassword(user, password);
     }
 
-
     private Result ForbiddenResult() {
-        return Result.Failure("You don't have enough rights to access this text.", true);
-    }
-
-    private Result UnAuthorizedResult() {
-        return Result.Failure("You need to be authorized to access this text.", true);
-    }
-
-    private Result PasswordNotCorrect() {
-        return Result.Failure("Provided password is not correct. Please try again.", true);
+        return Result.Failure(new ForbiddenException());
     }
 }

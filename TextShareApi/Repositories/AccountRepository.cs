@@ -20,6 +20,13 @@ public class AccountRepository : IAccountRepository {
         return (await _userManager.FindByNameAsync(userName))?.Id;
     }
 
+    public async Task<(string?, string?)> GetAccountIds(string firstUserName, string secondUserName) {
+        var senderId = await GetAccountId(firstUserName);
+        var recipientId = await GetAccountId(secondUserName);
+
+        return (senderId, recipientId);
+    }
+
     public async Task<string?> GetUserName(string userId) {
         return (await _userManager.FindByIdAsync(userId))?.UserName;
     }

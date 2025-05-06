@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TextShareApi.ClassesLib;
 using TextShareApi.Dtos.Text;
 using TextShareApi.Extensions;
 using TextShareApi.Interfaces.Services;
@@ -32,14 +31,12 @@ public class TextController : ControllerBase {
             throw new ArgumentNullException(nameof(senderName));
         }
 
-        var creationResult = await _textService.Create(senderName);
-        if (!creationResult.IsSuccess) {
-            if (creationResult.IsClientError) return BadRequest(creationResult.Error);
-            return StatusCode(500, creationResult.Error);
-        }
+        var result = await _textService.Create(senderName);
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+
         return CreatedAtAction(nameof(GetById),
-            new { id = creationResult.Value.Id },
-            creationResult.Value.ToTextDto());
+            new { id = result.Value.Id },
+            result.Value.ToTextDto());
     }
 
     [HttpGet("{id}")]
@@ -47,15 +44,11 @@ public class TextController : ControllerBase {
         var senderName = User.GetUserName();
         
         var existenceCheck = await _textService.Contains(id);
-        if (!existenceCheck.IsSuccess) {
-            return NotFound(existenceCheck.Error);
-        }
+        if (!existenceCheck.IsSuccess) return this.ToActionResult(existenceCheck.Exception);
+
 
         var getResult = await _textService.GetById(id, senderName, requestPassword);
-        if (!getResult.IsSuccess) {
-            if (getResult.IsClientError) return Forbid();
-            return StatusCode(500, getResult.Error);
-        }
+        if (!getResult.IsSuccess) return this.ToActionResult(getResult.Exception);
         
         return Ok(getResult.Value.ToTextDto());
     }
@@ -69,26 +62,21 @@ public class TextController : ControllerBase {
             throw new ArgumentNullException(nameof(senderName));
         }
 
-        var getResult = await _textService.GetAccountTexts(senderName);
-        if (!getResult.IsSuccess) {
-            if (getResult.IsClientError) return Forbid();
-            return StatusCode(500, getResult.Error);
-        }
+        var result = await _textService.GetAccountTexts(senderName);
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
         
-        return Ok(getResult.Value.Select(t => t.ToTextWithoutContentDto()).ToList());
+        return Ok(result.Value.Select(t => t.ToTextWithoutContentDto()).ToList());
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAllAvailable() {
         var senderName = User.GetUserName();
 
-        var getResult = await _textService.GetAllAvailable(senderName);
-        if (!getResult.IsSuccess) {
-            if (getResult.IsClientError) return BadRequest(getResult.Error);
-            return StatusCode(500, getResult.Error);
-        }
+        var result = await _textService.GetAllAvailable(senderName);
+
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
         
-        return Ok(getResult.Value.Select(t => t.ToTextWithoutContentDto()).ToList());
+        return Ok(result.Value.Select(t => t.ToTextWithoutContentDto()).ToList());
     }
 
     [HttpPut("content/{id}")]
@@ -105,9 +93,7 @@ public class TextController : ControllerBase {
         }
         
         var existenceCheck = await _textService.Contains(id);
-        if (!existenceCheck.IsSuccess) {
-            return NotFound(existenceCheck.Error);
-        }
+        if (!existenceCheck.IsSuccess) return this.ToActionResult(existenceCheck.Exception);
 
         var contentDto = new UpdateTextDto {
             Text = updateDto.Text,
@@ -115,10 +101,7 @@ public class TextController : ControllerBase {
         };
 
         var updateResult = await _textService.Update(id, senderName, requestPassword, contentDto);
-        if (!updateResult.IsSuccess) {
-            if (updateResult.IsClientError) return Forbid();
-            return StatusCode(500, updateResult.Error);
-        }
+        if (!updateResult.IsSuccess) return this.ToActionResult(updateResult.Exception);
         
         return Ok(updateResult.Value.ToTextDto());
     }
@@ -137,9 +120,7 @@ public class TextController : ControllerBase {
         }
         
         var existenceCheck = await _textService.Contains(id);
-        if (!existenceCheck.IsSuccess) {
-            return NotFound(existenceCheck.Error);
-        }
+        if (!existenceCheck.IsSuccess) return this.ToActionResult(existenceCheck.Exception);
 
         var updateDto = new UpdateTextDto {
             Password = secSetsDto.Password,
@@ -154,10 +135,7 @@ public class TextController : ControllerBase {
         }
 
         var updateResult = await _textService.Update(id, senderName, requestPassword, updateDto);
-        if (!updateResult.IsSuccess) {
-            if (updateResult.IsClientError) return Forbid();
-            return StatusCode(500, updateResult.Error);
-        }
+        if (!updateResult.IsSuccess) return this.ToActionResult(updateResult.Exception);
         
         return Ok(updateResult.Value.ToTextDto());
     }
@@ -171,11 +149,8 @@ public class TextController : ControllerBase {
             throw new ArgumentNullException(nameof(senderName));
         }
 
-        var deleteResult = await _textService.Delete(id, senderName, requestPassword);
-        if (!deleteResult.IsSuccess) {
-            if (deleteResult.IsClientError) return Forbid();
-            return StatusCode(500, deleteResult.Error);
-        }
+        var result = await _textService.Delete(id, senderName, requestPassword);
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
         
         return NoContent();
     }
