@@ -24,8 +24,6 @@ public class TextController : ControllerBase {
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> Create() {
-        using var sectionTimer = SectionTimer.StartNew(_logger);
-
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         var senderName = User.GetUserName();
@@ -39,8 +37,6 @@ public class TextController : ControllerBase {
             if (creationResult.IsClientError) return BadRequest(creationResult.Error);
             return StatusCode(500, creationResult.Error);
         }
-
-        sectionTimer.SetMessage($"Created text: {creationResult.Value}");
         return CreatedAtAction(nameof(GetById),
             new { id = creationResult.Value.Id },
             creationResult.Value.ToTextDto());
@@ -48,8 +44,6 @@ public class TextController : ControllerBase {
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromRoute] string id, [FromQuery] string? requestPassword) {
-        using var sectionTimer = SectionTimer.StartNew(_logger);
-
         var senderName = User.GetUserName();
         
         var existenceCheck = await _textService.Contains(id);
@@ -62,17 +56,13 @@ public class TextController : ControllerBase {
             if (getResult.IsClientError) return Forbid();
             return StatusCode(500, getResult.Error);
         }
-
-        sectionTimer.SetMessage($"Retrieved text: {getResult.Value.Id}");
-
+        
         return Ok(getResult.Value.ToTextDto());
     }
 
     [HttpGet("/myTexts")]
     [Authorize]
     public async Task<IActionResult> GetMyTexts() {
-        using var sectionTimer = SectionTimer.StartNew(_logger);
-
         var senderName = User.GetUserName();
         if (senderName == null) {
             _logger.LogCritical("Sender name is null");
@@ -84,16 +74,12 @@ public class TextController : ControllerBase {
             if (getResult.IsClientError) return Forbid();
             return StatusCode(500, getResult.Error);
         }
-
-        sectionTimer.SetMessage($"Returned texts: {getResult.Value.Count}");
-
+        
         return Ok(getResult.Value.Select(t => t.ToTextWithoutContentDto()).ToList());
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAllAvailable() {
-        using var sectionTimer = SectionTimer.StartNew(_logger);
-
         var senderName = User.GetUserName();
 
         var getResult = await _textService.GetAllAvailable(senderName);
@@ -101,9 +87,7 @@ public class TextController : ControllerBase {
             if (getResult.IsClientError) return BadRequest(getResult.Error);
             return StatusCode(500, getResult.Error);
         }
-
-        sectionTimer.SetMessage($"Returned Texts: {getResult.Value.Count}");
-
+        
         return Ok(getResult.Value.Select(t => t.ToTextWithoutContentDto()).ToList());
     }
 
@@ -112,8 +96,6 @@ public class TextController : ControllerBase {
     public async Task<IActionResult> UpdateContent([FromRoute] string id,
         [FromQuery] string? requestPassword,
         [FromBody] TextContentUpdateDto updateDto) {
-        using var sectionTimer = SectionTimer.StartNew(_logger);
-
         if (!ModelState.IsValid) return BadRequest(ModelState.ValidationState);
 
         var senderName = User.GetUserName();
@@ -137,8 +119,7 @@ public class TextController : ControllerBase {
             if (updateResult.IsClientError) return Forbid();
             return StatusCode(500, updateResult.Error);
         }
-
-        sectionTimer.SetMessage($"Updated text content: {updateResult.Value.Id}");
+        
         return Ok(updateResult.Value.ToTextDto());
     }
 
@@ -147,8 +128,6 @@ public class TextController : ControllerBase {
     public async Task<IActionResult> UpdateSecuritySettings([FromRoute] string id,
         [FromQuery] string? requestPassword,
         [FromBody] TextSecSetUpdateDto secSetsDto) {
-        using var sectionTimer = SectionTimer.StartNew(_logger);
-
         if (!ModelState.IsValid) return BadRequest(ModelState.ValidationState);
 
         var senderName = User.GetUserName();
@@ -179,17 +158,13 @@ public class TextController : ControllerBase {
             if (updateResult.IsClientError) return Forbid();
             return StatusCode(500, updateResult.Error);
         }
-
-        sectionTimer.SetMessage($"Updated text security settings: {updateResult.Value.Id}");
-
+        
         return Ok(updateResult.Value.ToTextDto());
     }
 
     [HttpDelete("{id}")]
     [Authorize]
     public async Task<IActionResult> Delete([FromRoute] string id, [FromQuery] string? requestPassword) {
-        using var sectionTimer = SectionTimer.StartNew(_logger);
-
         var senderName = User.GetUserName();
         if (senderName == null) {
             _logger.LogCritical("Sender name is null");
@@ -201,9 +176,7 @@ public class TextController : ControllerBase {
             if (deleteResult.IsClientError) return Forbid();
             return StatusCode(500, deleteResult.Error);
         }
-
-        sectionTimer.SetMessage($"Deleted Text: {id}");
-
+        
         return NoContent();
     }
 }

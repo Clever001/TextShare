@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using TextShareApi.Attributes;
 using TextShareApi.Data;
 using TextShareApi.Extensions;
+using TextShareApi.Filters;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
@@ -13,7 +15,12 @@ using TextShareApi.Repositories;
 using TextShareApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
+builder.Services.AddControllers(options => {
+    options.Filters.Add<ValidateModelStateAttribute>();
+    options.Filters.Add<LogExecutionTimeFilter>();
+}).ConfigureApiBehaviorOptions(options => {
+    options.SuppressModelStateInvalidFilter = true;
+});
 builder.Services.AddDbContext<AppDbContext>(options => {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });

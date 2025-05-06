@@ -25,8 +25,6 @@ public class FriendRequestController : ControllerBase {
     [HttpPost("{recipientName}")]
     [Authorize]
     public async Task<IActionResult> CreateFriendRequest([FromRoute] string recipientName) {
-        using var sectionTimer = SectionTimer.StartNew(_logger);
-
         var senderName = User.GetUserName();
         Debug.Assert(senderName != null);
 
@@ -36,17 +34,13 @@ public class FriendRequestController : ControllerBase {
             if (frResult.IsClientError) return BadRequest(frResult.Error);
             return StatusCode(500, frResult.Error);
         }
-
-        sectionTimer.SetMessage($"Created friend request between {senderName} and {recipientName}");
-
+        
         return Ok(frResult.Value.ToDto());
     }
 
     [HttpDelete("{recipientName}")]
     [Authorize]
     public async Task<IActionResult> DeleteFriendRequest([FromRoute] string recipientName) {
-        using var sectionTimer = SectionTimer.StartNew(_logger);
-
         var senderName = User.GetUserName();
         Debug.Assert(senderName != null);
 
@@ -55,17 +49,13 @@ public class FriendRequestController : ControllerBase {
             if (deletionResult.IsClientError) return BadRequest(deletionResult.Error);
             return StatusCode(500, deletionResult.Error);
         }
-
-        sectionTimer.SetMessage($"Deleted friend request between {senderName} and {recipientName}");
-
+        
         return NoContent();
     }
 
     [HttpGet("fromMe/")]
     [Authorize]
     public async Task<IActionResult> GetRequestsFromMe() {
-        using var sectionTimer = SectionTimer.StartNew(_logger);
-
         var senderName = User.GetUserName();
         Debug.Assert(senderName != null);
 
@@ -74,17 +64,13 @@ public class FriendRequestController : ControllerBase {
             if (getResult.IsSuccess) return BadRequest(getResult.Error);
             return StatusCode(500, getResult.Error);
         }
-
-        sectionTimer.SetMessage($"Returned friend requests from {senderName}");
-
+        
         return Ok(getResult.Value.Select(x => x.ToDto()).ToArray());
     }
 
     [HttpGet("toMe/")]
     [Authorize]
     public async Task<IActionResult> GetRequestsToMe() {
-        using var sectionTimer = SectionTimer.StartNew(_logger);
-
         var senderName = User.GetUserName();
         Debug.Assert(senderName != null);
 
@@ -93,9 +79,7 @@ public class FriendRequestController : ControllerBase {
             if (getResult.IsSuccess) return BadRequest(getResult.Error);
             return StatusCode(500, getResult.Error);
         }
-
-        sectionTimer.SetMessage($"Returned friend requests to {senderName}");
-
+        
         return Ok(getResult.Value.Select(x => x.ToDto()).ToArray());
     }
 
@@ -103,8 +87,6 @@ public class FriendRequestController : ControllerBase {
     [Authorize]
     public async Task<IActionResult> ProcessFriendRequest([FromRoute] string senderName,
         [FromBody] ProcessFriendRequestDto requestDto) {
-        using var sectionTimer = SectionTimer.StartNew(_logger);
-
         var curUserName = User.GetUserName();
         Debug.Assert(curUserName != null);
 
@@ -113,9 +95,7 @@ public class FriendRequestController : ControllerBase {
             if (processionResult.IsClientError) return BadRequest(processionResult.Error);
             return StatusCode(500, processionResult.Error);
         }
-
-        sectionTimer.SetMessage($"Processed friend request from {senderName}");
-
+        
         return Ok(processionResult.Value.ToDto());
     }
 }
