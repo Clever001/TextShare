@@ -17,6 +17,11 @@ public class TextRepository : ITextRepository {
     }
 
     public async Task AddText(Text text, TextSecuritySettings textSecuritySettings) {
+        /*var textTags = text.Tags;
+        var oldTags = await _context.Tags.Where(tag => textTags.Contains(tag)).ToListAsync();
+        var newTags = textTags.Except(oldTags).ToList();
+        await _context.Tags.AddRangeAsync(newTags);*/
+        
         await _context.Texts.AddAsync(text);
         await _context.TextSecuritySettings.AddAsync(textSecuritySettings);
         await _context.SaveChangesAsync();
@@ -26,6 +31,7 @@ public class TextRepository : ITextRepository {
         return await _context.Texts
             .Include(t => t.TextSecuritySettings)
             .Include(t => t.Owner)
+            .Include(t => t.Tags)
             .FirstOrDefaultAsync(t => t.Id == textId);
     }
 
@@ -34,6 +40,7 @@ public class TextRepository : ITextRepository {
         var query = _context.Texts
             .Include(t => t.TextSecuritySettings)
             .Include(t => t.Owner)
+            .Include(t => t.Tags)
             .Where(predicate)
             .Skip(skipCnt);
 

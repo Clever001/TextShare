@@ -22,7 +22,7 @@ builder.Services.AddControllers(options => {
     .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 builder.Services.AddDbContext<AppDbContext>(options => {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-    options.LogTo(Console.WriteLine, LogLevel.Information);
+    // options.LogTo(Console.WriteLine, LogLevel.Information);
 });
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options => {
@@ -57,6 +57,7 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IFriendPairRepository, FriendPairRepository>();
 builder.Services.AddScoped<IFriendRequestRepository, FriendRequestRepository>();
 builder.Services.AddScoped<IHashSeedRepository, HashSeedRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ITextRepository, TextRepository>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();

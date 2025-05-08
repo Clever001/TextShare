@@ -13,6 +13,7 @@ public class AppDbContext : IdentityDbContext<AppUser> {
     public DbSet<FriendRequest> FriendRequests { get; set; }
     public DbSet<FriendPair> FriendPairs { get; set; }
     public DbSet<TextSecuritySettings> TextSecuritySettings { get; set; }
+    public DbSet<Tag> Tags { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder) {
         base.OnModelCreating(builder);
@@ -33,6 +34,11 @@ public class AppDbContext : IdentityDbContext<AppUser> {
         builder.Entity<Text>()
             .HasIndex(t => new { t.Title, AppUserId = t.OwnerId })
             .IsUnique();
+
+        builder.Entity<Tag>().HasKey(t => t.Name);
+        builder.Entity<Tag>()
+            .HasMany<Text>(t => t.Texts)
+            .WithMany(t => t.Tags);
         
         builder.Entity<FriendRequest>().HasKey(r => new { r.SenderId, r.RecipientId });
         builder.Entity<FriendRequest>()

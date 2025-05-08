@@ -15,19 +15,22 @@ public class TextService : ITextService {
     private readonly ITextRepository _textRepository;
     private readonly ITextSecurityService _textSecurityService;
     private readonly IUniqueIdService _uniqueIdService;
+    private readonly ITagRepository _tagRepository;
 
     public TextService(ITextRepository textRepository,
         ITextSecurityService textSecurityService,
         IAccountRepository accountRepository,
         IFriendService friendService,
         IUniqueIdService uniqueIdService,
-        ILogger<TextService> logger) {
+        ILogger<TextService> logger,
+        ITagRepository tagRepository) {
         _textRepository = textRepository;
         _textSecurityService = textSecurityService;
         _accountRepository = accountRepository;
         _friendService = friendService;
         _uniqueIdService = uniqueIdService;
         _logger = logger;
+        _tagRepository = tagRepository;
     }
 
     public async Task<Result<Text>> Create(string curUserName, CreateTextDto dto) {
@@ -56,6 +59,7 @@ public class TextService : ITextService {
             Description = dto.Description,
             Content = dto.Content,
             Syntax = dto.Syntax,
+            Tags = new()
         };
         var securitySettings = new TextSecuritySettings {
             TextId = text.Id,
@@ -63,6 +67,20 @@ public class TextService : ITextService {
             AccessType = dto.AccessType,
             Password = dto.Password,
         };
+
+        // Adding Tags
+        if (dto.Tags.Count > 0) {
+            var existingTags = new Dictionary<string, Tag>(
+                (await _tagRepository.GetTags(t => dto.Tags.Contains(t.Name))).Select(t =>
+                    new KeyValuePair<string, Tag>(t.Name, t)));
+
+            foreach (string tag in dto.Tags.Distinct().Select(t => t.ToLower())) {
+                text.Tags.Add(existingTags.TryGetValue(tag, out var existingTag)
+                    ? existingTag
+                    : new Tag { Name = tag });
+            }
+        }
+        
         await _textRepository.AddText(text, securitySettings);
         return Result<Text>.Success(text);
     }
@@ -145,6 +163,17 @@ public class TextService : ITextService {
         if (dto.Title != null) text.Title = dto.Title;
         if (dto.Description != null) text.Description = dto.Description;
         if (dto.Syntax != null) text.Syntax = dto.Syntax;
+        if (dto.Tags != null) {
+            var existingTags = new Dictionary<string, Tag>(
+                (await _tagRepository.GetTags(t => dto.Tags.Contains(t.Name))).Select(t =>
+                    new KeyValuePair<string, Tag>(t.Name, t)));
+            text.Tags.Clear();
+            foreach (var tag in dto.Tags.Distinct().Select(t => t.ToLower())) {
+                text.Tags.Add(existingTags.TryGetValue(tag, out var existingTag)
+                    ? existingTag
+                    : new Tag { Name = tag });
+            }
+        }
         if (dto.AccessType != null) text.TextSecuritySettings.AccessType = dto.AccessType.Value;
         if (dto.UpdatePassword) text.TextSecuritySettings.Password = dto.Password;
 
