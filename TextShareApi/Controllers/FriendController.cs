@@ -38,7 +38,7 @@ public class FriendController : ControllerBase {
         var senderName = User.GetUserName();
         Debug.Assert(senderName != null);
 
-        var result = await _friendService.AreFriends(senderName, userName);
+        var result = await _friendService.AreFriendsByName(senderName, userName);
 
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
         

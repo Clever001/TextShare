@@ -3,7 +3,7 @@ using TextShareApi.Exceptions;
 namespace TextShareApi.ClassesLib;
 
 public class Result<T> {
-    private Result(bool isSuccess, T value, ApiException exception) {
+    private Result(bool isSuccess, T value, IApiException exception) {
         IsSuccess = isSuccess;
         Value = value;
         Exception = exception;
@@ -11,7 +11,7 @@ public class Result<T> {
 
     public bool IsSuccess { get; }
     public T Value { get; }
-    public ApiException Exception { get; }
+    public IApiException Exception { get; }
 
     public Result ToSimpleResult() {
         if (IsSuccess) return Result.Success();
@@ -22,19 +22,19 @@ public class Result<T> {
         return new Result<T>(true, value,  default!);
     }
 
-    public static Result<T> Failure(ApiException exception) {
+    public static Result<T> Failure(IApiException exception) {
         return new Result<T>(false, default!, exception);
     }
 }
 
 public class Result {
-    private Result(bool isSuccess, ApiException exception) {
+    private Result(bool isSuccess, IApiException exception) {
         IsSuccess = isSuccess;
         Exception = exception;
     }
 
     public bool IsSuccess { get; }
-    public ApiException Exception { get; }
+    public IApiException Exception { get; }
 
     public Result<T> ToGenericResult<T>(T value) {
         if (IsSuccess) return Result<T>.Success(value);
@@ -45,7 +45,7 @@ public class Result {
         return new Result(true, default!);
     }
 
-    public static Result Failure(ApiException exception) {
+    public static Result Failure(IApiException exception) {
         return new Result(false, exception);
     }
 }

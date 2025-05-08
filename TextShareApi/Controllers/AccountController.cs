@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using TextShareApi.Attributes;
 using TextShareApi.Dtos.Accounts;
 using TextShareApi.Dtos.Exception;
-using TextShareApi.Exceptions;
 using TextShareApi.Extensions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;

@@ -1,9 +1,10 @@
 namespace TextShareApi.Exceptions;
 
-public sealed class NotFoundException : ApiException {
-    public override string Code { get; init; } = "NotFound";
-    public override int CodeNumber { get; init; } = 404;
-    public override string Description { get; init; } = "The requested object not found.";
+public sealed class NotFoundException : IApiException {
+    public string Code { get; init; } = "NotFound";
+    public int CodeNumber { get; init; } = 404;
+    public string Description { get; init; } = "The requested object not found.";
+    public List<string>? Details { get; init; } = null;
 
     public NotFoundException() { }
 

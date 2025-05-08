@@ -63,7 +63,7 @@ public class FriendService : IFriendService {
         return Result.Success();
     }
 
-    public async Task<Result<bool>> AreFriends(string firstUserName, string secondUserName) {
+    public async Task<Result<bool>> AreFriendsByName(string firstUserName, string secondUserName) {
         if (firstUserName == secondUserName)
             return Result<bool>.Failure(new BadRequestException("First and second user name cannot be same."));
 
@@ -77,6 +77,10 @@ public class FriendService : IFriendService {
 
         var areFriends = await _fpRepo.ContainsFriendPair(firstId, secondId);
         return Result<bool>.Success(areFriends);
+    }
+
+    public async Task<Result<bool>> AreFriendsById(string firstUserId, string secondUserId) {
+        return Result<bool>.Success(await _fpRepo.ContainsFriendPair(firstUserId, secondUserId));
     }
 
     public async Task<Result<List<string>>> GetFriendsIds(string userId) {

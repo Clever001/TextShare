@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using TextShareApi.ClassesLib;
 using TextShareApi.Exceptions;
@@ -20,7 +21,7 @@ public class TextSecurityService : ITextSecurityService {
         _logger = logger;
     }
 
-    public async Task<Result> PassReadSecurityChecks(Text text, AppUser? requestSender, string? password) {
+    public async Task<Result> PassReadSecurityChecks(Text text, string? requestSenderId, string? password) {
         var textSecSettings = text.TextSecuritySettings;
         if (textSecSettings == null) {
             _logger.LogError("TextSecuritySettings is null");
@@ -29,31 +30,27 @@ public class TextSecurityService : ITextSecurityService {
 
         switch (textSecSettings.AccessType) {
             case AccessType.ByReferencePublic: {
-                return Result.Success();
+                break;
             }
             case AccessType.ByReferenceAuthorized: {
-                if (requestSender == null) return ForbiddenResult();
+                if (requestSenderId == null) return ForbiddenResult();
 
                 break;
             }
             case AccessType.OnlyFriends: {
-                if (requestSender == null) return ForbiddenResult();
-
-                var areFriendsResult = await _friendService.AreFriends(text.AppUser.UserName!, requestSender.UserName!);
-
-                if (text.AppUserId == requestSender.Id) break;
-
+                if (requestSenderId == null) return ForbiddenResult();
+                if (text.OwnerId == requestSenderId) break;
+                var areFriendsResult = await _friendService.AreFriendsById(text.OwnerId, requestSenderId);
                 if (!areFriendsResult.IsSuccess)
                     return Result.Failure(areFriendsResult.Exception);
-
                 if (!areFriendsResult.Value) return ForbiddenResult();
 
                 break;
             }
             case AccessType.Personal: {
-                if (requestSender == null) return ForbiddenResult();
+                if (requestSenderId == null) return ForbiddenResult();
 
-                if (text.AppUserId != requestSender.Id) return ForbiddenResult();
+                if (text.OwnerId != requestSenderId) return ForbiddenResult();
 
                 break;
             }
@@ -62,26 +59,33 @@ public class TextSecurityService : ITextSecurityService {
             }
         }
 
+        if (requestSenderId == text.OwnerId) {
+            return Result.Success();
+        }
+
         return PassPasswordCheck(text, password);
     }
 
-    public Result PassWriteSecurityChecks(Text text, AppUser requestSender, string? password) {
-        var owner = text.AppUser;
-        if (owner.Id != requestSender.Id) return ForbiddenResult();
+    public Result PassWriteSecurityChecks(Text text, string requestSenderId) {
+        var ownerId = text.OwnerId;
+        if (ownerId != requestSenderId) return ForbiddenResult();
 
-        return PassPasswordCheck(text, password);
+        return Result.Success();
     }
 
     public Result PassPasswordCheck(Text text, string? password) {
         var securitySettings = text.TextSecuritySettings;
-        var user = text.AppUser;
+        var user = text.Owner;
 
         if (securitySettings.Password == null) return Result.Success();
         
         if (password == null) return Result.Failure(new BadRequestException("Password is not provided."));
 
+        var sw = Stopwatch.StartNew();
         var passwordCheck = _passwordHasher.VerifyHashedPassword(user,
-            securitySettings.Password!, password);
+            securitySettings.Password, password);
+        sw.Stop();
+        Console.WriteLine($"Elapsed time: {sw.ElapsedMilliseconds} ms.");
         if (passwordCheck == PasswordVerificationResult.Failed) return Result.Failure(new BadRequestException("Provided password is not correct."));
 
         return Result.Success();

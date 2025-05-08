@@ -45,7 +45,7 @@ public class AccountRepository : IAccountRepository {
 
     public async Task<AppUser?> GetTextOwner(string textId) {
         return (await _context.Texts
-            .Include(text => text.AppUser)
-            .FirstOrDefaultAsync(text => text.Id == textId))?.AppUser;
+            .Include(text => text.Owner)
+            .FirstOrDefaultAsync(text => text.Id == textId))?.Owner;
     }
 }

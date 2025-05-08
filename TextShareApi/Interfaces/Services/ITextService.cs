@@ -5,7 +5,7 @@ using TextShareApi.Models;
 namespace TextShareApi.Interfaces.Services;
 
 public interface ITextService {
-    Task<Result<Text>> Create(string curUserName);
+    Task<Result<Text>> Create(string curUserName, CreateTextDto dto);
     Task<Result<Text>> GetById(string textId, string? curUserName, string? requestPassword);
     Task<Result<List<Text>>> GetAccountTexts(string curUserName);
     Task<Result<List<Text>>> GetAllAvailable(string? curUserName);

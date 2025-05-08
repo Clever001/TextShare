@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,16 +16,17 @@ using TextShareApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options => {
-    options.Filters.Add<ValidateModelStateAttribute>();
-    options.Filters.Add<LogExecutionTimeFilter>();
-}).ConfigureApiBehaviorOptions(options => {
-    options.SuppressModelStateInvalidFilter = true;
-});
+        options.Filters.Add<ValidateModelStateAttribute>();
+        options.Filters.Add<LogExecutionTimeFilter>();
+    }).ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = true; })
+    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 builder.Services.AddDbContext<AppDbContext>(options => {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.LogTo(Console.WriteLine, LogLevel.Information);
 });
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options => {
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
     options.User.RequireUniqueEmail = true;
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
@@ -68,13 +70,11 @@ builder.Services.AddScoped<PasswordHasher<AppUser>>();
 
 builder.Logging.AddConsole();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAll", policy => {
         policy.WithOrigins("http://localhost:3000")
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+            .AllowAnyMethod()
+            .AllowAnyHeader();
     });
 });
 

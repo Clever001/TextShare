@@ -25,12 +25,15 @@ public class AppDbContext : IdentityDbContext<AppUser> {
 
         builder.Entity<Text>().HasKey(t => t.Id);
         builder.Entity<Text>()
-            .HasOne(t => t.AppUser)
+            .HasOne(t => t.Owner)
             .WithMany(u => u.Texts)
-            .HasForeignKey(t => t.AppUserId)
+            .HasForeignKey(t => t.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
-        builder.Entity<Text>().HasIndex(t => t.AppUserId);
-
+        builder.Entity<Text>().HasIndex(t => t.OwnerId);
+        builder.Entity<Text>()
+            .HasIndex(t => new { t.Title, AppUserId = t.OwnerId })
+            .IsUnique();
+        
         builder.Entity<FriendRequest>().HasKey(r => new { r.SenderId, r.RecipientId });
         builder.Entity<FriendRequest>()
             .HasOne(r => r.Sender)

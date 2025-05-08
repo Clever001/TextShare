@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using TextShareApi.Dtos.Exception;
-using TextShareApi.Exceptions;
 
 namespace TextShareApi.Attributes;
 
