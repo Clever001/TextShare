@@ -9,11 +9,12 @@ namespace TextShareApi.Interfaces.Repositories;
 public interface ITextRepository {
     Task AddText(Text text, TextSecuritySettings textSecuritySettings);
     Task<Text?> GetText(string textId);
-    Task<List<Text>> GetTexts<T>(int skip,
+    Task<(int, List<Text>)> GetTexts<T>(int skip,
         int take,
         Expression<Func<Text, T>> keyOrder,
         bool isAscending,
-        List<Expression<Func<Text, bool>>>? predicates);
+        List<Expression<Func<Text, bool>>>? predicates,
+        bool generateCount);
     Task UpdateText(Text dto);
     Task<bool> DeleteText(string textId);
     Task<bool> ContainsText(string textId);

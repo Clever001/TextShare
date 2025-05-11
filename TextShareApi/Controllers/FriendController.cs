@@ -28,7 +28,7 @@ public class FriendController : ControllerBase {
         var result = await _friendService.GetFriends(pagination, isAscending, friendName, senderName!);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
         
-        return Ok(result.Value.Select(u => u.ToUserWithoutTokenDto()).ToArray());
+        return Ok(result.Value.Convert(u => u.ToUserWithoutTokenDto()));
     }
 
     [HttpGet("areFriends/{userName}")]

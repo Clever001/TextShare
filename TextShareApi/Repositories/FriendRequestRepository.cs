@@ -31,7 +31,7 @@ public class FriendRequestRepository : IFriendRequestRepository {
             .FirstOrDefaultAsync(r => r.SenderId == senderId && r.RecipientId == recipientId);
     }
 
-    public async Task<List<FriendRequest>> GetFriendRequests<T>(int skip,
+    public async Task<(int, List<FriendRequest>)> GetFriendRequests<T>(int skip,
         int take,
         Expression<Func<FriendRequest, T>> keyOrder,
         bool isAscending,
@@ -48,13 +48,15 @@ public class FriendRequestRepository : IFriendRequestRepository {
             }
         }
         
+        int count = await requests.CountAsync();
+        
         // Ordering
         requests = isAscending ? requests.OrderBy(keyOrder) : requests.OrderByDescending(keyOrder);
         
         // Pagination
         requests = requests.Skip(skip).Take(take);
         
-        return await requests.ToListAsync();
+        return (count, await requests.ToListAsync());
     }
 
     public async Task<FriendRequest?> UpdateRequest(string senderId, string recipientId, bool isAccepted) {

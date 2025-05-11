@@ -44,7 +44,7 @@ public class FriendPairRepository : IFriendPairRepository {
             .FirstOrDefaultAsync(p => p.FirstUserId == firstUserId && p.SecondUserId == secondUserId);
     }
 
-    public Task<List<FriendPair>> GetFriendPairs<T>(int skip,
+    public async Task<(int, List<FriendPair>)> GetFriendPairs<T>(int skip,
         int take,
         Expression<Func<FriendPair, T>> keyOrder,
         bool isAscending,
@@ -62,6 +62,7 @@ public class FriendPairRepository : IFriendPairRepository {
                 pairs = pairs.Where(predicate);
             }
         }
+        int count = pairs.Count();
         
         // Ordering
         pairs = isAscending ? 
@@ -71,7 +72,7 @@ public class FriendPairRepository : IFriendPairRepository {
         // Pagination
         pairs = pairs.Skip(skip).Take(take);
         
-        return pairs.ToListAsync();
+        return (count, await pairs.ToListAsync());
     }
 
     public async Task<List<FriendPair>> GetFriendPairs(Expression<Func<FriendPair, bool>> predicate) {

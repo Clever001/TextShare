@@ -64,7 +64,7 @@ public class AccountController : ControllerBase {
         var result = await _accountService.GetUsers(pagination, userName);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
         
-        return Ok(result.Value.Select(u => u.ToUserWithoutTokenDto()).ToList());
+        return Ok(result.Value.Convert(u => u.ToUserWithoutTokenDto()));
     }
 
     private bool IsEmail(string input) {

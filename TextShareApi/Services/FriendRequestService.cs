@@ -4,6 +4,7 @@ using TextShareApi.Dtos.QueryOptions;
 using TextShareApi.Exceptions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
+using TextShareApi.Mappers;
 using TextShareApi.Models;
 
 namespace TextShareApi.Services;
@@ -114,14 +115,14 @@ public class FriendRequestService : IFriendRequestService {
         return Result<FriendRequest?>.Success(request);
     }
 
-    public async Task<Result<List<FriendRequest>>> GetSentFriendRequests(PaginationDto pagination,
+    public async Task<Result<PaginatedResponseDto<FriendRequest>>> GetSentFriendRequests(PaginationDto pagination,
         bool isAscending,
         string senderName,
         string? recipientName) 
     {
         var senderId = await _accountRepository.GetAccountId(senderName);
         if (senderId == null)
-            return Result<List<FriendRequest>>.Failure(new ServerException("Sender not found."));
+            return Result<PaginatedResponseDto<FriendRequest>>.Failure(new ServerException("Sender not found."));
         
         int skip = (pagination.PageNumber - 1) * pagination.PageSize;
         int take = pagination.PageSize;
@@ -134,7 +135,7 @@ public class FriendRequestService : IFriendRequestService {
         if (recipientName != null && recipientName.Trim() != "") 
             predicates.Add(p => p.Recipient.UserName!.ToLower().Contains(recipientName.ToLower()));
 
-        var pairs = await _friendRequestRepository.GetFriendRequests(
+        var (count, pairs) = await _friendRequestRepository.GetFriendRequests(
             skip: skip,
             take: take,
             keyOrder: orderBy,
@@ -142,17 +143,17 @@ public class FriendRequestService : IFriendRequestService {
             predicates: predicates
         );
 
-        return Result<List<FriendRequest>>.Success(pairs);
+        return Result<PaginatedResponseDto<FriendRequest>>.Success(pairs.ToPaginatedResponse(pagination, count));
     }
 
-    public async Task<Result<List<FriendRequest>>> GetReceivedFriendRequests(PaginationDto pagination,
+    public async Task<Result<PaginatedResponseDto<FriendRequest>>> GetReceivedFriendRequests(PaginationDto pagination,
         bool isAscending,
         string? senderName,
         string recipientName) 
     {
         var recipientId = await _accountRepository.GetAccountId(recipientName);
         if (recipientId == null)
-            return Result<List<FriendRequest>>.Failure(new ServerException("Recipient not found."));
+            return Result<PaginatedResponseDto<FriendRequest>>.Failure(new ServerException("Recipient not found."));
         
         int skip = (pagination.PageNumber - 1) * pagination.PageSize;
         int take = pagination.PageSize;
@@ -165,7 +166,7 @@ public class FriendRequestService : IFriendRequestService {
         if (senderName != null && senderName.Trim() != "") 
             predicates.Add(p => p.Sender.UserName!.ToLower().Contains(senderName.ToLower()));
         
-        var pairs = await _friendRequestRepository.GetFriendRequests(
+        var (count, pairs) = await _friendRequestRepository.GetFriendRequests(
             skip: skip,
             take: take,
             keyOrder: orderBy,
@@ -173,6 +174,6 @@ public class FriendRequestService : IFriendRequestService {
             predicates: predicates
         );
 
-        return Result<List<FriendRequest>>.Success(pairs);
+        return Result<PaginatedResponseDto<FriendRequest>>.Success(pairs.ToPaginatedResponse(pagination, count));
     }
 }

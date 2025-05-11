@@ -5,6 +5,7 @@ using TextShareApi.Dtos.QueryOptions;
 using TextShareApi.Exceptions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
+using TextShareApi.Mappers;
 using TextShareApi.Models;
 
 namespace TextShareApi.Services;
@@ -62,14 +63,14 @@ public class AccountService : IAccountService {
         return Result<(AppUser, string)>.Success((user, token));
     }
 
-    public async Task<Result<List<AppUser>>> GetUsers(PaginationDto pagination, string? userName) {
+    public async Task<Result<PaginatedResponseDto<AppUser>>> GetUsers(PaginationDto pagination, string? userName) {
         int skip = (pagination.PageNumber - 1) * pagination.PageSize;
         int take = pagination.PageSize;
         Expression<Func<AppUser, string?>> orderBy = u => u.UserName;
         Expression<Func<AppUser, bool>>? nameFilter = null;
         if (userName != null && userName.Trim() != "") nameFilter = u => u.UserName!.ToLower().Contains(userName.ToLower());
 
-        var users = await _accountRepository.GetAllAccounts(
+        var (count, users) = await _accountRepository.GetAllAccounts(
             skip: skip,
             take: take,
             keyOrder: orderBy,
@@ -79,6 +80,6 @@ public class AccountService : IAccountService {
                 [nameFilter]
         );
 
-        return Result<List<AppUser>>.Success(users);
+        return Result<PaginatedResponseDto<AppUser>>.Success(users.ToPaginatedResponse(pagination, count));
     }
 }

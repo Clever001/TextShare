@@ -60,10 +60,15 @@ public class TextController : ControllerBase {
         
         string? senderName = User.GetUserName();
 
+        if (Request.Headers.ContainsKey("Authorization") && senderName is null or "")
+            return this.ToActionResult(new ForbiddenException());
+        
+        Console.WriteLine($"Sender Name: {senderName}");
+
         var result = await _textService.GetTexts(pagination, sort, filter, senderName);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
-        return Ok(result.Value.Select(x => x.ToTextWithoutContentDto()).ToList());
+        return Ok(result.Value.Convert(t => t.ToTextWithoutContentDto()));
     }
 
     [HttpGet("latests")]

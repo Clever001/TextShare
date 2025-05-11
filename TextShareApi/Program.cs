@@ -22,7 +22,7 @@ builder.Services.AddControllers(options => {
     .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 builder.Services.AddDbContext<AppDbContext>(options => {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-    options.LogTo(Console.WriteLine, LogLevel.Information);
+    // options.LogTo(Console.WriteLine, LogLevel.Information);
 });
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options => {

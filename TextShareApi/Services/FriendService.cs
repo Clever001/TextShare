@@ -4,6 +4,7 @@ using TextShareApi.Dtos.QueryOptions;
 using TextShareApi.Exceptions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
+using TextShareApi.Mappers;
 using TextShareApi.Models;
 
 namespace TextShareApi.Services;
@@ -35,17 +36,18 @@ public class FriendService : IFriendService {
         return Result.Success();
     }
 
-    public async Task<Result<List<AppUser>>> GetFriends(PaginationDto pagination, bool isAscending, string? friendName, string senderName) {
+    public async Task<Result<PaginatedResponseDto<AppUser>>> GetFriends(PaginationDto pagination, bool isAscending, string? friendName, string senderName) {
         int skip = (pagination.PageNumber - 1) * pagination.PageSize;
         int take = pagination.PageSize;
         
         var senderId = await _accountRepository.GetAccountId(senderName);
-        var predicates = new List<Expression<Func<FriendPair, bool>>>();
-        predicates.Add(p => p.FirstUserId == senderId);
+        var predicates = new List<Expression<Func<FriendPair, bool>>> {
+            p => p.FirstUserId == senderId
+        };
         if (friendName != null && friendName.Trim() != "")
             predicates.Add(p => p.SecondUser.UserName!.ToLower().Contains(friendName.ToLower()));
 
-        var pairs = await _fpRepo.GetFriendPairs(
+        var (count, pairs) = await _fpRepo.GetFriendPairs(
             skip: skip,
             take: take,
             keyOrder: p => p.SecondUser.UserName,
@@ -57,21 +59,8 @@ public class FriendService : IFriendService {
         
         var friends = pairs.Select(p => p.SecondUser).ToList();
 
-        return Result<List<AppUser>>.Success(friends);
+        return Result<PaginatedResponseDto<AppUser>>.Success(friends.ToPaginatedResponse(pagination, count));
     }
-
-    /*public async Task<Result<List<AppUser>>> GetFriends(string userName) {
-        var userId = await _accountRepository.GetAccountId(userName);
-
-        if (userId == null) return Result<List<AppUser>>.Failure(new NotFoundException("Current user not found."));
-
-        var friends =
-            (await _fpRepo.GetFriendPairs(fp => fp.FirstUserId == userId))
-            .Select(fp => fp.SecondUser)
-            .ToList();
-
-        return Result<List<AppUser>>.Success(friends);
-    }*/
 
     public async Task<Result> RemoveFriend(string firstUserName, string secondUserName) {
         if (firstUserName == secondUserName) return Result.Failure(new BadRequestException("First and second user name cannot be same."));

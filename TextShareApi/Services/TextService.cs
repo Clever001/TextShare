@@ -9,39 +9,28 @@ using TextShareApi.Dtos.Text;
 using TextShareApi.Exceptions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
+using TextShareApi.Mappers;
 using TextShareApi.Models;
 
 namespace TextShareApi.Services;
 
 public class TextService : ITextService {
-    private readonly IAccountRepository _accountRepository;
-    private readonly IFriendService _friendService;
+    private readonly IAccountRepository _accountRepository; 
     private readonly ILogger<TextService> _logger;
     private readonly ITextRepository _textRepository;
     private readonly ITextSecurityService _textSecurityService;
     private readonly IUniqueIdService _uniqueIdService;
     private readonly ITagRepository _tagRepository;
-    private readonly Dictionary<string, Expression<Func<Text, object>>> _sortExpressions = 
-        new Dictionary<string, Expression<Func<Text, object>>>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["id"] = t => t.Id,
-            ["title"] = t => t.Title,
-            ["syntax"] = t => t.Syntax,
-            ["createdon"] = t => t.CreatedOn,
-            ["updatedon"] = t => t.UpdatedOn
-        };
 
     public TextService(ITextRepository textRepository,
         ITextSecurityService textSecurityService,
         IAccountRepository accountRepository,
-        IFriendService friendService,
         IUniqueIdService uniqueIdService,
         ILogger<TextService> logger,
         ITagRepository tagRepository) {
         _textRepository = textRepository;
         _textSecurityService = textSecurityService;
         _accountRepository = accountRepository;
-        _friendService = friendService;
         _uniqueIdService = uniqueIdService;
         _logger = logger;
         _tagRepository = tagRepository;
@@ -96,6 +85,10 @@ public class TextService : ITextService {
         }
 
         await _textRepository.AddText(text, securitySettings);
+        text.Owner = new AppUser {
+            Id = userId,
+            UserName = curUserName
+        };
         return Result<Text>.Success(text);
     }
 
@@ -114,7 +107,7 @@ public class TextService : ITextService {
         return Result<Text>.Success(text);
     }
 
-    public async Task<Result<List<Text>>> GetTexts(PaginationDto pagination,
+    public async Task<Result<PaginatedResponseDto<Text>>> GetTexts(PaginationDto pagination,
         SortDto sort,
         TextFilterDto filter,
         string? senderName) 
@@ -146,12 +139,13 @@ public class TextService : ITextService {
         
         // Security settings check
         if (senderName == null) {
-            predicates.Add(text => text.TextSecuritySettings.AccessType == AccessType.ByReferencePublic);
+            predicates.Add(text => text.TextSecuritySettings.AccessType == AccessType.ByReferencePublic || 
+                                   text.TextSecuritySettings.AccessType == AccessType.ByReferenceAuthorized);
         }
         else {
             var senderId = await _accountRepository.GetAccountId(senderName);
             if (senderId == null)
-                return Result<List<Text>>.Failure(new ServerException("Sender not found."));
+                return Result<PaginatedResponseDto<Text>>.Failure(new ServerException("Sender not found."));
             predicates.Add(text => (text.TextSecuritySettings.AccessType == AccessType.ByReferencePublic) || 
                                    (text.TextSecuritySettings.AccessType == AccessType.ByReferenceAuthorized) || 
                                    (text.TextSecuritySettings.AccessType == AccessType.OnlyFriends &&
@@ -162,36 +156,42 @@ public class TextService : ITextService {
         
         // Sorting and Gathering texts
         var (isValid, getTexts) = GenerateGetTextsFunc(sort.SortBy);
-        if (!isValid) return Result<List<Text>>.Failure(new BadRequestException("Invalid Sort By field."));
-        var texts = await getTexts(skip, take, sort.SortAscending, predicates);
+        if (!isValid) return Result<PaginatedResponseDto<Text>>.Failure(new BadRequestException("Invalid Sort By field."));
+        var (count, texts) = await getTexts(skip, take, sort.SortAscending, predicates);
         
-        return Result<List<Text>>.Success(texts);
+        return Result<PaginatedResponseDto<Text>>.Success(texts.ToPaginatedResponse(pagination, count));
     }
 
-    private (bool isValid, Func<int, int, bool, List<Expression<Func<Text, bool>>>, Task<List<Text>>>) 
+    private (bool isValid, Func<int, int, bool, List<Expression<Func<Text, bool>>>, Task<(int, List<Text>)>>) 
         GenerateGetTextsFunc(string sortBy) {
         return sortBy.ToLower() switch {
             "id" => (true, (skip, take, asc, predicates) => 
-                    _textRepository.GetTexts(skip, take, t => t.Id, asc, predicates)),
+                    _textRepository.GetTexts(skip, take, t => t.Id, asc, predicates, true)),
             "title" => (true, (skip, take, asc, predicates) => 
-                    _textRepository.GetTexts(skip, take, t => t.Title, asc, predicates)),
+                    _textRepository.GetTexts(skip, take, t => t.Title, asc, predicates, true)),
             "syntax" => (true, (skip, take, asc, predicates) => 
-                    _textRepository.GetTexts(skip, take, t => t.Syntax, asc, predicates)),
+                    _textRepository.GetTexts(skip, take, t => t.Syntax, asc, predicates, true)),
             "createdon" => (true, (skip, take, asc, predicates) =>
-                    _textRepository.GetTexts(skip, take, t => t.CreatedOn, asc, predicates)),
+                    _textRepository.GetTexts(skip, take, t => t.CreatedOn, asc, predicates, true)),
             "updatedon" => (true, (skip, take, asc, predicates) =>
-                    _textRepository.GetTexts(skip, take, t => t.UpdatedOn, asc, predicates)),
+                    _textRepository.GetTexts(skip, take, t => t.UpdatedOn, asc, predicates, true)),
             _ => (false, null!)
         };
     }
 
     public async Task<Result<List<Text>>> GetLatestTexts() {
-        var texts = await _textRepository.GetTexts(
+        var predicates = new List<Expression<Func<Text, bool>>> {
+            t => t.TextSecuritySettings.AccessType == AccessType.ByReferencePublic ||
+                 t.TextSecuritySettings.AccessType == AccessType.ByReferenceAuthorized
+        };
+        
+        var (_, texts) = await _textRepository.GetTexts(
             skip: 0,
             take: 5,
             keyOrder: t => t.CreatedOn,
             isAscending: true,
-            predicates: null
+            predicates: predicates,
+            generateCount: false
         );
         
         return Result<List<Text>>.Success(texts);

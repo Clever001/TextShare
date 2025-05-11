@@ -32,7 +32,7 @@ public class AccountRepository : IAccountRepository {
         return await _userManager.FindByNameAsync(userName);
     }
 
-    public async Task<List<AppUser>> GetAllAccounts<T>(int skip,
+    public async Task<(int, List<AppUser>)> GetAllAccounts<T>(int skip,
         int take,
         Expression<Func<AppUser, T>> keyOrder,
         bool isAscending,
@@ -47,6 +47,8 @@ public class AccountRepository : IAccountRepository {
             }
         }
         
+        int count = await users.CountAsync();
+        
         // Ordering
         users = isAscending ? 
             users.OrderBy(keyOrder) : 
@@ -54,9 +56,9 @@ public class AccountRepository : IAccountRepository {
         
         // Pagination
         users = users.Skip(skip).Take(take);
-        return await users.Select(u => new AppUser {
+        return (count, await users.Select(u => new AppUser {
             Id = u.Id,
             UserName = u.UserName,
-        }).ToListAsync();
+        }).ToListAsync());
     }
 }

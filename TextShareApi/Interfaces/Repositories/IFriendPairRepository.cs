@@ -8,7 +8,7 @@ public interface IFriendPairRepository {
     Task<ValueTuple<FriendPair, FriendPair>>
         CreateFriendPairs(string firstUserId, string secondUserId);
     Task<FriendPair?> GetFriendPair(string firstUserId, string secondUserId);
-    Task<List<FriendPair>> GetFriendPairs<T>(int skip,
+    Task<(int, List<FriendPair>)> GetFriendPairs<T>(int skip,
         int take,
         Expression<Func<FriendPair, T>> keyOrder,
         bool isAscending,

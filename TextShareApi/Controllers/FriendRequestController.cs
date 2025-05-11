@@ -59,7 +59,7 @@ public class FriendRequestController : ControllerBase {
             recipientName: recipientName
         );
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
-        return Ok(result.Value.Select(r => r.ToDto()).ToList());
+        return Ok(result.Value.Convert(r => r.ToDto()));
     }
 
     [HttpGet("toMe/")]
@@ -75,7 +75,7 @@ public class FriendRequestController : ControllerBase {
             recipientName: recipientName!
         );
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
-        return Ok(result.Value.Select(r => r.ToDto()).ToList());
+        return Ok(result.Value.Convert(r => r.ToDto()));
     }
 
     [HttpPut("{senderName}")]

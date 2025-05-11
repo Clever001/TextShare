@@ -6,7 +6,7 @@ namespace TextShareApi.Interfaces.Repositories;
 public interface IFriendRequestRepository {
     Task<FriendRequest> CreateRequest(string senderId, string recipientId);
     Task<FriendRequest?> GetRequest(string senderId, string recipientId);
-    Task<List<FriendRequest>> GetFriendRequests<T>(
+    Task<(int, List<FriendRequest>)> GetFriendRequests<T>(
         int skip, int take, Expression<Func<FriendRequest, T>> keyOrder,
         bool isAscending,
         List<Expression<Func<FriendRequest, bool>>>? predicates);
