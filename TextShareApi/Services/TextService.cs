@@ -189,7 +189,7 @@ public class TextService : ITextService {
             skip: 0,
             take: 5,
             keyOrder: t => t.CreatedOn,
-            isAscending: true,
+            isAscending: false,
             predicates: predicates,
             generateCount: false
         );

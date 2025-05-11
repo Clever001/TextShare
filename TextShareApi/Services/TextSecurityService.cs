@@ -85,7 +85,6 @@ public class TextSecurityService : ITextSecurityService {
         var passwordCheck = _passwordHasher.VerifyHashedPassword(user,
             securitySettings.Password, password);
         sw.Stop();
-        Console.WriteLine($"Elapsed time: {sw.ElapsedMilliseconds} ms.");
         if (passwordCheck == PasswordVerificationResult.Failed) return Result.Failure(new BadRequestException("Provided password is not correct."));
 
         return Result.Success();
