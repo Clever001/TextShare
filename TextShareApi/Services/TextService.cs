@@ -1,10 +1,15 @@
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using TextShareApi.ClassesLib;
+using TextShareApi.Dtos.Enums;
+using TextShareApi.Dtos.QueryOptions;
+using TextShareApi.Dtos.QueryOptions.Filters;
 using TextShareApi.Dtos.Text;
 using TextShareApi.Exceptions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
-using TextShareApi.Models.Enums;
 
 namespace TextShareApi.Services;
 
@@ -16,6 +21,15 @@ public class TextService : ITextService {
     private readonly ITextSecurityService _textSecurityService;
     private readonly IUniqueIdService _uniqueIdService;
     private readonly ITagRepository _tagRepository;
+    private readonly Dictionary<string, Expression<Func<Text, object>>> _sortExpressions = 
+        new Dictionary<string, Expression<Func<Text, object>>>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["id"] = t => t.Id,
+            ["title"] = t => t.Title,
+            ["syntax"] = t => t.Syntax,
+            ["createdon"] = t => t.CreatedOn,
+            ["updatedon"] = t => t.UpdatedOn
+        };
 
     public TextService(ITextRepository textRepository,
         ITextSecurityService textSecurityService,
@@ -41,7 +55,7 @@ public class TextService : ITextService {
         if (dto?.Password == "") {
             return Result<Text>.Failure(new BadRequestException("Password cannot be empty."));
         }
-        
+
         var userId = await _accountRepository.GetAccountId(curUserName);
         if (userId == null) return Result<Text>.Failure(new NotFoundException("Current user not found."));
 
@@ -80,7 +94,7 @@ public class TextService : ITextService {
                     : new Tag { Name = tag });
             }
         }
-        
+
         await _textRepository.AddText(text, securitySettings);
         return Result<Text>.Success(text);
     }
@@ -100,64 +114,114 @@ public class TextService : ITextService {
         return Result<Text>.Success(text);
     }
 
-    public async Task<Result<List<Text>>> GetAccountTexts(string curUserName) {
-        var accountId = await _accountRepository.GetAccountId(curUserName);
-        if (accountId == null) return Result<List<Text>>.Failure(new NotFoundException("Current user not found."));
+    public async Task<Result<List<Text>>> GetTexts(PaginationDto pagination,
+        SortDto sort,
+        TextFilterDto filter,
+        string? senderName) 
+    {
+        // Pagination
+        int skip = (pagination.PageNumber - 1) * pagination.PageSize;
+        int take = pagination.PageSize;
 
-        var texts = await _textRepository.GetTexts(t => t.OwnerId == accountId);
-        return Result<List<Text>>.Success(texts);
-    }
+        // Filtering
+        var predicates = new List<Expression<Func<Text, bool>>>();
+        
+        if (filter.OwnerName != null)
+            predicates.Add(t => t.Owner.UserName!.ToLower().Contains(filter.OwnerName!.ToLower()));
 
-    public async Task<Result<List<Text>>> GetAllAvailable(string? curUserName) {
-        if (curUserName == null) {
-            var res = await _textRepository.GetTexts(
-                t => t.TextSecuritySettings.AccessType == AccessType.ByReferencePublic, 0, 20);
+        if (filter.Title != null)
+            predicates.Add(t => t.Title.ToLower().Contains(filter.Title.ToLower()));
 
-            return Result<List<Text>>.Success(res);
+        if (filter.Tags is { Count: > 0 })
+            predicates.Add(text => filter.Tags.All(tag => text.Tags.Any(t => t.Name == tag)));
+        
+        if (filter.Syntax != null)
+            predicates.Add(text => text.Syntax == filter.Syntax);
+
+        if (filter.AccessType != null)
+            predicates.Add(text => text.TextSecuritySettings.AccessType == filter.AccessType);
+
+        if (filter.HasPassword != null)
+            predicates.Add(text => text.TextSecuritySettings.Password == null != filter.HasPassword);
+        
+        // Security settings check
+        if (senderName == null) {
+            predicates.Add(text => text.TextSecuritySettings.AccessType == AccessType.ByReferencePublic);
         }
-
-        var curUserId = await _accountRepository.GetAccountId(curUserName);
-        if (curUserId == null) return Result<List<Text>>.Failure(new NotFoundException("Current user not found."));
-        var friendsIds = (await _friendService.GetFriendsIds(curUserId)).Value;
-
-        // TODO: Здесь надо будет возвращать dto. Иначе очень большой объем данных.
-
-        var texts = await _textRepository.GetTexts(t =>
-                t.OwnerId == curUserId ||
-                t.TextSecuritySettings.AccessType == AccessType.ByReferencePublic ||
-                t.TextSecuritySettings.AccessType == AccessType.ByReferenceAuthorized ||
-                (t.TextSecuritySettings.AccessType == AccessType.OnlyFriends && friendsIds.Contains(t.OwnerId)),
-            0, 20
-        );
-
+        else {
+            var senderId = await _accountRepository.GetAccountId(senderName);
+            if (senderId == null)
+                return Result<List<Text>>.Failure(new ServerException("Sender not found."));
+            predicates.Add(text => (text.TextSecuritySettings.AccessType == AccessType.ByReferencePublic) || 
+                                   (text.TextSecuritySettings.AccessType == AccessType.ByReferenceAuthorized) || 
+                                   (text.TextSecuritySettings.AccessType == AccessType.OnlyFriends &&
+                                    (text.OwnerId == senderId || text.Owner.FriendPairs.Select(p => p.SecondUserId).Contains(senderId))) || 
+                                   (text.TextSecuritySettings.AccessType == AccessType.Personal && 
+                                    text.OwnerId == senderId));
+        }
+        
+        // Sorting and Gathering texts
+        var (isValid, getTexts) = GenerateGetTextsFunc(sort.SortBy);
+        if (!isValid) return Result<List<Text>>.Failure(new BadRequestException("Invalid Sort By field."));
+        var texts = await getTexts(skip, take, sort.SortAscending, predicates);
+        
         return Result<List<Text>>.Success(texts);
     }
 
-    public async Task<Result<Text>> Update(string textId, string curUserName, string? requestPassword,
+    private (bool isValid, Func<int, int, bool, List<Expression<Func<Text, bool>>>, Task<List<Text>>>) 
+        GenerateGetTextsFunc(string sortBy) {
+        return sortBy.ToLower() switch {
+            "id" => (true, (skip, take, asc, predicates) => 
+                    _textRepository.GetTexts(skip, take, t => t.Id, asc, predicates)),
+            "title" => (true, (skip, take, asc, predicates) => 
+                    _textRepository.GetTexts(skip, take, t => t.Title, asc, predicates)),
+            "syntax" => (true, (skip, take, asc, predicates) => 
+                    _textRepository.GetTexts(skip, take, t => t.Syntax, asc, predicates)),
+            "createdon" => (true, (skip, take, asc, predicates) =>
+                    _textRepository.GetTexts(skip, take, t => t.CreatedOn, asc, predicates)),
+            "updatedon" => (true, (skip, take, asc, predicates) =>
+                    _textRepository.GetTexts(skip, take, t => t.UpdatedOn, asc, predicates)),
+            _ => (false, null!)
+        };
+    }
+
+    public async Task<Result<List<Text>>> GetLatestTexts() {
+        var texts = await _textRepository.GetTexts(
+            skip: 0,
+            take: 5,
+            keyOrder: t => t.CreatedOn,
+            isAscending: true,
+            predicates: null
+        );
+        
+        return Result<List<Text>>.Success(texts);
+    }
+
+    public async Task<Result<Text>> Update(string textId, string curUserName,
         UpdateTextDto dto) {
         var text = await _textRepository.GetText(textId);
         if (text == null) return Result<Text>.Failure(new NotFoundException("Text not found."));
-        
-        
+
+
         // Security check
         var curUserId = await _accountRepository.GetAccountId(curUserName);
         if (curUserId == null) return Result<Text>.Failure(new ServerException("Current user not found."));
         var securityCheck = _textSecurityService.PassWriteSecurityChecks(text, curUserId);
         if (!securityCheck.IsSuccess) return Result<Text>.Failure(securityCheck.Exception);
-        
+
         // Title existence check
         if (dto.Title != null) {
             bool contains = await _textRepository.ContainsText(dto.Title, curUserId);
             if (contains) return Result<Text>.Failure(new BadRequestException("This Title already exists."));
         }
-        
+
         // Hashing Password
         if (dto is { UpdatePassword: true, Password: not null }) {
             var curUser = await _accountRepository.GetAccountByName(curUserName);
             dto.Password = _textSecurityService.HashPassword(curUser!, dto.Password);
         }
-        
-        
+
+
         // Updating Text
         if (dto.Content != null) text.Content = dto.Content;
         if (dto.Title != null) text.Title = dto.Title;
@@ -174,6 +238,7 @@ public class TextService : ITextService {
                     : new Tag { Name = tag });
             }
         }
+
         if (dto.AccessType != null) text.TextSecuritySettings.AccessType = dto.AccessType.Value;
         if (dto.UpdatePassword) text.TextSecuritySettings.Password = dto.Password;
 
@@ -184,18 +249,18 @@ public class TextService : ITextService {
         return Result<Text>.Success(text);
     }
 
-    public async Task<Result> Delete(string textId, string curUserName, string? requestPassword) {
+    public async Task<Result> Delete(string textId, string curUserName) {
         var text = await _textRepository.GetText(textId);
         if (text == null) return Result.Failure(new NotFoundException("Text not found."));
-        
-        
+
+
         // Security check
         var curUserId = await _accountRepository.GetAccountId(curUserName);
         if (curUserId == null) return Result.Failure(new ServerException("Current user not found."));
         var securityCheck = _textSecurityService.PassWriteSecurityChecks(text, curUserId);
         if (!securityCheck.IsSuccess) return Result.Failure(securityCheck.Exception);
 
-        
+
         // Deleting text
         var deleted = await _textRepository.DeleteText(textId);
         if (!deleted) {
@@ -204,15 +269,6 @@ public class TextService : ITextService {
             return Result.Failure(new ServerException());
         }
 
-        return Result.Success();
-    }
-
-    public async Task<Result> Contains(string textId) {
-        var exists = await _textRepository.ContainsText(textId);
-        if (!exists) {
-            return Result.Failure(new NotFoundException("Text not found."));
-        }
-        
         return Result.Success();
     }
 }

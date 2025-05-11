@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using TextShareApi.ClassesLib;
+using TextShareApi.Dtos.Enums;
 using TextShareApi.Exceptions;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
-using TextShareApi.Models.Enums;
 
 namespace TextShareApi.Services;
 

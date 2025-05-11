@@ -1,9 +1,14 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TextShareApi.Dtos.QueryOptions;
+using TextShareApi.Dtos.QueryOptions.Filters;
 using TextShareApi.Dtos.Text;
+using TextShareApi.Exceptions;
 using TextShareApi.Extensions;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;
+using TextShareApi.Models;
 
 namespace TextShareApi.Controllers;
 
@@ -39,66 +44,63 @@ public class TextController : ControllerBase {
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromRoute] string id, [FromQuery] string? requestPassword) {
         var senderName = User.GetUserName();
-        
+
         var getResult = await _textService.GetById(id, senderName, requestPassword);
         if (!getResult.IsSuccess) return this.ToActionResult(getResult.Exception);
-        
+
         return Ok(getResult.Value.ToTextDto());
     }
 
-    [HttpGet("/myTexts")]
-    [Authorize]
-    public async Task<IActionResult> GetMyTexts() {
-        var senderName = User.GetUserName();
-        if (senderName == null) {
-            _logger.LogCritical("Sender name is null.");
-            throw new ArgumentNullException(nameof(senderName));
-        }
-
-        var result = await _textService.GetAccountTexts(senderName);
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+    [HttpGet]
+    public async Task<IActionResult> GetAll([FromQuery] PaginationDto pagination,
+        [FromQuery] SortDto sort,
+        [FromQuery] TextFilterDto filter) {
+        if (!sort.IsValid(typeof(Text)))
+            return this.ToActionResult(new BadRequestException("SortBy contains invalid property name."));
         
-        return Ok(result.Value.Select(t => t.ToTextWithoutContentDto()).ToList());
+        string? senderName = User.GetUserName();
+
+        var result = await _textService.GetTexts(pagination, sort, filter, senderName);
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+
+        return Ok(result.Value.Select(x => x.ToTextWithoutContentDto()).ToList());
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAllAvailable() {
-        var senderName = User.GetUserName();
-
-        var result = await _textService.GetAllAvailable(senderName);
+    [HttpGet("latests")]
+    public async Task<IActionResult> GetLatests() {
+        var result = await _textService.GetLatestTexts();
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
-        
-        return Ok(result.Value.Select(t => t.ToTextWithoutContentDto()).ToList());
+
+        return Ok(result.Value.Select(x => x.ToTextWithoutContentDto()).ToList());
     }
 
     [HttpPut("{textId}")]
     [Authorize]
-    public async Task<IActionResult> Update([FromRoute] string textId, [FromBody] UpdateTextDto updateTextDto,
-        [FromQuery] string? requestPassword) {
+    public async Task<IActionResult> Update([FromRoute] string textId, [FromBody] UpdateTextDto updateTextDto) {
         var senderName = User.GetUserName();
         if (senderName == null) {
             _logger.LogCritical("Sender name is null.");
             throw new ArgumentNullException(nameof(senderName));
         }
 
-        var result = await _textService.Update(textId, senderName, requestPassword, updateTextDto);
+        var result = await _textService.Update(textId, senderName, updateTextDto);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
-        
+
         return Ok(result.Value.ToTextDto());
     }
 
     [HttpDelete("{id}")]
     [Authorize]
-    public async Task<IActionResult> Delete([FromRoute] string id, [FromQuery] string? requestPassword) {
+    public async Task<IActionResult> Delete([FromRoute] string id) {
         var senderName = User.GetUserName();
         if (senderName == null) {
             _logger.LogCritical("Sender name is null.");
             throw new ArgumentNullException(nameof(senderName));
         }
 
-        var result = await _textService.Delete(id, senderName, requestPassword);
+        var result = await _textService.Delete(id, senderName);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
-        
+
         return NoContent();
     }
 }

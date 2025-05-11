@@ -1,5 +1,6 @@
 namespace TextShareApi.Dtos.Accounts;
 
-public class UserWithoutTokenDto {
-    public string? UserName { get; set; }
+public sealed class UserWithoutTokenDto {
+    public string Id { get; init; } = string.Empty;
+    public string UserName { get; init; } = string.Empty;
 }

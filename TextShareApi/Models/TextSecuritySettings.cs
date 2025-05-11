@@ -1,4 +1,4 @@
-using TextShareApi.Models.Enums;
+using TextShareApi.Dtos.Enums;
 
 namespace TextShareApi.Models;
 

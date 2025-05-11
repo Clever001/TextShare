@@ -1,24 +1,25 @@
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity;
 using TextShareApi.ClassesLib;
+using TextShareApi.Dtos.QueryOptions;
 using TextShareApi.Exceptions;
+using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
 
 namespace TextShareApi.Services;
 
 public class AccountService : IAccountService {
-    // TODO: Разобраться с регистрацией входа и выхода из системы
-    private readonly SignInManager<AppUser> _signInManager;
     private readonly ITokenService _tokenService;
     private readonly UserManager<AppUser> _userManager;
+    private readonly IAccountRepository _accountRepository;
 
     public AccountService(ITokenService tokenService, UserManager<AppUser> userManager,
-        SignInManager<AppUser> signInManager) {
+        IAccountRepository accountRepository) {
         _tokenService = tokenService;
         _userManager = userManager;
-        _signInManager = signInManager;
+        _accountRepository = accountRepository;
     }
-
 
     public async Task<Result<(AppUser, string)>> Register(string userName, string email, string password) {
         try {
@@ -33,15 +34,12 @@ public class AccountService : IAccountService {
                     var token = _tokenService.CreateToken(user);
                     return Result<(AppUser, string)>.Success((user, token));
                 }
-                
+
                 await _userManager.DeleteAsync(user);
 
                 return Result<(AppUser, string)>.Failure(new ServerException());
             }
-            /*new BadRequestException {
-                Description = "Cannot create user with provided information.",
-                Details = createResult.Errors.Select(e => e.Description).ToList()
-            }*/
+
             return Result<(AppUser, string)>.Failure(new BadRequestException(
                 "Cannot create user with provided information.",
                 createResult.Errors.Select(e => e.Description).ToList()));
@@ -64,8 +62,23 @@ public class AccountService : IAccountService {
         return Result<(AppUser, string)>.Success((user, token));
     }
 
-    /*
-    public async Task<Result> Logout(string nameOrEmail) {
-        throw new NotImplementedException();
-    }*/
+    public async Task<Result<List<AppUser>>> GetUsers(PaginationDto pagination, string? userName) {
+        int skip = (pagination.PageNumber - 1) * pagination.PageSize;
+        int take = pagination.PageSize;
+        Expression<Func<AppUser, string?>> orderBy = u => u.UserName;
+        Expression<Func<AppUser, bool>>? nameFilter = null;
+        if (userName != null && userName.Trim() != "") nameFilter = u => u.UserName!.ToLower().Contains(userName.ToLower());
+
+        var users = await _accountRepository.GetAllAccounts(
+            skip: skip,
+            take: take,
+            keyOrder: orderBy,
+            isAscending: true,
+            predicates: nameFilter == null ?
+                null:
+                [nameFilter]
+        );
+
+        return Result<List<AppUser>>.Success(users);
+    }
 }

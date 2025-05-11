@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TextShareApi.Data;
@@ -17,7 +18,7 @@ public class AccountRepository : IAccountRepository {
     }
 
     public async Task<string?> GetAccountId(string userName) {
-        return (await _userManager.FindByNameAsync(userName))?.Id;
+        return await _context.Users.Where(u => u.NormalizedUserName == userName.ToUpper()).Select(u => u.Id).FirstOrDefaultAsync();
     }
 
     public async Task<(string?, string?)> GetAccountIds(string firstUserName, string secondUserName) {
@@ -27,25 +28,35 @@ public class AccountRepository : IAccountRepository {
         return (senderId, recipientId);
     }
 
-    public async Task<string?> GetUserName(string userId) {
-        return (await _userManager.FindByIdAsync(userId))?.UserName;
-    }
-
-    public async Task<IList<AppUser>> GetUsers() {
-        return await _userManager.GetUsersInRoleAsync("User");
-    }
-
-    public async Task<AppUser?> GetAccountById(string userId) {
-        return await _userManager.FindByIdAsync(userId);
-    }
-
     public async Task<AppUser?> GetAccountByName(string userName) {
         return await _userManager.FindByNameAsync(userName);
     }
 
-    public async Task<AppUser?> GetTextOwner(string textId) {
-        return (await _context.Texts
-            .Include(text => text.Owner)
-            .FirstOrDefaultAsync(text => text.Id == textId))?.Owner;
+    public async Task<List<AppUser>> GetAllAccounts<T>(int skip,
+        int take,
+        Expression<Func<AppUser, T>> keyOrder,
+        bool isAscending,
+        List<Expression<Func<AppUser, bool>>>? predicates) 
+    {
+        IQueryable<AppUser> users = _context.Users;
+        
+        // Filtering
+        if (predicates != null) {
+            foreach (var predicate in predicates) {
+                users = users.Where(predicate);
+            }
+        }
+        
+        // Ordering
+        users = isAscending ? 
+            users.OrderBy(keyOrder) : 
+            users.OrderByDescending(keyOrder);
+        
+        // Pagination
+        users = users.Skip(skip).Take(take);
+        return await users.Select(u => new AppUser {
+            Id = u.Id,
+            UserName = u.UserName,
+        }).ToListAsync();
     }
 }

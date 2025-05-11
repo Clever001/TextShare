@@ -3,10 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using TextShareApi.Attributes;
 using TextShareApi.Dtos.Accounts;
 using TextShareApi.Dtos.Exception;
+using TextShareApi.Dtos.QueryOptions;
+using TextShareApi.Dtos.QueryOptions.Filters;
+using TextShareApi.Exceptions;
 using TextShareApi.Extensions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;
+using TextShareApi.Models;
 
 namespace TextShareApi.Controllers;
 
@@ -14,15 +18,12 @@ namespace TextShareApi.Controllers;
 [Route("api/accounts")]
 [ApiController]
 public class AccountController : ControllerBase {
-    private readonly IAccountRepository _accountRepository;
     private readonly IAccountService _accountService;
     private readonly ILogger<AccountController> _logger;
 
     public AccountController(IAccountService accountService,
-        IAccountRepository accountRepository,
         ILogger<AccountController> logger) {
         _accountService = accountService;
-        _accountRepository = accountRepository;
         _logger = logger;
     }
 
@@ -42,11 +43,7 @@ public class AccountController : ControllerBase {
 
         var (user, token) = result.Value;
         
-        return Ok(new UserWithTokenDto {
-            UserName = user.UserName,
-            Email = user.Email,
-            Token = token
-        });
+        return Ok(user.ToUserWithTokenDto(token));
     }
 
     [HttpPost("login")]
@@ -57,19 +54,17 @@ public class AccountController : ControllerBase {
 
         var (user, token) = result.Value;
         
-        return Ok(new UserWithTokenDto {
-            UserName = user.UserName,
-            Email = user.Email,
-            Token = token
-        });
+        return Ok(user.ToUserWithTokenDto(token));
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get() {
-        // TODO: Добавить распределение по страницам
-        var users = await _accountRepository.GetUsers();
+    public async Task<IActionResult> Get([FromQuery] PaginationDto pagination,
+        [FromQuery] string? userName) {
+       
+        var result = await _accountService.GetUsers(pagination, userName);
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
         
-        return Ok(users.Select(u => u.ToUserWithoutTokenDto()).ToArray());
+        return Ok(result.Value.Select(u => u.ToUserWithoutTokenDto()).ToList());
     }
 
     private bool IsEmail(string input) {

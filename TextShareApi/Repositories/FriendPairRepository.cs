@@ -44,6 +44,36 @@ public class FriendPairRepository : IFriendPairRepository {
             .FirstOrDefaultAsync(p => p.FirstUserId == firstUserId && p.SecondUserId == secondUserId);
     }
 
+    public Task<List<FriendPair>> GetFriendPairs<T>(int skip,
+        int take,
+        Expression<Func<FriendPair, T>> keyOrder,
+        bool isAscending,
+        List<Expression<Func<FriendPair, bool>>>? predicates,
+        bool includeSender,
+        bool includeRecipient) 
+    {
+        IQueryable<FriendPair> pairs = _context.FriendPairs;
+        if (includeSender) pairs = pairs.Include(p => p.FirstUser);
+        if (includeRecipient) pairs = pairs.Include(p => p.SecondUser);
+        
+        // Filtering
+        if (predicates != null) {
+            foreach (var predicate in predicates) {
+                pairs = pairs.Where(predicate);
+            }
+        }
+        
+        // Ordering
+        pairs = isAscending ? 
+            pairs.OrderBy(keyOrder) : 
+            pairs.OrderByDescending(keyOrder);
+        
+        // Pagination
+        pairs = pairs.Skip(skip).Take(take);
+        
+        return pairs.ToListAsync();
+    }
+
     public async Task<List<FriendPair>> GetFriendPairs(Expression<Func<FriendPair, bool>> predicate) {
         return await _context.FriendPairs
             .Include(p => p.SecondUser)

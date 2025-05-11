@@ -1,4 +1,4 @@
-namespace TextShareApi.Models.Enums;
+namespace TextShareApi.Dtos.Enums;
 
 public enum SecurityCheckResult {
     Allowed,

@@ -31,12 +31,30 @@ public class FriendRequestRepository : IFriendRequestRepository {
             .FirstOrDefaultAsync(r => r.SenderId == senderId && r.RecipientId == recipientId);
     }
 
-    public async Task<List<FriendRequest>> GetFriendRequests(Expression<Func<FriendRequest, bool>> predicate) {
-        return await _context.FriendRequests
+    public async Task<List<FriendRequest>> GetFriendRequests<T>(int skip,
+        int take,
+        Expression<Func<FriendRequest, T>> keyOrder,
+        bool isAscending,
+        List<Expression<Func<FriendRequest, bool>>>? predicates) 
+    {
+        IQueryable<FriendRequest> requests = _context.FriendRequests
             .Include(r => r.Sender)
-            .Include(r => r.Recipient)
-            .Where(predicate)
-            .ToListAsync();
+            .Include(r => r.Recipient);
+        
+        // Filtering
+        if (predicates != null) {
+            foreach (var predicate in predicates) {
+                requests = requests.Where(predicate);
+            }
+        }
+        
+        // Ordering
+        requests = isAscending ? requests.OrderBy(keyOrder) : requests.OrderByDescending(keyOrder);
+        
+        // Pagination
+        requests = requests.Skip(skip).Take(take);
+        
+        return await requests.ToListAsync();
     }
 
     public async Task<FriendRequest?> UpdateRequest(string senderId, string recipientId, bool isAccepted) {

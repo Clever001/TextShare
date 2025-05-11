@@ -21,7 +21,7 @@ public class TextRepository : ITextRepository {
         var oldTags = await _context.Tags.Where(tag => textTags.Contains(tag)).ToListAsync();
         var newTags = textTags.Except(oldTags).ToList();
         await _context.Tags.AddRangeAsync(newTags);*/
-        
+
         await _context.Texts.AddAsync(text);
         await _context.TextSecuritySettings.AddAsync(textSecuritySettings);
         await _context.SaveChangesAsync();
@@ -35,17 +35,49 @@ public class TextRepository : ITextRepository {
             .FirstOrDefaultAsync(t => t.Id == textId);
     }
 
-    public async Task<List<Text>> GetTexts(Expression<Func<Text, bool>> predicate, int skipCnt = 0,
-        int? maxCnt = null) {
-        var query = _context.Texts
+    public async Task<List<Text>> GetTexts<T>(int skip,
+        int take,
+        Expression<Func<Text, T>> keyOrder,
+        bool isAscending,
+        List<Expression<Func<Text, bool>>>? predicates) 
+    {
+        IQueryable<Text> texts = _context.Texts
             .Include(t => t.TextSecuritySettings)
             .Include(t => t.Owner)
-            .Include(t => t.Tags)
-            .Where(predicate)
-            .Skip(skipCnt);
-
-        if (maxCnt != null) query = query.Take(maxCnt.Value);
-        return await query.ToListAsync();
+                .ThenInclude(u => u.FriendPairs)
+            .Include(t => t.Tags);
+        
+        // Filtering
+        if (predicates != null) {
+            foreach (var predicate in predicates) {
+                texts = texts.Where(predicate);
+            }
+        }
+        
+        // Ordering
+        texts = isAscending ? 
+            texts.OrderBy(keyOrder) : 
+            texts.OrderByDescending(keyOrder);
+        
+        // Pagination
+        texts = texts.Skip(skip).Take(take);
+        
+        return await texts.Select(t => new Text {
+            Id = t.Id,
+            Title = t.Title,
+            Description = t.Description,
+            Syntax = t.Syntax,
+            Content = "", // No Content
+            CreatedOn = t.CreatedOn,
+            UpdatedOn = t.UpdatedOn,
+            OwnerId = t.OwnerId,
+            Owner = new AppUser {
+                Id = t.OwnerId,
+                UserName = t.Owner.UserName
+            },
+            Tags = t.Tags,
+            TextSecuritySettings = t.TextSecuritySettings
+        }).ToListAsync();
     }
 
     public async Task UpdateText(Text text) {
@@ -60,7 +92,7 @@ public class TextRepository : ITextRepository {
         if (text == null) return false;
 
         var securitySettings = await _context.TextSecuritySettings.FindAsync(textId);
-        
+
         if (securitySettings == null) {
             // Never executed. Text always has Security Settings table.
             _logger.LogError("SecuritySettings does not exist. Cannot delete");
