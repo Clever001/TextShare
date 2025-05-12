@@ -43,6 +43,7 @@ const App = () => {
     }
 
     const Header_onLogOutClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        Cookies.remove("userId");
         Cookies.remove("userName");
         Cookies.remove("email");
         Cookies.remove("token");

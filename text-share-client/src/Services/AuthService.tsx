@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse, AxiosStatic } from "axios";
-import { LoginDto, RegisterDto, UserWithTokenDto } from "../../Dtos"
+import { LoginDto, RegisterDto, UserWithTokenDto } from "../Dtos"
 import { handleApiError } from "./ErrorHandler";
+import { translateExceptions } from "./TranslatorService";
 
 
 export const RegisterAPI = async (register: RegisterDto) : Promise<AxiosResponse<UserWithTokenDto, any> | string[]> => {
@@ -13,7 +14,7 @@ export const RegisterAPI = async (register: RegisterDto) : Promise<AxiosResponse
         });
         return data;
     } catch (error) {
-        return handleApiError(error as AxiosError);
+        return translateExceptions(handleApiError(error as Error));
     }
 }
 
@@ -27,6 +28,6 @@ export const LoginAPI = async (login: LoginDto) : Promise<AxiosResponse<UserWith
         });
         return data;
     } catch (error) {
-        return handleApiError(error as AxiosError);
+        return translateExceptions(handleApiError(error as Error));
     }
 }

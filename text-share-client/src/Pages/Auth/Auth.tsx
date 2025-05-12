@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import './Auth.css';
-import { LoginAPI, RegisterAPI } from '../Services/AuthService';
+import { LoginAPI, RegisterAPI } from '../../Services/AuthService';
 import { UserWithTokenDto } from '../../Dtos';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router';
@@ -81,8 +81,7 @@ const Auth = ({}: Props) => {
     }
 
     const user = result.data as UserWithTokenDto;
-    console.log(user);
-    console.log(user.userName);
+    Cookies.set("userId", user.id, {expires:1})
     Cookies.set("userName", user.userName, {expires:1});
     Cookies.set("email", user.email, {expires:1});
     Cookies.set("token", user.token, {expires:1});
@@ -120,7 +119,7 @@ const Auth = ({}: Props) => {
     }
 
     var user = result.data as UserWithTokenDto;
-    console.log(user);
+    Cookies.set("userId", user.id, {expires:1})
     Cookies.set("userName", user.userName, {expires:1});
     Cookies.set("email", user.email, {expires:1});
     Cookies.set("token", user.token, {expires:1});
