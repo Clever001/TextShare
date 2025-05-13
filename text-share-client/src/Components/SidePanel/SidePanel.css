@@ -1,0 +1,25 @@
+.side-panel .title {
+    font-size:18px;
+    font-weight:500;
+    width:100%;
+    border-bottom:1px solid #BABABA;
+    margin-top: 60px;
+}
+
+.side-panel a {
+    color: #000;
+    display: flex;
+    flex-direction:column;
+}
+
+.side-panel .text {
+    margin: 5px 0;
+}
+
+.side-panel p {
+    margin:  0;
+}
+
+.side-panel a p:last-child {
+    color: #9A9A9A;
+}

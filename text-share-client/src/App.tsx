@@ -4,6 +4,7 @@ import './App.css';
 import Header from './Components/Header/Header';
 import Cookies from 'js-cookie';
 import { AuthContext } from './Context/AuthContext';
+import SidePanel from './Components/SidePanel/SidePanel';
 
 const App = () => {
     // Global
@@ -88,8 +89,8 @@ const App = () => {
                         <div className="col-lg-9 col-12 content">
                             <Outlet />
                         </div>
-                        <div className="col-lg-3 d-none d-md-block side-bar">
-                            Here will be our side-bar!
+                        <div className="col-lg-3 col-12 side-bar">
+                            <SidePanel />
                         </div>
                     </div>
                 </div>
