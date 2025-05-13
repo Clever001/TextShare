@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import './Auth.css';
-import { LoginAPI, RegisterAPI } from '../../Services/AuthService';
+import { LoginAPI, RegisterAPI } from '../../Services/API/AuthService';
 import { UserWithTokenDto } from '../../Dtos';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router';

@@ -1,0 +1,83 @@
+.text-search {
+    margin-top:60px;
+}
+
+.text-search .title {
+    font-size:18px;
+    font-weight:500;
+    width:100%;
+    border-bottom:1px solid #BABABA;
+}
+
+.text-search .header > div {
+    margin: 15px 0;
+}
+
+.text-search .search-bar input {
+    width:90%!important;
+}
+
+.text-search input, .text-search select {
+    outline:none;
+    border:1px solid #BABABA;
+    border-radius:5px;
+}
+
+.text-search input:hover, .text-search select:hover {
+    border-color: #000;
+}
+
+.text-search .search-bar button {
+    background-color: #BABABA;
+    color: #fff;
+    border:none;
+}
+
+.text-search .search-bar, .text-search .filters {
+    width: 65%;
+    min-width: 320px;
+}
+
+.text-search table {
+    width: 100%;
+}
+
+.text-search table td {
+    padding:4px 0;
+}
+
+.text-search table .col1 {
+    width: 70%;
+}
+.text-search table .col1 * {
+    width: 100%;
+}
+
+.text-search table .col2 > * {
+    width: 100%;
+}
+
+.text-search p {
+    margin: auto 0;
+}
+
+.text-search .filters {
+    border: 1px solid #BABABA;
+    border-radius:5px;
+    padding:7px;
+}
+
+/* Результаты поиска */
+.text-search .result {
+    margin-top:30px;
+}
+
+.text-search .result thead td {
+    border-bottom:1px solid #BABABA;
+}
+
+@media (max-width: 991px) {
+    .text-search .result table, .text-search .pagination-controls {
+        font-size:14px;
+    }
+}

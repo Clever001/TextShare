@@ -27,7 +27,7 @@ const App = () => {
 
     const header_onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        navigate(`/search?query=${encodeURIComponent(header_query)}`);
+        navigate(`/?query=${encodeURIComponent(header_query)}`);
     }
 
     const header_onUserClick = (e: React.FormEvent<HTMLFormElement>) => {
@@ -85,10 +85,10 @@ const App = () => {
             <div className="container-fluid">
                 <div className="container">
                     <div className="row">
-                        <div className="col-md-9 col-12 content">
+                        <div className="col-lg-9 col-12 content">
                             <Outlet />
                         </div>
-                        <div className="col-md-3 d-none d-md-block side-bar">
+                        <div className="col-lg-3 d-none d-md-block side-bar">
                             Here will be our side-bar!
                         </div>
                     </div>

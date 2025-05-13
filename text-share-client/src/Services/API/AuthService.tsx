@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse, AxiosStatic } from "axios";
-import { LoginDto, RegisterDto, UserWithTokenDto } from "../Dtos"
-import { handleApiError } from "./ErrorHandler";
-import { translateExceptions } from "./TranslatorService";
+import { LoginDto, RegisterDto, UserWithTokenDto } from "../../Dtos"
+import { handleApiError } from "../ErrorHandler";
+import { translateExceptions } from "../TranslatorService";
 
 
 export const RegisterAPI = async (register: RegisterDto) : Promise<AxiosResponse<UserWithTokenDto, any> | string[]> => {
