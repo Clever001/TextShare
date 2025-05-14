@@ -1,0 +1,77 @@
+.reader {
+    margin-top: 60px;
+    color: #000;
+}
+
+.reader .header {
+    justify-content: space-between;
+}
+
+.reader .header, 
+.reader .header .info,
+.reader .header .sub-info {
+    display: flex;
+    flex-direction: row;
+}
+
+
+.reader .sub-info a {
+    color:#DA2225;
+}
+
+.reader .text-type-info * {
+    margin: 0;
+}
+
+.reader .info .title {
+    font-size:18px;
+}
+
+.reader .info {
+    width:90%;
+}
+
+.reader .header {
+    width: 100%;
+}
+
+.reader .text-type-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left:5px;
+}
+
+/* .reader .text-type-info > * {
+    margin: auto 0;
+} */
+
+.reader .info img {
+    width: 40px;
+    height: 40px;
+    margin: auto 0;
+}
+
+.reader .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    height:50px;
+    width: 50px;
+}
+
+.reader .actions a {
+    height: 20px;
+    width: 20px;
+}
+
+.reader .sub-info > * {
+    margin-right: 5px;
+}
+
+.reader .text textarea {
+    margin-top:4px;
+    width: 100%;
+    min-height:350px;
+    outline:none;
+}

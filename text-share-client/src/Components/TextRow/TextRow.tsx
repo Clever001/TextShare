@@ -16,22 +16,22 @@ const TextRow = ({ text, getIcon }: Props) => {
   return (
     <tr>
       <td>
-        <Link to={`/text/${encodeURIComponent(text.title)}`}>{getIcon(text.accessType)}{text.title}</Link>
+        <Link to={`/reader/${encodeURIComponent(text.id)}`}>{getIcon(text.accessType)}{text.title}</Link>
       </td>
       <td>
-        <Link to={`/text/${encodeURIComponent(text.title)}`}>{text.ownerName}</Link>
+        <Link to={`/reader/${encodeURIComponent(text.id)}`}>{text.ownerName}</Link>
       </td>
       <td>
-        <Link to={`/text/${encodeURIComponent(text.title)}`}>{dateToString(text.createdOn)}</Link>
+        <Link to={`/reader/${encodeURIComponent(text.id)}`}>{dateToString(text.createdOn)}</Link>
       </td>
       <td>
-        <Link to={`/text/${encodeURIComponent(text.title)}`}>{text.tags.slice(0, 3).join(" ")} {text.tags.length > 3 && "..."}</Link>
+        <Link to={`/reader/${encodeURIComponent(text.id)}`}>{text.tags.slice(0, 3).join(" ")} {text.tags.length > 3 && "..."}</Link>
       </td>
       <td>
-        <Link to={`/text/${encodeURIComponent(text.title)}`}>{text.syntax}</Link>
+        <Link to={`/reader/${encodeURIComponent(text.id)}`}>{text.syntax}</Link>
       </td>
       <td>
-        <Link to={`/text/${encodeURIComponent(text.title)}`}>{text.hasPassword ? (<p>есть</p>) : (<p>нету</p>)}</Link>
+        <Link to={`/reader/${encodeURIComponent(text.id)}`}>{text.hasPassword ? (<p>есть</p>) : (<p>нету</p>)}</Link>
       </td>
     </tr>
   )

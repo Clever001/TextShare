@@ -29,6 +29,10 @@ export const handleApiError = (error: Error): string[] => {
             return ["Токен невалиден."]
         }
 
+        if (status == 404) {
+            return ["Ресурс не был найден."]
+        }
+
         if (status === 500) {
             return ["Ошибка работы сервера."];
         }

@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { PaginatedResponseDto, PaginationDto, SortDto, TextFilterDto, TextWithoutContentDto } from '../../Dtos'
 import { AuthContext } from '../../Context/AuthContext'
 import Cookies from 'js-cookie'
-import { SearchTextsAPI } from '../../Services/API/TextSearchService'
+import { SearchSocietyTextsAPI, SearchTextsAPI } from '../../Services/API/TextSearchService'
 
 type Props = {}
 
@@ -18,6 +18,7 @@ const SidePanel = (props: Props) => {
   const navigate = useNavigate();
 
   const [myTexts, setMyTexts] = useState<TextWithoutContentDto[]>([]);
+  const [societyTexts, setSocietyTexts] = useState<TextWithoutContentDto[]>([]);
 
   const getMyTexts = async () => {
     if (validAuth) {
@@ -67,6 +68,26 @@ const SidePanel = (props: Props) => {
   useEffect(() => {
     getMyTexts();
   }, [validAuth]);
+
+  const getSocietyTexts = async () => {
+    const result = await SearchSocietyTextsAPI();
+
+    if (result.length == 0) {
+      setSocietyTexts([])
+      return
+    }
+
+    if (typeof(result[0]) === "string") {
+      console.log(result)
+      return
+    }
+
+    setSocietyTexts(result as TextWithoutContentDto[])
+  }
+
+  useEffect(() => {
+    getSocietyTexts();
+  }, []);
 
   const russianPluralWords : {[Key: string] : string[]} = {
     'year': ['лет', 'года', 'год'],
@@ -134,7 +155,7 @@ const SidePanel = (props: Props) => {
           <div className="text">
             {myTexts.map(t => {
               return (
-                <Link to={"/reader/" + encodeURIComponent(t.title)}>
+                <Link to={"/reader/" + encodeURIComponent(t.id)}>
                   <p>{t.title}</p>
                   <p>{(t.syntax !== "") ? t.syntax : "text"} | {getTimeAgo(t.createdOn)} | {accessTypes[t.accessType]}</p>
                 </Link>
@@ -147,35 +168,15 @@ const SidePanel = (props: Props) => {
       <div className="society-texts">
         <div className="title">Тексты сообщества</div>
         <div className="text">
-          <Link to="/reader">
-            <p>Пример заголовка текста</p>
-            <p>C++ | 3 часа назад | Публичный</p>
-          </Link>
-        </div>
-        <div className="text">
-          <Link to="/reader">
-            <p>Пример заголовка текста</p>
-            <p>Rust | 4 часа назад | С авторизацией</p>
-          </Link>
-        </div>
-        <div className="text">
-          <Link to="/reader">
-            <p>Пример заголовка текста</p>
-            <p>C# | 1 день назад | Публичный</p>
-          </Link>
-        </div>
-        <div className="text">
-          <Link to="/reader">
-            <p>Пример заголовка текста</p>
-            <p>Go | 1 день назад | С авторизацией</p>
-          </Link>
-        </div>
-        <div className="text">
-          <Link to="/reader">
-            <p>Пример заголовка текста</p>
-            <p>Pascal | 2 дня назад | Публичный</p>
-          </Link>
-        </div>
+            {societyTexts.map(t => {
+              return (
+                <Link to={"/reader/" + encodeURIComponent(t.id)}>
+                  <p>{t.title}</p>
+                  <p>{(t.syntax !== "") ? t.syntax : "text"} | {getTimeAgo(t.createdOn)} | {accessTypes[t.accessType]}</p>
+                </Link>
+              )
+            })}
+          </div>
       </div>
     </div>
   )

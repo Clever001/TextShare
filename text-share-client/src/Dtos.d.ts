@@ -61,6 +61,34 @@ export interface PaginatedResponseDto<T> {
     pageSize: number
 }
 
+export interface TextWithContentInput {
+    id: string,
+    title: string,
+    description: string,
+    syntax: string,
+    tags: string[],
+    content: string,
+    createdOn: string,
+    updatedOn: string | null,
+    ownerName: string,
+    accessType: string,
+    hasPassword: boolean
+}
+
+export interface TextWithContentDto {
+    id: string,
+    title: string,
+    description: string,
+    syntax: string,
+    tags: string[],
+    content: string,
+    createdOn: Date,
+    updatedOn: Date | null,
+    ownerName: string,
+    accessType: string,
+    hasPassword: boolean
+}
+
 // QueryOptions
 
 export interface PaginationDto {

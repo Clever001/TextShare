@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { PaginatedResponseDto, PaginationDto, SortDto, TextFilterDto, TextWithoutContentDto, TextWithoutContentInput } from "../../Dtos";
+import { PaginatedResponseDto, PaginationDto, SortDto, TextFilterDto, TextWithContentDto, TextWithContentInput, TextWithoutContentDto, TextWithoutContentInput } from "../../Dtos";
 import { translateExceptions } from "../TranslatorService";
 import { handleApiError } from "../ErrorHandler";
 
@@ -51,6 +51,65 @@ export const SearchTextsAPI = async (pagination: PaginationDto, sort: SortDto, f
         // console.log(data);
         // console.log(convertedData);
         return convertedData
+    } catch (error) {
+        return translateExceptions(handleApiError(error as Error));
+    }
+}
+
+export const SearchSocietyTextsAPI = async () : Promise<TextWithoutContentDto[] | string[]> => {
+    try {
+        const url = process.env.REACT_APP_SERVER_URL_PATH + "api/text/latests"
+
+        const data = (await axios.get<TextWithoutContentInput[]>(url)).data as TextWithoutContentInput[]
+        const convertedData: TextWithoutContentDto[] = data.map(t => {
+            return {
+                id: t.id,
+                title: t.title,
+                description: t.description,
+                syntax: t.syntax,
+                tags: t.tags,
+                createdOn: new Date(t.createdOn),
+                updatedOn: t.updatedOn ? new Date(t.updatedOn) : null,
+                ownerName: t.ownerName,
+                accessType: t.accessType,
+                hasPassword: t.hasPassword
+            }
+        })
+        
+        return convertedData
+    } catch (error) {
+        return translateExceptions(handleApiError(error as Error));
+    }
+}
+
+export const SearchTextById = async (id: string, token: string | null) : Promise<TextWithContentDto | string[]> => {
+    try {
+        const url = process.env.REACT_APP_SERVER_URL_PATH + "api/text/" + id;
+
+        const response = token ? await axios.get<TextWithContentInput>(url, {
+                headers: {
+                    "Authorization" : `Bearer ${token}`
+                }
+            }) : await axios.get<TextWithContentInput>(url);
+            
+
+        const data = response.data as TextWithContentInput;
+
+        const convertedData: TextWithContentDto = {
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            syntax: data.syntax,
+            tags: data.tags,
+            content: data.content,
+            createdOn: new Date(data.createdOn),
+            updatedOn: data.updatedOn ? new Date(data.updatedOn) : null,
+            ownerName: data.ownerName,
+            accessType: data.accessType,
+            hasPassword: data.hasPassword
+        }
+
+        return convertedData;
     } catch (error) {
         return translateExceptions(handleApiError(error as Error));
     }
