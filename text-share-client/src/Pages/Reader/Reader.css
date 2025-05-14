@@ -69,9 +69,9 @@
     margin-right: 5px;
 }
 
-.reader .text textarea {
+.reader .text content {
     margin-top:4px;
     width: 100%;
     min-height:350px;
-    outline:none;
+    border:1px solid #BABABA;
 }

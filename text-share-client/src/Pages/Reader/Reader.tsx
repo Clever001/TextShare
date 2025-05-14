@@ -9,14 +9,17 @@ import './Reader.css'
 type Props = {}
 
 const Reader = (props: Props) => {
-  const {textId} = useParams();
+  const editorRef = useRef<HTMLDivElement>(null);
+  const editorInstance = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+
+  const { textId } = useParams();
   const [error, setError] = useState<string | null>(null);
   const [text, setText] = useState<TextWithContentDto | null>(null);
 
-  const getText = async() : Promise<TextWithContentDto | null> => {
+  const getText = async (): Promise<TextWithContentDto | null> => {
     const token: string | null = Cookies.get('token') ?? null;
 
-    if (typeof(textId) === "undefined") {
+    if (typeof (textId) === "undefined") {
       setError('Текста c таким id нет!');
       setText(null);
       return null;
@@ -36,16 +39,39 @@ const Reader = (props: Props) => {
   }
 
   useEffect(() => {
-    getText();
+    let isMounted = true;
+
+    const initializeEditor = async () => {
+      const text = await getText();
+      if (!text || !isMounted) {
+        return;
+      }
+
+      if (editorRef.current && !editorInstance.current) {
+        editorInstance.current = monaco.editor.create(editorRef.current, {
+          value: text.content,
+          language: 'python',
+          theme: 'vs',
+          readOnly: true,
+        });
+      }
+    };
+
+    initializeEditor();
+
+    return () => {
+      isMounted = false;
+      editorInstance.current?.dispose(); // Освобождаем ресурсы
+    };
   }, [textId]);
 
-  const convertDate = (d: Date) :string => {
+  const convertDate = (d: Date): string => {
     return `${d.getDate()}.${d.getMonth()}.${d.getFullYear()}`;
   }
 
   return (
     <div className="reader">
-      {text ? 
+      {text ?
         <div className="text">
           <div className="header">
             <div className="info">
@@ -66,9 +92,9 @@ const Reader = (props: Props) => {
               <Link to="/"><img src="img/delete_black.svg" alt="delete" /></Link>
             </div>
           </div>
-          <textarea className="content" value={text.content}/>
+          <div className="content" ref={editorRef} style={{ width: '100%', height: '400px' }} />
         </div>
-      :
+        :
         <div className="error">{error}</div>
       }
     </div>

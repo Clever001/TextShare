@@ -16,7 +16,6 @@
     "axios": "^1.9.0",
     "dotenv": "^16.5.0",
     "js-cookie": "^3.0.5",
-    "monaco-editor": "^0.52.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router": "^7.5.3",
@@ -26,10 +25,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test"
   },
   "eslintConfig": {
     "extends": [
@@ -50,6 +48,9 @@
     ]
   },
   "devDependencies": {
-    "@types/js-cookie": "^3.0.6"
+    "@types/js-cookie": "^3.0.6",
+    "monaco-editor": "^0.52.2",
+    "monaco-editor-webpack-plugin": "^7.1.0",
+    "react-app-rewired": "^2.2.1"
   }
 }
