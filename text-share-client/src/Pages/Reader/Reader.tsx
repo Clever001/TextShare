@@ -1,11 +1,11 @@
-import Cookies from 'js-cookie';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { SearchTextByIdAPI } from '../../Services/API/TextAPIService';
 import { TextWithContentDto } from '../../Dtos';
 import * as monaco from 'monaco-editor';
-import './Reader.css'
+import './Reader.css';
 import { isExceptionDto } from '../../Services/ErrorHandler';
+import Cookies from 'js-cookie';
 
 type Props = {};
 
@@ -16,18 +16,20 @@ const Reader = (props: Props) => {
   const { textId } = useParams();
   const [error, setError] = useState<string | null>(null);
   const [text, setText] = useState<TextWithContentDto | null>(null);
-  
+  const [password, setPassword] = useState<string>("");
+  const [isPasswordRequired, setIsPasswordRequired] = useState<boolean>(false);
 
+  // Получение текста с сервера
   const getText = async (): Promise<TextWithContentDto | null> => {
     const token: string | null = Cookies.get('token') ?? null;
 
-    if (typeof (textId) === "undefined") {
-      setError('Текста c таким id нет!');
+    if (typeof textId === "undefined") {
+      setError('Текста с таким id нет!');
       setText(null);
       return null;
     }
 
-    const result = await SearchTextByIdAPI(textId, token, null);
+    const result = await SearchTextByIdAPI(textId, token, password);
 
     if (isExceptionDto(result)) {
       switch (result.httpCode) {
@@ -38,13 +40,13 @@ const Reader = (props: Props) => {
           setError("У вас недостаточно прав для доступа к данному тексту.");
           break;
         case 400: // Bad Request (не был предоставлен пароль)
+          setIsPasswordRequired(true);
           setError("Заполните, пожалуйста, пароль для доступа к данному тексту.");
           break;
         default:
-          console.log("http code:", result.httpCode);
           setError(result.description);
           break;
-        }
+      }
       setText(null);
       return null;
     }
@@ -52,53 +54,119 @@ const Reader = (props: Props) => {
     setError(null);
     setText(result);
     return result;
-  }
+  };
 
-  useEffect(() => {
-    let isMounted = true;
+  // Обработка ввода пароля
+  const handlePasswordSubmit = async () => {
+    const token: string | null = Cookies.get('token') ?? null;
 
-    const initializeEditor = async () => {
-      const text = await getText();
-      if (!text || text.content == "" || !isMounted) {
-        return;
+    if (typeof textId === "undefined") {
+      setError('Текста с таким id нет!');
+      setText(null);
+      return;
+    }
+
+    const result = await SearchTextByIdAPI(textId, token, password);
+
+    if (isExceptionDto(result)) {
+      if (result.httpCode === 400) {
+        setError("Неверный пароль. Попробуйте снова.");
+      } else {
+        setError(result.description);
       }
+      return;
+    }
 
+    setIsPasswordRequired(false);
+    setError(null);
+    setText(result);
+
+    // Инициализируем редактор после успешной загрузки текста
+    initializeEditor(result);
+  };
+
+  // Инициализация Monaco Editor
+  const initializeEditor = async (loadedText: TextWithContentDto) => {
+    if (!editorRef.current) {
+      for (let i = 0; i != 20; i++) {
+        console.log("Жду", i);
+        await new Promise(resolve => setTimeout(resolve, 100));
+        if (editorRef.current) break;
+      }
+    }
+
+    console.log("!editorRef.current", !editorRef.current)
+    console.log("!loadedText", !loadedText);
+
+    if (!editorRef.current || !loadedText) return;
+
+    if (editorInstance.current) {
+      editorInstance.current.dispose(); // Уничтожаем предыдущий экземпляр
+      editorInstance.current = null;
+    }
+
+    editorInstance.current = monaco.editor.create(editorRef.current, {
+      value: loadedText.content,
+      language: loadedText.syntax ? loadedText.syntax.toLowerCase() : "plaintext",
+      theme: 'vs',
+      readOnly: true,
+    });
+  };
+
+  // Обновление содержимого редактора при изменении текста
+  useEffect(() => {
+    const updateText = async () => {
       if (!editorRef.current) {
         for (let i = 0; i != 20; i++) {
           console.log("Жду", i);
-          await new Promise( resolve => setTimeout(resolve, 100) );
+          await new Promise(resolve => setTimeout(resolve, 100));
           if (editorRef.current) break;
         }
       }
 
-      if (editorRef.current && !editorInstance.current) {
-        editorInstance.current = monaco.editor.create(editorRef.current, {
-          value: text.content,
-          language: text.syntax.toLowerCase(),
-          theme: 'vs',
-          readOnly: true,
-        });
-      } else {
-        console.log("editorRef.current", editorRef.current);
-        console.log("!editorInstance.current", !editorInstance.current)
+      if (text && editorInstance.current) {
+        const model = editorInstance.current.getModel();
+        if (model) {
+          model.setValue(text.content);
+          monaco.editor.setModelLanguage(model, text.syntax ? text.syntax.toLowerCase() : "plaintext");
+        }
+      }
+    }
+
+  }, [text]);
+
+  // Загрузка текста и инициализация редактора
+  useEffect(() => {
+    let isMounted = true;
+    var pwdRequired = isPasswordRequired;
+
+    const loadTextAndInitializeEditor = async () => {
+      const loadedText = await getText();
+      if (!loadedText || !isMounted) return;
+
+      if (!pwdRequired) {
+        initializeEditor(loadedText);
       }
     };
 
-    initializeEditor();
+    setIsPasswordRequired(false); // Сбрасываем флаг при изменении textId
+    pwdRequired = false;
+    loadTextAndInitializeEditor();
 
     return () => {
       isMounted = false;
-      editorInstance.current?.dispose();
+      editorInstance.current?.dispose(); // Уничтожаем экземпляр при размонтировании
       editorInstance.current = null;
     };
   }, [textId]);
 
+  // Функция для преобразования даты
   const convertDate = (d: Date): string => {
-    return `${d.getDate()}.${d.getMonth()}.${d.getFullYear()}`;
-  }
+    return `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
+  };
 
+  // Логика копирования текста
   const [isCopied, setIsCopied] = useState<boolean>(false);
-
   const onCopy = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     if (text) {
       try {
@@ -112,11 +180,26 @@ const Reader = (props: Props) => {
         console.error("Ошибка при копировании текста:", error);
       }
     }
-  }
+  };
 
   return (
     <div className="reader">
-      {text ?
+      {/* Форма ввода пароля */}
+      {isPasswordRequired && (
+        <div className="password-prompt">
+          <p>Введите пароль для доступа к тексту:</p>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Пароль"
+          />
+          <button onClick={handlePasswordSubmit}>Подтвердить</button>
+        </div>
+      )}
+
+      {/* Отображение текста */}
+      {text ? (
         <div className="text">
           <div className="header">
             <div className="info">
@@ -124,7 +207,9 @@ const Reader = (props: Props) => {
               <div className="text-type-info">
                 <p className="title">{text.title}</p>
                 <div className="sub-info">
-                  <Link to={`/profile/${encodeURIComponent(text.ownerName)}`}><p className="owner-name">{text.ownerName}</p></Link>
+                  <Link to={`/profile/${encodeURIComponent(text.ownerName)}`}>
+                    <p className="owner-name">{text.ownerName}</p>
+                  </Link>
                   <p className="date">{convertDate(text.createdOn)}</p>
                   <p className="syntax">{text.syntax}</p>
                 </div>
@@ -132,24 +217,24 @@ const Reader = (props: Props) => {
             </div>
             <div className="actions">
               <a onClick={onCopy} className="copy-button">
-                  <img src="img/copy_black.svg" alt="copy" />
-                  {isCopied && (
-                      <span className="copy-notification">Текст скопирован!</span>
-                  )}
+                <img src="img/copy_black.svg" alt="copy" />
+                {isCopied && (
+                  <span className="copy-notification">Текст скопирован!</span>
+                )}
               </a>
               <Link to={`/editor/${text.id}`}><img src="img/edit_black.svg" alt="edit" /></Link>
               <Link to="/"><img src="img/download_black.svg" alt="download" /></Link>
               <Link to="/"><img src="img/delete_black.svg" alt="delete" /></Link>
             </div>
           </div>
-          {text.content == "" &&  "Текст пуст! Автор пока что ничего сюда не добавил."}
+          {text.content == "" && "Текст пуст! Автор пока что ничего сюда не добавил."}
           <div className="content" ref={editorRef} style={{ height: '80vh' }} />
         </div>
-        :
+      ) : (
         <div className="error">{error}</div>
-      }
+      )}
     </div>
-  )
-}
+  );
+};
 
 export default Reader;
