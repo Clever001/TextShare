@@ -1,3 +1,5 @@
+import { ExceptionDto } from "../Dtos";
+
 let staticTranslates : Map<string, string> = new Map<string, string>();
 
 staticTranslates.set("The Password field is required.", "Пароль не может быть пустым");
@@ -23,22 +25,28 @@ let templateTranslates : {[Key: string] : string} = {};
 templateTranslates["Username '{0}' is already taken."] = "Имя '{0}' уже используется другим пользователем";
 templateTranslates["Email '{0}' is already taken."] = "Почта '{0}' уже используется другим пользователем";
 
-export const translateException = (e : string) : string => {
-    if (staticTranslates.has(e)) {
-        return staticTranslates.get(e) ?? "Unexpected error occured.";
-    }
-
-    for (const [template, translation] of Object.entries(templateTranslates)) {
-        const regex = new RegExp(`^${template.replace(/\{(\d+)\}/g, "(.+)")}$`);
-        const match = e.match(regex);
-        if (match) {
-            return translation.replace(/\{(\d+)\}/g, (_, index) => match[parseInt(index) + 1]);
-        }
+export const translateException = (e : ExceptionDto) : ExceptionDto => {
+    e.description = translateString(e.description);
+    if (e.details) {
+        e.details = e.details.map(s => translateString(s))
     }
 
     return e;
 }
 
-export const translateExceptions = (e: string[]) : string[] => {
-    return e.map(translateException);
+const translateString = (s: string) : string => {
+    if (staticTranslates.has(s)) {
+        return staticTranslates.get(s) ?? "Неизвестная ошибка во время перевода строки. " + 
+            "Перевод был найден, но его не удалось получить.";
+    }
+
+    for (const [template, translation] of Object.entries(templateTranslates)) {
+        const regex = new RegExp(`^${template.replace(/\{(\d+)\}/g, "(.+)")}$`);
+        const match = s.match(regex);
+        if (match) {
+            return translation.replace(/\{(\d+)\}/g, (_, index) => match[parseInt(index) + 1]);
+        }
+    }
+
+    return s
 }

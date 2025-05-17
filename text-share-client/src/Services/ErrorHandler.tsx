@@ -1,42 +1,45 @@
 import axios, { AxiosError } from "axios";
-import { ExceptionDto } from "../Dtos";
+import { ExceptionDto, ExceptionInput } from "../Dtos";
 
-export const handleApiError = (error: Error): string[] => {
+export const handleApiError = (error: Error): ExceptionDto => {
     if (!axios.isAxiosError(error)) {
-        return ["Неизвестная ошибка."];
+        return {
+            httpCode: -1,
+            apiCode: "NonAxiosError",
+            description: "Ошибка не связана с работой API.",
+            details: null
+        }
     }
 
     if (error.response) {
         const status = error.response.status;
 
-        if (status === 400) {
-            const responseData = error.response.data as ExceptionDto;
+        const responseData = error.response.data as ExceptionInput;
 
-            if (responseData.details) {
-                return responseData.details;
-            }
-
-            return [responseData.description];
-        }
-
-        if (status === 401) {
-            const responseData = error.response.data as ExceptionDto;
-
-            return [responseData.description];
-        }
-
-        if (status == 403) {
-            return ["Токен невалиден."]
-        }
-
-        if (status == 404) {
-            return ["Ресурс не был найден."]
-        }
-
-        if (status === 500) {
-            return ["Ошибка работы сервера."];
+        return {
+            httpCode: status,
+            apiCode: responseData.code,
+            description: responseData.description,
+            details: responseData.details
         }
     }
 
-    return ["Ошибка подключения к серверу."];
+    return {
+        httpCode: 503,
+        apiCode: "ServiceUnavailable",
+        description: "",
+        details: null
+    }
+};
+
+export const isExceptionDto = (obj: any): obj is ExceptionDto => {
+    return (
+        typeof obj.httpCode === "number" &&
+        typeof obj.apiCode === "string" &&
+        typeof obj.description === "string" &&
+        (
+            (Array.isArray(obj.details) && obj.details.every((item: any) => typeof item === "string")) ||
+            obj.details === null
+        )
+    );
 };

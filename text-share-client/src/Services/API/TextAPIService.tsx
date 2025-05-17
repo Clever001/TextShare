@@ -1,9 +1,9 @@
 import axios, { AxiosResponse } from "axios";
-import { PaginatedResponseDto, PaginationDto, SortDto, TextFilterDto, TextWithContentDto, TextWithContentInput, TextWithoutContentDto, TextWithoutContentInput } from "../../Dtos";
-import { translateExceptions } from "../TranslatorService";
+import { ExceptionDto, PaginatedResponseDto, PaginationDto, SortDto, TextFilterDto, TextWithContentDto, TextWithContentInput, TextWithoutContentDto, TextWithoutContentInput, UpdateTextDto } from "../../Dtos";
 import { handleApiError } from "../ErrorHandler";
+import { translateException } from "../TranslatorService";
 
-export const SearchTextsAPI = async (pagination: PaginationDto, sort: SortDto, filter: TextFilterDto, token: string | null) : Promise<PaginatedResponseDto<TextWithoutContentDto> | string[]> => {
+export const SearchTextsAPI = async (pagination: PaginationDto, sort: SortDto, filter: TextFilterDto, token: string | null) : Promise<PaginatedResponseDto<TextWithoutContentDto> | ExceptionDto> => {
     try {
         var url = process.env.REACT_APP_SERVER_URL_PATH + "api/text" +
             `?pageNumber=${pagination.pageNumber}&pageSize=${pagination.pageSize}` +
@@ -52,11 +52,11 @@ export const SearchTextsAPI = async (pagination: PaginationDto, sort: SortDto, f
         // console.log(convertedData);
         return convertedData
     } catch (error) {
-        return translateExceptions(handleApiError(error as Error));
+        return translateException(handleApiError(error as Error));
     }
 }
 
-export const SearchSocietyTextsAPI = async () : Promise<TextWithoutContentDto[] | string[]> => {
+export const SearchSocietyTextsAPI = async () : Promise<TextWithoutContentDto[] | ExceptionDto> => {
     try {
         const url = process.env.REACT_APP_SERVER_URL_PATH + "api/text/latests"
 
@@ -78,13 +78,14 @@ export const SearchSocietyTextsAPI = async () : Promise<TextWithoutContentDto[] 
         
         return convertedData
     } catch (error) {
-        return translateExceptions(handleApiError(error as Error));
+        return translateException(handleApiError(error as Error));
     }
 }
 
-export const SearchTextById = async (id: string, token: string | null) : Promise<TextWithContentDto | string[]> => {
+export const SearchTextByIdAPI = async (id: string, token: string | null, password: string | null) : Promise<TextWithContentDto | ExceptionDto> => {
     try {
-        const url = process.env.REACT_APP_SERVER_URL_PATH + "api/text/" + id;
+        var url = process.env.REACT_APP_SERVER_URL_PATH + "api/text/" + id;
+        if (password) url += `?requestPassword=${password}`;
 
         const response = token ? await axios.get<TextWithContentInput>(url, {
                 headers: {
@@ -111,6 +112,38 @@ export const SearchTextById = async (id: string, token: string | null) : Promise
 
         return convertedData;
     } catch (error) {
-        return translateExceptions(handleApiError(error as Error));
+        return translateException(handleApiError(error as Error));
+    }
+}
+
+export const UpdateTextAPI = async (id: string, updateDto: UpdateTextDto, token: string) : Promise<TextWithContentDto | ExceptionDto> => {
+    try {
+        const url = process.env.REACT_APP_SERVER_URL_PATH + "api/text/" + id;
+
+        const response = await axios.put<TextWithContentInput>(url, updateDto, {
+            headers: {
+                "Authorization" : `Bearer ${token}`
+            }
+        });
+
+        const data = response.data as TextWithContentInput;
+
+        const convertedData: TextWithContentDto = {
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            syntax: data.syntax,
+            tags: data.tags,
+            content: data.content,
+            createdOn: new Date(data.createdOn),
+            updatedOn: data.updatedOn ? new Date(data.updatedOn) : null,
+            ownerName: data.ownerName,
+            accessType: data.accessType,
+            hasPassword: data.hasPassword
+        }
+
+        return convertedData;
+    } catch (error) {
+        return translateException(handleApiError(error as Error))
     }
 }

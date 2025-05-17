@@ -1,10 +1,11 @@
 import React, { useContext, useState } from 'react';
 import './Auth.css';
-import { LoginAPI, RegisterAPI } from '../../Services/API/AuthService';
+import { LoginAPI, RegisterAPI } from '../../Services/API/AuthAPIService';
 import { UserWithTokenDto } from '../../Dtos';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router';
 import { AuthContext } from '../../Context/AuthContext';
+import { isExceptionDto } from '../../Services/ErrorHandler';
 
 type Props = {}
 
@@ -75,16 +76,15 @@ const Auth = ({}: Props) => {
       password:password
     });
     
-    if (Array.isArray(result)) {
-      setErrors(result);
+    if (isExceptionDto(result)) {
+      setErrors(result.details ?? [result.description]);
       return;
     }
 
-    const user = result.data as UserWithTokenDto;
-    Cookies.set("userId", user.id, {expires:1})
-    Cookies.set("userName", user.userName, {expires:1});
-    Cookies.set("email", user.email, {expires:1});
-    Cookies.set("token", user.token, {expires:1});
+    Cookies.set("userId", result.id, {expires:1})
+    Cookies.set("userName", result.userName, {expires:1});
+    Cookies.set("email", result.email, {expires:1});
+    Cookies.set("token", result.token, {expires:1});
     setValidAuth(true);
     navigate("/");
   }
@@ -113,16 +113,15 @@ const Auth = ({}: Props) => {
       password:password
     });
 
-    if (Array.isArray(result)) {
-      setErrors(result);
+    if (isExceptionDto(result)) {
+      setErrors(result.details ?? [result.description]);
       return;
     }
 
-    var user = result.data as UserWithTokenDto;
-    Cookies.set("userId", user.id, {expires:1})
-    Cookies.set("userName", user.userName, {expires:1});
-    Cookies.set("email", user.email, {expires:1});
-    Cookies.set("token", user.token, {expires:1});
+    Cookies.set("userId", result.id, {expires:1})
+    Cookies.set("userName", result.userName, {expires:1});
+    Cookies.set("email", result.email, {expires:1});
+    Cookies.set("token", result.token, {expires:1});
     setValidAuth(true);
     navigate("/");
   }

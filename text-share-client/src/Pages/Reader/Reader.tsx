@@ -1,12 +1,13 @@
 import Cookies from 'js-cookie';
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom';
-import { SearchTextById } from '../../Services/API/TextSearchService';
+import { SearchTextByIdAPI } from '../../Services/API/TextAPIService';
 import { TextWithContentDto } from '../../Dtos';
 import * as monaco from 'monaco-editor';
 import './Reader.css'
+import { isExceptionDto } from '../../Services/ErrorHandler';
 
-type Props = {}
+type Props = {};
 
 const Reader = (props: Props) => {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -15,6 +16,7 @@ const Reader = (props: Props) => {
   const { textId } = useParams();
   const [error, setError] = useState<string | null>(null);
   const [text, setText] = useState<TextWithContentDto | null>(null);
+  
 
   const getText = async (): Promise<TextWithContentDto | null> => {
     const token: string | null = Cookies.get('token') ?? null;
@@ -25,10 +27,24 @@ const Reader = (props: Props) => {
       return null;
     }
 
-    const result = await SearchTextById(textId, token);
+    const result = await SearchTextByIdAPI(textId, token, null);
 
-    if (Array.isArray(result)) {
-      setError(result[0]);
+    if (isExceptionDto(result)) {
+      switch (result.httpCode) {
+        case 404: // Not Found
+          setError("Данный текст не был найден или не существует.");
+          break;
+        case 403: // Forbidden
+          setError("У вас недостаточно прав для доступа к данному тексту.");
+          break;
+        case 400: // Bad Request (не был предоставлен пароль)
+          setError("Заполните, пожалуйста, пароль для доступа к данному тексту.");
+          break;
+        default:
+          console.log("http code:", result.httpCode);
+          setError(result.description);
+          break;
+        }
       setText(null);
       return null;
     }
@@ -43,17 +59,28 @@ const Reader = (props: Props) => {
 
     const initializeEditor = async () => {
       const text = await getText();
-      if (!text || !isMounted) {
+      if (!text || text.content == "" || !isMounted) {
         return;
+      }
+
+      if (!editorRef.current) {
+        for (let i = 0; i != 20; i++) {
+          console.log("Жду", i);
+          await new Promise( resolve => setTimeout(resolve, 100) );
+          if (editorRef.current) break;
+        }
       }
 
       if (editorRef.current && !editorInstance.current) {
         editorInstance.current = monaco.editor.create(editorRef.current, {
           value: text.content,
-          language: 'python',
+          language: text.syntax.toLowerCase(),
           theme: 'vs',
           readOnly: true,
         });
+      } else {
+        console.log("editorRef.current", editorRef.current);
+        console.log("!editorInstance.current", !editorInstance.current)
       }
     };
 
@@ -61,12 +88,30 @@ const Reader = (props: Props) => {
 
     return () => {
       isMounted = false;
-      editorInstance.current?.dispose(); // Освобождаем ресурсы
+      editorInstance.current?.dispose();
+      editorInstance.current = null;
     };
   }, [textId]);
 
   const convertDate = (d: Date): string => {
     return `${d.getDate()}.${d.getMonth()}.${d.getFullYear()}`;
+  }
+
+  const [isCopied, setIsCopied] = useState<boolean>(false);
+
+  const onCopy = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    if (text) {
+      try {
+        await navigator.clipboard.writeText(text.content);
+        setIsCopied(true);
+
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 3000);
+      } catch (error) {
+        console.error("Ошибка при копировании текста:", error);
+      }
+    }
   }
 
   return (
@@ -86,13 +131,19 @@ const Reader = (props: Props) => {
               </div>
             </div>
             <div className="actions">
-              <Link to="/"><img src="img/copy_black.svg" alt="copy" /></Link>
-              <Link to="/"><img src="img/edit_black.svg" alt="edit" /></Link>
+              <a onClick={onCopy} className="copy-button">
+                  <img src="img/copy_black.svg" alt="copy" />
+                  {isCopied && (
+                      <span className="copy-notification">Текст скопирован!</span>
+                  )}
+              </a>
+              <Link to={`/editor/${text.id}`}><img src="img/edit_black.svg" alt="edit" /></Link>
               <Link to="/"><img src="img/download_black.svg" alt="download" /></Link>
               <Link to="/"><img src="img/delete_black.svg" alt="delete" /></Link>
             </div>
           </div>
-          <div className="content" ref={editorRef} style={{ width: '100%', height: '400px' }} />
+          {text.content == "" &&  "Текст пуст! Автор пока что ничего сюда не добавил."}
+          <div className="content" ref={editorRef} style={{ height: '80vh' }} />
         </div>
         :
         <div className="error">{error}</div>
@@ -101,4 +152,4 @@ const Reader = (props: Props) => {
   )
 }
 
-export default Reader
+export default Reader;

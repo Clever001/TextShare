@@ -19,8 +19,15 @@ export interface LoginDto {
 
 // Exception
 
-export interface ExceptionDto {
+export interface ExceptionInput {
     code: string,
+    description: string,
+    details: string[] | null
+}
+
+export interface ExceptionDto {
+    httpCode: number,
+    apiCode: string,
     description: string,
     details: string[] | null
 }
@@ -88,6 +95,28 @@ export interface TextWithContentDto {
     accessType: string,
     hasPassword: boolean
 }
+
+export interface UpdateTextDto {
+    title: string | null,
+    description: string | null,
+    content: string | null,
+    syntax: string | null,
+    tags: string[] | null,
+    accessType: string | null,
+    password: string | null,
+    updatePassword: bool
+}
+
+// public class UpdateTextDto {
+//     public string? Content { get; set; }
+//     public string? Title { get; set; }
+//     public string? Description { get; set; }
+//     public string? Syntax { get; set; }
+//     public List<string>? Tags { get; set; }
+//     public AccessType? AccessType { get; set; }
+//     public string? Password { get; set; }
+//     public bool UpdatePassword { get; set; } = true;
+// }
 
 // QueryOptions
 

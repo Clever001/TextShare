@@ -5,8 +5,9 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import TextRow from '../../Components/TextRow/TextRow'
 import { PaginatedResponseDto, PaginationDto, SortDto, TextFilterDto, TextWithoutContentDto } from '../../Dtos'
 import Cookies from 'js-cookie'
-import { SearchTextsAPI } from '../../Services/API/TextSearchService'
+import { SearchTextsAPI } from '../../Services/API/TextAPIService'
 import { AuthContext } from '../../Context/AuthContext'
+import { isExceptionDto } from '../../Services/ErrorHandler'
 
 type Props = {}
 
@@ -115,7 +116,11 @@ const TextSearch = (props: Props) => {
     var token = Cookies.get("token");
 
     const result = token ? await SearchTextsAPI(pagination, sort, filter, token) : await SearchTextsAPI(pagination, sort, filter, null);
-    if (Array.isArray(result)) {
+    if (isExceptionDto(result)) {
+      Cookies.remove("userId");
+      Cookies.remove("userName");
+      Cookies.remove("email");
+      Cookies.remove("token");
       setValidAuth(false);
       navigate("/auth")
       return;

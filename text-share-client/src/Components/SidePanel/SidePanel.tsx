@@ -4,7 +4,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { PaginatedResponseDto, PaginationDto, SortDto, TextFilterDto, TextWithoutContentDto } from '../../Dtos'
 import { AuthContext } from '../../Context/AuthContext'
 import Cookies from 'js-cookie'
-import { SearchSocietyTextsAPI, SearchTextsAPI } from '../../Services/API/TextSearchService'
+import { SearchSocietyTextsAPI, SearchTextsAPI } from '../../Services/API/TextAPIService'
+import { isExceptionDto } from '../../Services/ErrorHandler'
 
 type Props = {}
 
@@ -25,6 +26,10 @@ const SidePanel = (props: Props) => {
       const userName = Cookies.get("userName") ?? "";
       const token = Cookies.get("token") ?? "";
       if (userName === "" || token === "") {
+        Cookies.remove("userId");
+        Cookies.remove("userName");
+        Cookies.remove("email");
+        Cookies.remove("token");
         setValidAuth(false);
         setMyTexts([]);
         return;
@@ -50,8 +55,12 @@ const SidePanel = (props: Props) => {
       }
 
       const result = await SearchTextsAPI(pagination, sort, filter, token);
-      if (Array.isArray(result)) {
-        if (result[0] === "Токен невалиден.") {
+      if (isExceptionDto(result)) {
+        if (result.httpCode === 403) {
+          Cookies.remove("userId");
+          Cookies.remove("userName");
+          Cookies.remove("email");
+          Cookies.remove("token");
           setValidAuth(false);
         }
         setMyTexts([]);
@@ -71,18 +80,18 @@ const SidePanel = (props: Props) => {
 
   const getSocietyTexts = async () => {
     const result = await SearchSocietyTextsAPI();
+    
+    if (isExceptionDto(result)) {
+      console.log(result)
+      return
+    }
 
     if (result.length == 0) {
       setSocietyTexts([])
       return
     }
 
-    if (typeof(result[0]) === "string") {
-      console.log(result)
-      return
-    }
-
-    setSocietyTexts(result as TextWithoutContentDto[])
+    setSocietyTexts(result)
   }
 
   useEffect(() => {

@@ -65,6 +65,10 @@
     width: 20px;
 }
 
+.reader .actions a:hover {
+    cursor:pointer;
+}
+
 .reader .sub-info > * {
     margin-right: 5px;
 }
@@ -72,6 +76,29 @@
 .reader .text content {
     margin-top:4px;
     width: 100%;
-    min-height:350px;
     border:1px solid #BABABA;
+}
+
+.reader .copy-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.reader .copy-notification {
+    position: absolute;
+    top: -30px;
+    left: -100px;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: green;
+    font-weight: bold;
+    background-color: white;
+    padding: 5px 10px;
+    border: 1px solid #BABABA;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    
 }
