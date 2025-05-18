@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { ExceptionDto, PaginatedResponseDto, PaginationDto, SortDto, TextFilterDto, TextWithContentDto, TextWithContentInput, TextWithoutContentDto, TextWithoutContentInput, UpdateTextDto } from "../../Dtos";
+import { CreateTextDto, ExceptionDto, PaginatedResponseDto, PaginationDto, SortDto, TextFilterDto, TextWithContentDto, TextWithContentInput, TextWithoutContentDto, TextWithoutContentInput, UpdateTextDto } from "../../Dtos";
 import { handleApiError } from "../ErrorHandler";
 import { translateException } from "../TranslatorService";
 
@@ -14,7 +14,7 @@ export const SearchTextsAPI = async (pagination: PaginationDto, sort: SortDto, f
         if (filter.tags) filter.tags.forEach(t => url += `&tags=${encodeURIComponent(t)}`)
         if (filter.syntax) url += `&syntax=${encodeURIComponent(filter.syntax)}`
         if (filter.accessType) url += `&accessType=${encodeURIComponent(filter.accessType)}`
-        if (filter.hasPassword) url += `&hasPassword=${encodeURIComponent(filter.hasPassword)}`
+        if (filter.hasPassword != null) url += `&hasPassword=${encodeURIComponent(filter.hasPassword)}`
         var data:PaginatedResponseDto<TextWithoutContentInput> | null= null;
 
         if (token) {
@@ -140,7 +140,38 @@ export const UpdateTextAPI = async (id: string, updateDto: UpdateTextDto, token:
             ownerName: data.ownerName,
             accessType: data.accessType,
             hasPassword: data.hasPassword
-        }
+        };
+
+        return convertedData;
+    } catch (error) {
+        return translateException(handleApiError(error as Error))
+    }
+}
+
+export const CreateTextAPI = async(createDto: CreateTextDto, token: string) : Promise<TextWithoutContentDto | ExceptionDto> => {
+    try {
+        const url = process.env.REACT_APP_SERVER_URL_PATH + "api/text/";
+
+        const response = await axios.post<TextWithoutContentInput>(url, createDto, {
+            headers: {
+                "Authorization" : `Bearer ${token}`
+            }
+        });
+
+        const data = response.data as TextWithoutContentInput;
+
+        const convertedData: TextWithoutContentDto = {
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            syntax: data.syntax,
+            tags: data.tags,
+            createdOn: new Date(data.createdOn),
+            updatedOn: data.updatedOn ? new Date(data.updatedOn) : null,
+            ownerName: data.ownerName,
+            accessType: data.accessType,
+            hasPassword: data.hasPassword
+        };
 
         return convertedData;
     } catch (error) {

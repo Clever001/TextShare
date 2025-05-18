@@ -20,6 +20,10 @@ staticTranslates.set("Passwords must have at least one uppercase ('A'-'Z').",
     "В паролях должна быть хотя бы одна заглавная буква ('A'-'Z').");
 staticTranslates.set("Password is not provided.", 
     "Пароль не был предоставлен.")
+staticTranslates.set("Title cannot be empty.",
+    "Заголовок не может быть пустым.")
+staticTranslates.set("Text with Composite of fields Title and AppUserId already exists.",
+    "Текст с таким названием уже существует.")
 
 let templateTranslates : {[Key: string] : string} = {};
 templateTranslates["Username '{0}' is already taken."] = "Имя '{0}' уже используется другим пользователем";

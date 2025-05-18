@@ -20,7 +20,7 @@ const Editor = (props: Props) => {
   const [errors, setErrors] = useState<string[]>([]);
   const [text, setText] = useState<TextWithContentDto | null>(null);
 
-  const openAuth = () => {window.open(process.env.REACT_APP_CLIENT_URL_PATH + "auth/", "_blank");}
+  const openAuth = () => { window.open(process.env.REACT_APP_CLIENT_URL_PATH + "auth/", "_blank"); }
 
   // Get Text From API
 
@@ -49,16 +49,16 @@ const Editor = (props: Props) => {
           setErrors(["Данный текст не был найден или не существует."]);
           break;
         case 403: // Forbidden
-          setErrors(["У вас недостаточно прав для доступа к данному тексту."]);
+          setErrors(["У вас недостаточно прав для доступа на редактирование данного текста."]);
           break;
         case 400: // Bad Request (не был предоставлен пароль)
-          setErrors(["Заполните, пожалуйста, пароль для доступа к данному тексту."]);
+          setErrors(["У вас недостаточно прав для доступа на редактирование данного текста."]);
           break;
         default:
           console.log("http code:", result.httpCode);
           setErrors([result.description]);
           break;
-        }
+      }
       setText(null);
       return null;
     }
@@ -91,57 +91,57 @@ const Editor = (props: Props) => {
     let isMounted = true; // Флаг для отслеживания состояния монтирования
 
     const initializeEditor = async () => {
-        if (!isMounted) return; // Проверяем, монтирован ли компонент
+      if (!isMounted) return; // Проверяем, монтирован ли компонент
 
-        const text = await getText();
-        if (!text || !isMounted) {
-            return; // Выходим, если текст не загружен или компонент размонтирован
-        }
+      const text = await getText();
+      if (!text || !isMounted) {
+        return; // Выходим, если текст не загружен или компонент размонтирован
+      }
 
-        if (!editorRef.current) {
-          for (let i = 0; i != 20; i++) {
-            console.log("Жду", i);
-            await new Promise( resolve => setTimeout(resolve, 100) );
-            if (editorRef.current) break;
-          }
+      if (!editorRef.current) {
+        for (let i = 0; i != 20; i++) {
+          console.log("Жду", i);
+          await new Promise(resolve => setTimeout(resolve, 100));
+          if (editorRef.current) break;
         }
+      }
 
-        if (editorRef.current && !editorInstance.current) {
-            try {
-                editorInstance.current = monaco.editor.create(editorRef.current, {
-                    value: text.content,
-                    language: text.syntax ? text.syntax.toLowerCase() : "plaintext",
-                    theme: 'vs',
-                });
-            } catch (error) {
-                console.error("Ошибка при инициализации Monaco Editor:", error);
-            }
+      if (editorRef.current && !editorInstance.current) {
+        try {
+          editorInstance.current = monaco.editor.create(editorRef.current, {
+            value: text.content,
+            language: text.syntax ? text.syntax.toLowerCase() : "plaintext",
+            theme: 'vs',
+          });
+        } catch (error) {
+          console.error("Ошибка при инициализации Monaco Editor:", error);
         }
+      }
     };
 
     initializeEditor();
 
     const handleResize = () => {
-        if (editorInstance.current) {
-            editorInstance.current.layout(); // Пересчитываем размеры редактора
-        }
+      if (editorInstance.current) {
+        editorInstance.current.layout(); // Пересчитываем размеры редактора
+      }
     };
 
     window.addEventListener('resize', handleResize);
 
     return () => {
-        isMounted = false; // Сбрасываем флаг при размонтировании
-        if (editorInstance.current) {
-            editorInstance.current.dispose(); // Уничтожаем экземпляр редактора
-            editorInstance.current = null;
-        }
-        window.removeEventListener('resize', handleResize);
+      isMounted = false; // Сбрасываем флаг при размонтировании
+      if (editorInstance.current) {
+        editorInstance.current.dispose(); // Уничтожаем экземпляр редактора
+        editorInstance.current = null;
+      }
+      window.removeEventListener('resize', handleResize);
     };
   }, [textId]);
 
   // Update Text By API
 
-  const updateText = async (e:React.FormEvent<HTMLFormElement>) => {
+  const updateText = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const token = Cookies.get("token");
@@ -208,7 +208,7 @@ const Editor = (props: Props) => {
       }
     }
 
-    if (updateDto.title == null &&updateDto.accessType == null &&  
+    if (updateDto.title == null && updateDto.accessType == null &&
       updateDto.content == null && updateDto.syntax == null &&
       updateDto.tags == null && updateDto.accessType == null &&
       updateDto.updatePassword == false && updateDto.description == null
@@ -297,7 +297,7 @@ const Editor = (props: Props) => {
   // Text Highlight
   const [highlight, setHighlight] = useState<boolean>(true);
 
-  const onHighlightChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+  const onHighlightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!highlight && editorInstance.current) {
       const model = editorInstance.current.getModel();
       if (model) {
@@ -316,7 +316,7 @@ const Editor = (props: Props) => {
     <div className="editor">
       {text ?
         <div className="text">
-          {errors && 
+          {errors &&
             errors.map(e => {
               return (<div key={e} className="error">{e}</div>)
             })
@@ -328,7 +328,7 @@ const Editor = (props: Props) => {
                 <div className="switch-container">
                   <p>Подсветка синтаксиса</p>
                   <label className="switch">
-                    <input type="checkbox" name="highlightSyntax" checked={highlight} onChange={onHighlightChange}/>
+                    <input type="checkbox" name="highlightSyntax" checked={highlight} onChange={onHighlightChange} />
                     <span className="slider"></span>
                   </label>
                 </div>

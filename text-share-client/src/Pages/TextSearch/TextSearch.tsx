@@ -48,7 +48,7 @@ const TextSearch = (props: Props) => {
 
       const pagination: PaginationDto = {
         pageNumber: 1,
-        pageSize: 5
+        pageSize: 10
       }
 
       const sort: SortDto = {
@@ -99,7 +99,7 @@ const TextSearch = (props: Props) => {
 
     const pagination: PaginationDto = {
       pageNumber: 1,
-      pageSize: 5
+      pageSize: 10
     }
 
     const sort: SortDto = {
@@ -150,7 +150,7 @@ const TextSearch = (props: Props) => {
     
     const pagination: PaginationDto = {
       pageNumber: newPage,
-      pageSize: 5
+      pageSize: 10
     }
 
     const sort: SortDto = {
@@ -179,6 +179,10 @@ const TextSearch = (props: Props) => {
           <div className="filters">
             <table>
               <tbody>
+                <tr>
+                  <td className="col1"><p>Автор</p></td>
+                  <div className="col2"><input type="text" name="ownerName" /></div>
+                </tr>
                 <tr>
                   <td className="col1"><p>Теги</p></td>
                   <td className="col2"><input type="text" name="tags" /></td>

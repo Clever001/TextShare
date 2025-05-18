@@ -1,0 +1,128 @@
+.creation {
+    color: #000;
+    margin-top: 60px;
+}
+
+.creation .content {
+    height: 70vh;
+    width: 100%;
+    min-height: 400px;
+    margin-bottom: 20px;
+}
+
+.creation .text .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size:18px;
+}
+
+.creation .settings .title {
+    font-size:18px;
+    font-weight:500;
+    width:100%;
+    border-bottom:1px solid #BABABA;
+}
+
+.creation .text button {
+    background-color: #BABABA;
+    color: #fff;
+    border:none;
+    margin-bottom: 150px;
+}
+
+
+/* Таблица */
+
+.creation table img {
+    padding:3px;
+}
+
+.creation table img:hover {
+    cursor:pointer;
+}
+
+.creation table {
+    width: 75%;
+    min-width: 320px;
+    margin-top: 5px !important;
+}
+
+.creation table p {
+    margin: auto 0;
+}
+
+.creation table td {
+    padding:4px 0;
+}
+
+.creation table .col1 {
+    width: 30%;
+}
+
+.creation table .col1 * {
+    width: 100%;
+}
+
+.creation table .col2 > * {
+    width: 100%;
+}
+
+.creation input, .creation textarea, .creation select {
+    outline:none;
+    border:1px solid #BABABA;
+    border-radius:5px;
+}
+
+/* Реализация свича */
+.creation .switch-container {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    margin: 0;
+}
+
+.creation .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 28px;
+}
+
+.creation .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.creation .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.creation .switch input:checked + .slider {
+    background-color: #4caf50;
+}
+
+.creation .slider::before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.creation .switch input:checked + .slider::before {
+    transform: translateX(32px);
+}

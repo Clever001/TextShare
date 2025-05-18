@@ -107,15 +107,24 @@ export interface UpdateTextDto {
     updatePassword: bool
 }
 
-// public class UpdateTextDto {
-//     public string? Content { get; set; }
-//     public string? Title { get; set; }
-//     public string? Description { get; set; }
-//     public string? Syntax { get; set; }
-//     public List<string>? Tags { get; set; }
-//     public AccessType? AccessType { get; set; }
-//     public string? Password { get; set; }
-//     public bool UpdatePassword { get; set; } = true;
+export interface CreateTextDto {
+    title: string,
+    description: string,
+    content: string,
+    syntax: string,
+    tags: string[],
+    accessType: string,
+    password: string | null
+}
+
+// public class CreateTextDto {
+//     public string Title { get; set; } = string.Empty;
+//     public string Description { get; set; } = string.Empty;
+//     public string Content { get; set; } = string.Empty;
+//     public string Syntax { get; set; } = string.Empty;
+//     public List<string> Tags { get; set; } = new List<string>();
+//     public AccessType AccessType { get; set; } = AccessType.Personal;
+//     public string? Password { get; set; } = null;
 // }
 
 // QueryOptions

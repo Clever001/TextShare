@@ -227,7 +227,6 @@ const Reader = (props: Props) => {
               <Link to="/"><img src="img/delete_black.svg" alt="delete" /></Link>
             </div>
           </div>
-          {text.content == "" && "Текст пуст! Автор пока что ничего сюда не добавил."}
           <div className="content" ref={editorRef} style={{ height: '80vh' }} />
         </div>
       ) : (
