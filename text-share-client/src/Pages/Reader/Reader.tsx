@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { SearchTextByIdAPI } from '../../Services/API/TextAPIService';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { DeleteTextAPI, SearchTextByIdAPI } from '../../Services/API/TextAPIService';
 import { TextWithContentDto } from '../../Dtos';
 import * as monaco from 'monaco-editor';
 import './Reader.css';
@@ -18,6 +18,8 @@ const Reader = (props: Props) => {
   const [text, setText] = useState<TextWithContentDto | null>(null);
   const [password, setPassword] = useState<string>("");
   const [isPasswordRequired, setIsPasswordRequired] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   // Получение текста с сервера
   const getText = async (): Promise<TextWithContentDto | null> => {
@@ -182,6 +184,56 @@ const Reader = (props: Props) => {
     }
   };
 
+  const handleDownload = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    if (text) {
+      try {
+        const types = monaco.languages.getLanguages().find(l => l.id === text.syntax)?.extensions;
+        const extension = types ? types[0] : ".txt";
+
+        const blob = new Blob([text.content], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = text.title + extension;
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.log(error);
+        alert("Произошла ошибка при закачивании текста.");
+      }
+    }
+  }
+
+  const deleteText = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    if (!textId) {
+      setError("Не был задан id для удаляемого текста.");
+      return;
+    }
+
+    const token = Cookies.get("token");
+    if (!token) {
+      alert("Перед удалением текста вам нужно сначала зарегистрироваться в системе.");
+      navigate("/auth");
+      return;
+    }
+
+    const result = await DeleteTextAPI(textId, token);
+
+    if (isExceptionDto(result)) {
+      setError(result.description);
+      return;
+    }
+
+    alert("Текст был успешно удален.");
+    window.location.reload();
+  }
+
   return (
     <div className="reader">
       {/* Форма ввода пароля */}
@@ -198,8 +250,12 @@ const Reader = (props: Props) => {
         </div>
       )}
 
+      {error && 
+        <div className="error">{error}</div>
+      }
+
       {/* Отображение текста */}
-      {text ? (
+      {text && (
         <div className="text">
           <div className="header">
             <div className="info">
@@ -223,14 +279,12 @@ const Reader = (props: Props) => {
                 )}
               </a>
               <Link to={`/editor/${text.id}`}><img src="img/edit_black.svg" alt="edit" /></Link>
-              <Link to="/"><img src="img/download_black.svg" alt="download" /></Link>
-              <Link to="/"><img src="img/delete_black.svg" alt="delete" /></Link>
+              <a onClick={handleDownload}><img src="img/download_black.svg" alt="download" /></a>
+              <a onClick={deleteText}><img src="img/delete_black.svg" alt="delete" /></a>
             </div>
           </div>
           <div className="content" ref={editorRef} style={{ height: '80vh' }} />
         </div>
-      ) : (
-        <div className="error">{error}</div>
       )}
     </div>
   );

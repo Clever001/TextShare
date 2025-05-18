@@ -222,7 +222,10 @@ const Editor = (props: Props) => {
     if (isExceptionDto(result)) {
       switch (result.httpCode) {
         case 400: // BadRequest
-          setErrors([result.description]);
+          if (result.details) 
+            setErrors(result.details);
+          else
+            setErrors([result.description]);
           break;
         case 401: // UnAuthorized
           alert("Обновите свои регистрационные данные перед изменением текста.");
@@ -316,11 +319,6 @@ const Editor = (props: Props) => {
     <div className="editor">
       {text ?
         <div className="text">
-          {errors &&
-            errors.map(e => {
-              return (<div key={e} className="error">{e}</div>)
-            })
-          }
           <form onSubmit={updateText}>
             <div className="header">
               <div className="title">Редактор текста</div>
@@ -407,6 +405,11 @@ const Editor = (props: Props) => {
                 </tbody>
               </table>
             </div>
+            {errors &&
+              errors.map(e => {
+                return (<div key={e} className="error">{e}</div>)
+              })
+            }
             <button type="submit">Изменить текст</button>
           </form>
         </div>

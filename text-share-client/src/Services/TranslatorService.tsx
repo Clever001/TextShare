@@ -24,6 +24,8 @@ staticTranslates.set("Title cannot be empty.",
     "Заголовок не может быть пустым.")
 staticTranslates.set("Text with Composite of fields Title and AppUserId already exists.",
     "Текст с таким названием уже существует.")
+staticTranslates.set("You do not have permission to access this resource.",
+    "У вас недостаточно прав для выполняния данного действия.")
 
 let templateTranslates : {[Key: string] : string} = {};
 templateTranslates["Username '{0}' is already taken."] = "Имя '{0}' уже используется другим пользователем";

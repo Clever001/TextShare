@@ -3,6 +3,10 @@
     margin-top: 60px;
 }
 
+.editor .error {
+    color: red;
+}
+
 .editor .content {
     height: 70vh;
     width: 100%;

@@ -148,7 +148,7 @@ export const UpdateTextAPI = async (id: string, updateDto: UpdateTextDto, token:
     }
 }
 
-export const CreateTextAPI = async(createDto: CreateTextDto, token: string) : Promise<TextWithoutContentDto | ExceptionDto> => {
+export const CreateTextAPI = async (createDto: CreateTextDto, token: string) : Promise<TextWithoutContentDto | ExceptionDto> => {
     try {
         const url = process.env.REACT_APP_SERVER_URL_PATH + "api/text/";
 
@@ -174,6 +174,23 @@ export const CreateTextAPI = async(createDto: CreateTextDto, token: string) : Pr
         };
 
         return convertedData;
+    } catch (error) {
+        return translateException(handleApiError(error as Error))
+    }
+}
+
+export const DeleteTextAPI = async (id: string, token: string) : Promise<null | ExceptionDto> => {
+    try {
+        const url = process.env.REACT_APP_SERVER_URL_PATH + "api/text/" + id;
+
+        console.log(url);
+        const result = await axios.delete(url, {
+            headers: {
+                "Authorization" : `Bearer ${token}`
+            }
+        })
+
+        return null;
     } catch (error) {
         return translateException(handleApiError(error as Error))
     }

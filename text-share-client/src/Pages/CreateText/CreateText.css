@@ -3,6 +3,10 @@
     margin-top: 60px;
 }
 
+.creation .error {
+    color:red;
+}
+
 .creation .content {
     height: 70vh;
     width: 100%;

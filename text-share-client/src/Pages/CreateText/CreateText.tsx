@@ -169,11 +169,6 @@ const CreateText = (props: Props) => {
   return (
     <div className="creation">
       <div className="text">
-        {errors &&
-          errors.map(e => {
-            return (<div key={e} className="error">{e}</div>)
-          })
-        }
         <form onSubmit={onFormSubmit}>
           <div className="header">
             <div className="title">Новый текст</div>
@@ -244,6 +239,11 @@ const CreateText = (props: Props) => {
               </tbody>
             </table>
           </div>
+          {errors &&
+            errors.map(e => {
+              return (<div key={e} className="error">{e}</div>)
+            })
+          }
           <button type="submit">Добавить новый текст</button>
         </form>
       </div>

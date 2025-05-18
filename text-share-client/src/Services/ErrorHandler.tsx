@@ -34,6 +34,7 @@ export const handleApiError = (error: Error): ExceptionDto => {
 
 export const isExceptionDto = (obj: any): obj is ExceptionDto => {
     return (
+        obj != null && 
         typeof obj.httpCode === "number" &&
         typeof obj.apiCode === "string" &&
         typeof obj.description === "string" &&

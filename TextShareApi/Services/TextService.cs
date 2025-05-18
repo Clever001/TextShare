@@ -265,7 +265,7 @@ public class TextService : ITextService {
         // Deleting text
         var deleted = await _textRepository.DeleteText(textId);
         if (!deleted) {
-            // Never executed. Text existence was performed previously.
+            // Never executed. Text existence check was performed previously.
             _logger.LogWarning("Text did not exist from the beginning. Text not deleted.");
             return Result.Failure(new ServerException());
         }

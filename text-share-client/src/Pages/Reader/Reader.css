@@ -3,6 +3,10 @@
     color: #000;
 }
 
+.reader .error {
+    color:red;
+}
+
 .reader .header {
     justify-content: space-between;
 }
