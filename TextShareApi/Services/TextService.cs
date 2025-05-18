@@ -182,7 +182,8 @@ public class TextService : ITextService {
     public async Task<Result<List<Text>>> GetLatestTexts() {
         var predicates = new List<Expression<Func<Text, bool>>> {
             t => t.TextSecuritySettings.AccessType == AccessType.ByReferencePublic ||
-                 t.TextSecuritySettings.AccessType == AccessType.ByReferenceAuthorized
+                 t.TextSecuritySettings.AccessType == AccessType.ByReferenceAuthorized,
+            t => t.TextSecuritySettings.Password == null
         };
         
         var (_, texts) = await _textRepository.GetTexts(

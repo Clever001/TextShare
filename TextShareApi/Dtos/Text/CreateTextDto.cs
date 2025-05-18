@@ -1,11 +1,15 @@
+using System.ComponentModel.DataAnnotations;
 using TextShareApi.Dtos.Enums;
 
 namespace TextShareApi.Dtos.Text;
 
 public class CreateTextDto {
+    [MaxLength(70)]
     public string Title { get; set; } = string.Empty;
+    [MaxLength(250)]
     public string Description { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
+    [MaxLength(35)]
     public string Syntax { get; set; } = string.Empty;
     public List<string> Tags { get; set; } = new List<string>();
     public AccessType AccessType { get; set; } = AccessType.Personal;
