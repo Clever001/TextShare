@@ -117,10 +117,16 @@ export interface CreateTextDto {
     password: string | null
 }
 
+// FriendRequest
+
 export interface FriendRequestDto {
     senderName: string,
     recipientName: string,
     isAccepted: boolean | null
+}
+
+export interface ProcessFriendRequestDto {
+    acceptRequest: booleacn
 }
 
 // QueryOptions

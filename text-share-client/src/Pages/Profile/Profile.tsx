@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { PaginatedResponseDto, PaginationDto, SortDto, TextFilterWithoutNameDto, TextWithoutContentDto } from '../../Dtos'
 import { getSyntaxes } from '../../Services/HelperService'
 import TextRow from '../../Components/TextRow/TextRow'
@@ -7,12 +7,19 @@ import Cookies from 'js-cookie'
 import { SearchTextsByNameAPI } from '../../Services/API/TextAPIService'
 import { isExceptionDto } from '../../Services/ErrorHandler'
 import './Profile.css'
-import { AreFriendsAPI, GetRequestFromMeAPI, GetRequestToMeAPI } from '../../Services/API/AccountAPIService'
+import { AreFriendsAPI, DeleteFriendAPI, DeleteFriendRequestAPI, GetRequestFromMeAPI, GetRequestToMeAPI, ProcessFriendRequestAPI, SendFriendRequestAPI } from '../../Services/API/AccountAPIService'
+import { AuthContext } from '../../Context/AuthContext'
 
 type Props = {}
 
 const Profile = (props: Props) => {
   const navigate = useNavigate();
+
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    throw new Error('AuthContext must be used within a AuthProvider');
+  }
+  const setValidAuth = authContext.setValidAuth;
 
   const [errors, setErrors] = useState<string[]>([]);
   const [texts, setTexts] = useState<PaginatedResponseDto<TextWithoutContentDto> | null>(null);
@@ -119,8 +126,18 @@ const Profile = (props: Props) => {
       hasPassword: null
     }
 
-    searchTexts(pagination, sort);
-    checkFriendship();
+    const applyActionsInOrder = async () => {
+      await searchTexts(pagination, sort);
+      
+      const curUser = Cookies.get("userName");
+      if (!curUser) return;
+
+      if (userName.toLowerCase() != curUser.toLowerCase()) {
+        await checkFriendship();
+      }
+    }
+
+    applyActionsInOrder();
 
   }, [userName]);
 
@@ -183,24 +200,91 @@ const Profile = (props: Props) => {
     }
   }
 
-  const onSendRequestClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-    throw new Error('Function not implemented.')
+  const recheckFriendship = async () => {
+    setArefriends(false);
+    setSentRequest(false);
+    setRecievedRequest(false);
+    setNoBind(false);
+    await checkFriendship();
   }
 
-  const onDeleteRequestClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-    throw new Error('Function not implemented.')
+  const onSendRequestClick = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (!token) return;
+    if (!userName) return;
+
+    const response = await SendFriendRequestAPI(token, userName);
+
+    if (!isValidResponse(response)) return;
+
+    await recheckFriendship();
   }
 
-  const onAproveRequestClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-    throw new Error('Function not implemented.')
+  const onDeleteRequestClick = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (!token) return;
+    if (!userName) return;
+
+    const response = await DeleteFriendRequestAPI(token, userName);
+
+    if (!isValidResponse(response)) return;
+
+    await recheckFriendship();
   }
 
-  const onRejectRequestClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-    throw new Error('Function not implemented.')
+  const onAproveRequestClick = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (!token) return;
+    if (!userName) return;
+
+    const response = await ProcessFriendRequestAPI(token, userName, {
+      acceptRequest: true
+    });
+
+    if (!isValidResponse(response)) return;
+
+    await recheckFriendship();
   }
 
-  const onDeleteFriendClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
-    throw new Error('Function not implemented.')
+  const onRejectRequestClick = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (!token) return;
+    if (!userName) return;
+
+    const response = await ProcessFriendRequestAPI(token, userName, {
+      acceptRequest: false
+    });
+
+    if (!isValidResponse(response)) return;
+
+    await recheckFriendship();
+  }
+
+  const onDeleteFriendClick = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (!token) return;
+    if (!userName) return;
+
+    const response = await DeleteFriendAPI(token, userName);
+
+    if (!isValidResponse(response)) return;
+
+    await recheckFriendship();
+  }
+
+  const isValidResponse = (e: any): boolean => {
+    if (isExceptionDto(e)) {
+      if (e.httpCode == 403) {
+        alert("Перед выполнением запроса сначала необходимо повторно авторизоваться в системе.")
+        setValidAuth(false);
+        Cookies.remove("id");
+        Cookies.remove("token");
+        Cookies.remove("userName");
+        Cookies.remove("email");
+        navigate("/auth");
+      }
+      if (e.details)
+        setErrors(e.details);
+      else
+        setErrors([e.description]);
+      return false;
+    }
+    return true;
   }
 
   return (
