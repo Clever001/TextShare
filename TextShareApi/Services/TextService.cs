@@ -272,4 +272,26 @@ public class TextService : ITextService {
 
         return Result.Success();
     }
+
+    public async Task<Result<PaginatedResponseDto<Text>>> GetTextsByName(PaginationDto pagination,
+        SortDto sort,
+        TextFilterWithoutOwnerDto filter,
+        string ownerName,
+        string? senderName) {
+        bool accountExists = await _accountRepository.ContainsAccountByName(ownerName);
+        if (!accountExists) {
+            return Result<PaginatedResponseDto<Text>>.Failure(new NotFoundException("Account with this name was not found."));
+        }
+
+        var convertedFilter = new TextFilterDto {
+            OwnerName = ownerName,
+            Title = filter.Title,
+            Tags = filter.Tags,
+            Syntax = filter.Syntax,
+            AccessType = filter.AccessType,
+            HasPassword = filter.HasPassword
+        };
+
+        return await GetTexts(pagination, sort, convertedFilter, senderName);
+    }
 }

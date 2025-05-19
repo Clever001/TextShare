@@ -19,7 +19,7 @@ export const router = createBrowserRouter([
             { index: true, element: <TextSearch />},
             { path: "reader/:textId", element: <Reader />},
             { path: "editor/:textId", element: <Editor />},
-            { path: "profile/:userId", element: <Profile />},
+            { path: "profile/:userName", element: <Profile />},
             { path: "profile/", element: <Profile />},
             { path: "createText/", element: <CreateText />},
             { path: "userSearch/", element: <UserSearch />},

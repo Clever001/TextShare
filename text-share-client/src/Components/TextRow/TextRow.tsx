@@ -6,9 +6,10 @@ import "./TextRow.css"
 interface Props {
   text: TextWithoutContentDto,
   getIcon: (accessType: string) => string,
+  includeOwner: boolean
 }
 
-const TextRow = ({ text, getIcon }: Props) => {
+const TextRow = ({ text, getIcon , includeOwner}: Props) => {
   const dateToString = (d: Date):string => {
     return `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
   } 
@@ -18,9 +19,11 @@ const TextRow = ({ text, getIcon }: Props) => {
       <td>
         <Link to={`/reader/${encodeURIComponent(text.id)}`}>{getIcon(text.accessType)}{text.title}</Link>
       </td>
-      <td>
-        <Link to={`/reader/${encodeURIComponent(text.id)}`}>{text.ownerName}</Link>
-      </td>
+      {includeOwner && 
+        <td>
+          <Link to={`/reader/${encodeURIComponent(text.id)}`}>{text.ownerName}</Link>
+        </td>
+      }
       <td>
         <Link to={`/reader/${encodeURIComponent(text.id)}`}>{dateToString(text.createdOn)}</Link>
       </td>

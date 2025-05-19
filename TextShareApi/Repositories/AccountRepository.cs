@@ -61,4 +61,9 @@ public class AccountRepository : IAccountRepository {
             UserName = u.UserName,
         }).ToListAsync());
     }
+
+    public async Task<bool> ContainsAccountByName(string userName) {
+        string upperName = userName.ToUpper();
+        return await _context.Users.AnyAsync(u => u.NormalizedUserName == upperName);
+    }
 }

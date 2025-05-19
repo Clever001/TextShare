@@ -1,11 +1,11 @@
 import axios, { AxiosResponse } from "axios";
-import { CreateTextDto, ExceptionDto, PaginatedResponseDto, PaginationDto, SortDto, TextFilterDto, TextWithContentDto, TextWithContentInput, TextWithoutContentDto, TextWithoutContentInput, UpdateTextDto } from "../../Dtos";
+import { CreateTextDto, ExceptionDto, PaginatedResponseDto, PaginationDto, SortDto, TextFilterDto, TextFilterWithoutNameDto, TextWithContentDto, TextWithContentInput, TextWithoutContentDto, TextWithoutContentInput, UpdateTextDto } from "../../Dtos";
 import { handleApiError } from "../ErrorHandler";
 import { translateException } from "../TranslatorService";
 
-export const SearchTextsAPI = async (pagination: PaginationDto, sort: SortDto, filter: TextFilterDto, token: string | null) : Promise<PaginatedResponseDto<TextWithoutContentDto> | ExceptionDto> => {
+const BaseTextsSearch = async (pagination: PaginationDto, sort: SortDto, filter: TextFilterDto, token: string | null, baseUrl: string) : Promise<PaginatedResponseDto<TextWithoutContentDto> | ExceptionDto> => {
     try {
-        var url = process.env.REACT_APP_SERVER_URL_PATH + "api/text" +
+        var url = baseUrl +
             `?pageNumber=${pagination.pageNumber}&pageSize=${pagination.pageSize}` +
             `&sortBy=${sort.sortBy}&sortAscending=${sort.sortAscending}`
 
@@ -47,14 +47,30 @@ export const SearchTextsAPI = async (pagination: PaginationDto, sort: SortDto, f
                 currentPage: data.currentPage,
                 pageSize: data.pageSize
             }
-
-        // console.log(data);
-        // console.log(convertedData);
+        
         return convertedData
     } catch (error) {
         return translateException(handleApiError(error as Error));
     }
 }
+
+export const SearchTextsAPI = async (pagination: PaginationDto, sort: SortDto, filter: TextFilterDto, token: string | null) : Promise<PaginatedResponseDto<TextWithoutContentDto> | ExceptionDto> => {
+    const baseUrl = process.env.REACT_APP_SERVER_URL_PATH + "api/text";
+    return await BaseTextsSearch(pagination, sort, filter, token, baseUrl);
+}
+
+export const SearchTextsByNameAPI = async (pagination: PaginationDto, sort: SortDto, filter: TextFilterWithoutNameDto, ownerName: string, token: string | null) : Promise<PaginatedResponseDto<TextWithoutContentDto> | ExceptionDto> => {
+    const baseUrl = process.env.REACT_APP_SERVER_URL_PATH + "api/text/byName";
+    return await BaseTextsSearch(pagination, sort, {
+        ownerName: ownerName,
+        title: filter.title,
+        tags: filter.tags,
+        syntax: filter.syntax,
+        accessType: filter.accessType,
+        hasPassword: filter.hasPassword
+    }, token, baseUrl);
+}
+
 
 export const SearchSocietyTextsAPI = async () : Promise<TextWithoutContentDto[] | ExceptionDto> => {
     try {

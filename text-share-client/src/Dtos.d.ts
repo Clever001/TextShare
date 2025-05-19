@@ -117,6 +117,8 @@ export interface CreateTextDto {
     password: string | null
 }
 
+
+
 // public class CreateTextDto {
 //     public string Title { get; set; } = string.Empty;
 //     public string Description { get; set; } = string.Empty;
@@ -141,6 +143,14 @@ export interface SortDto {
 
 export interface TextFilterDto {
     ownerName: string | null,
+    title: string | null,
+    tags: string[] | null,
+    syntax: string | null,
+    accessType: string | null,
+    hasPassword: bool | null
+}
+
+export interface TextFilterWithoutNameDto {
     title: string | null,
     tags: string[] | null,
     syntax: string | null,

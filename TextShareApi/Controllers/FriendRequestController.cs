@@ -28,9 +28,9 @@ public class FriendRequestController : ControllerBase {
         var senderName = User.GetUserName();
 
         var result = await _frService.Create(senderName!, recipientName);
-        
+
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
-        
+
         return Ok(result.Value.ToDto());
     }
 
@@ -40,9 +40,9 @@ public class FriendRequestController : ControllerBase {
         var senderName = User.GetUserName();
 
         var result = await _frService.Delete(senderName!, recipientName);
-        
+
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
-        
+
         return NoContent();
     }
 
@@ -76,6 +76,30 @@ public class FriendRequestController : ControllerBase {
         );
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
         return Ok(result.Value.Convert(r => r.ToDto()));
+    }
+
+    [HttpGet("fromMe/{recipientName}")]
+    [Authorize]
+    public async Task<IActionResult> GetRequestDetailFromMe([FromRoute] string recipientName)
+    {
+        var senderName = User.GetUserName();
+
+        var result = await _frService.GetFriendRequest(senderName!, recipientName);
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+
+        return Ok(result.Value.ToDto());
+    }
+
+    [HttpGet("toMe/{senderName}")]
+    [Authorize]
+    public async Task<IActionResult> GetRequestDetailtoMe([FromRoute] string senderName)
+    {
+        var recipientName = User.GetUserName();
+
+        var result = await _frService.GetFriendRequest(senderName, recipientName!);
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+
+        return Ok(result.Value.ToDto());
     }
 
     [HttpPut("{senderName}")]

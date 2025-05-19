@@ -99,20 +99,24 @@ public class FriendRequestService : IFriendRequestService {
         return Result<FriendRequest>.Success(request);
     }
 
-    public async Task<Result<FriendRequest?>> GetFriendRequest(string senderName, string recipientName) {
+    public async Task<Result<FriendRequest>> GetFriendRequest(string senderName, string recipientName) {
         if (senderName == recipientName)
-            return Result<FriendRequest?>.Failure(new BadRequestException("Sender name and recipient name cannot be the same."));
+            return Result<FriendRequest>.Failure(new BadRequestException("Sender name and recipient name cannot be the same."));
 
         var (senderId, recipientId) = await _accountRepository.GetAccountIds(senderName, recipientName);
         if (senderId == null) {
-            return Result<FriendRequest?>.Failure(new NotFoundException("Sender not found."));
+            return Result<FriendRequest>.Failure(new NotFoundException("Sender not found."));
         }
         if (recipientId == null) {
-            return Result<FriendRequest?>.Failure(new NotFoundException("Recipient not found."));
+            return Result<FriendRequest>.Failure(new NotFoundException("Recipient not found."));
         }
 
         var request = await _friendRequestRepository.GetRequest(senderId, recipientId);
-        return Result<FriendRequest?>.Success(request);
+        if (request == null) {
+            return Result<FriendRequest>.Failure(new NotFoundException("Request not found."));
+        }
+
+        return Result<FriendRequest>.Success(request);
     }
 
     public async Task<Result<PaginatedResponseDto<FriendRequest>>> GetSentFriendRequests(PaginationDto pagination,

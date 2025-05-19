@@ -181,7 +181,7 @@ const TextSearch = (props: Props) => {
               <tbody>
                 <tr>
                   <td className="col1"><p>Автор</p></td>
-                  <div className="col2"><input type="text" name="ownerName" /></div>
+                  <td className="col2"><input type="text" name="ownerName" /></td>
                 </tr>
                 <tr>
                   <td className="col1"><p>Теги</p></td>
@@ -243,7 +243,7 @@ const TextSearch = (props: Props) => {
             </thead>
             <tbody>
               {texts && (texts.items.map(t => {
-                return (<TextRow text={t} getIcon={getIcon} key={t.id}></TextRow>)
+                return (<TextRow text={t} getIcon={getIcon} key={t.id} includeOwner={true}></TextRow>)
               }))}
             </tbody>
           </table>
@@ -254,20 +254,20 @@ const TextSearch = (props: Props) => {
 
       {texts && 
         <div className="pagination-controls">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          Предыдущая страница
-        </button>
-        <span>Страница {currentPage} из {texts.totalPages}</span>
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={texts ? currentPage >= texts.totalPages : false}
-        >
-          Следующая страница
-        </button>
-      </div>
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Предыдущая страница
+          </button>
+          <span>Страница {currentPage} из {texts.totalPages}</span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={texts ? currentPage >= texts.totalPages : false}
+          >
+            Следующая страница
+          </button>
+        </div>
       }
     </div>
   )

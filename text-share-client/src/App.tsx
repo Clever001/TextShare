@@ -67,6 +67,17 @@ const App = () => {
         getUserName();
     }, [validAuth]);
 
+    const Header_onProfileClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+        const userName = Cookies.get("userName");
+        if (!userName) {
+            alert("Перед перезодом на страницу профиля сначала необходимо зарегистрироваться в системе.");
+            navigate("/auth");
+            return;
+        }
+
+        navigate("/profile/" + userName);
+    }
+
     // Side bar
 
 
@@ -80,7 +91,8 @@ const App = () => {
                 onSearchSubmit={header_onSearchSubmit}
                 onUserClick={header_onUserClick}
                 onShowMenuButtonClick={header_onShowMenuButtonClick}
-                onLogOutClick={Header_onLogOutClick}
+                onLogOutClick={Header_onLogOutClick} 
+                onProfileClick={Header_onProfileClick}
             />
 
             <div className="container-fluid">

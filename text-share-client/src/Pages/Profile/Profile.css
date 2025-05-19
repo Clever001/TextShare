@@ -1,0 +1,101 @@
+.profile {
+    margin-top:60px;
+    color: #000;
+}
+
+.profile .errors {
+    color: red;
+}
+
+.profile .title {
+    border-bottom:1px solid #BABABA;
+    margin: 10px 0 0 0;
+    font-size: 18px;
+}
+
+/* Header */
+
+.profile .header {
+    display: flex;
+    flex-direction:row;
+    justify-content: space-between;
+}
+
+.profile .header .info {
+    display: flex;
+    flex-direction:row;
+    gap:20px;
+}
+
+.profile .header .info img {
+    height:40px;
+    width:40px;
+}
+
+.profile .header .info .name {
+    margin: auto 0;
+    font-size: 18px;
+}
+
+.profile .header .action-button {
+    margin: auto 0;
+}
+
+/* filters */
+
+.profile .filters {
+    width: 65%;
+    min-width: 320px;
+    border: 1px solid #BABABA;
+    border-radius:5px;
+    padding:7px;
+    margin: 10px 0;
+}
+
+.profile table {
+    width: 100%;
+}
+
+.profile table td {
+    padding:4px 0;
+}
+
+.profile table .col1 {
+    width: 70%;
+}
+.profile table .col1 * {
+    width: 100%;
+}
+
+.profile table .col2 > * {
+    width: 100%;
+}
+
+.profile table input,
+.profile table select {
+    border-radius:5px;
+    border:1px solid #BABABA;
+    outline:none;
+}
+
+.profile table input:hover,
+.profile table select:hover {
+    border-color:#000;
+}
+
+.profile form button {
+    background-color: #0080CE;
+    color: #fff;
+    border: 0;
+    border-radius:5px;
+}
+
+/* Table */
+
+.profile .result thead td {
+    border-bottom:1px solid #BABABA;
+}
+
+.profile .result tbody td {
+    height:40px;
+}

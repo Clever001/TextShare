@@ -10,13 +10,14 @@ type Props = {
     onSearchSubmit : (e: React.FormEvent<HTMLFormElement>) => void,
     onUserClick : (e: React.FormEvent<HTMLFormElement>) => void,
     onShowMenuButtonClick : (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
-    onLogOutClick : (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+    onLogOutClick : (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
+    onProfileClick : (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
 const Header = ({
     userName, query, menuHidden, onSearchQueryChange, 
     onSearchSubmit, onUserClick, onShowMenuButtonClick, 
-    onLogOutClick
+    onLogOutClick, onProfileClick
 }: Props) => {
   return (
     <header>
@@ -63,10 +64,10 @@ const Header = ({
             <div className="dropout-menu" hidden={menuHidden}>
                 {userName && 
                     <div>
-                        <Link to="/profile">
+                        <button type="button" onClick={onProfileClick}>
                             <img src="img/user_simple_icon.svg" alt="" />
                             <div className="text">Мой профиль</div>
-                        </Link>
+                        </button>
                     </div>
                 }
                 {userName &&

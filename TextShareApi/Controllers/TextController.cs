@@ -57,13 +57,32 @@ public class TextController : ControllerBase {
         [FromQuery] TextFilterDto filter) {
         if (!sort.IsValid(typeof(Text)))
             return this.ToActionResult(new BadRequestException("SortBy contains invalid property name."));
-        
+
         string? senderName = User.GetUserName();
 
         if (Request.Headers.ContainsKey("Authorization") && senderName is null or "")
             return this.ToActionResult(new ForbiddenException());
-        
+
         var result = await _textService.GetTexts(pagination, sort, filter, senderName);
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+
+        return Ok(result.Value.Convert(t => t.ToTextWithoutContentDto()));
+    }
+
+    [HttpGet("byName")]
+    public async Task<IActionResult> GetByUserName([FromQuery] PaginationDto pagination,
+        [FromQuery] SortDto sort,
+        [FromQuery] TextFilterWithoutOwnerDto filter, [FromQuery] string ownerName)
+    {
+        if (!sort.IsValid(typeof(Text)))
+            return this.ToActionResult(new BadRequestException("SortBy contains invalid property name."));
+
+        string? senderName = User.GetUserName();
+
+        if (Request.Headers.ContainsKey("Authorization") && senderName is null or "")
+            return this.ToActionResult(new ForbiddenException());
+
+        var result = await _textService.GetTextsByName(pagination, sort, filter, ownerName, senderName);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
         return Ok(result.Value.Convert(t => t.ToTextWithoutContentDto()));
