@@ -92,7 +92,7 @@ public class FriendRequestController : ControllerBase {
 
     [HttpGet("toMe/{senderName}")]
     [Authorize]
-    public async Task<IActionResult> GetRequestDetailtoMe([FromRoute] string senderName)
+    public async Task<IActionResult> GetRequestDetailToMe([FromRoute] string senderName)
     {
         var recipientName = User.GetUserName();
 

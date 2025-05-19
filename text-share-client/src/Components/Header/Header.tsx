@@ -44,13 +44,10 @@ const Header = ({
             </div>
             <div className="user-info">
                 {userName ? 
-                    <form onSubmit={onUserClick}> {/* TODO: Insert Here Cur User Id */}
-                        <input value="test" type="text" hidden={true} disabled={true}/>
-                        <button type="submit">
-                            <img src="img/user_icon.svg" alt="user" />
-                            <div className="user-name">{userName}</div>
-                        </button>
-                    </form>
+                    <button onClick={onProfileClick}>
+                        <img src="img/user_icon.svg" alt="user" />
+                        <div className="user-name">{userName}</div>
+                    </button>
                 :
                     <Link to="/auth">
                         <img src="img/log_in_icon.svg" alt="log in" />

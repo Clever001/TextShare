@@ -7,6 +7,7 @@ import Cookies from 'js-cookie'
 import { SearchTextsByNameAPI } from '../../Services/API/TextAPIService'
 import { isExceptionDto } from '../../Services/ErrorHandler'
 import './Profile.css'
+import { AreFriendsAPI, GetRequestFromMeAPI, GetRequestToMeAPI } from '../../Services/API/AccountAPIService'
 
 type Props = {}
 
@@ -20,6 +21,8 @@ const Profile = (props: Props) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const PAGE_SIZE = 10;
+
+  const token = Cookies.get("token") ?? null;
 
   var filter: TextFilterWithoutNameDto = {
     title: null,
@@ -70,13 +73,7 @@ const Profile = (props: Props) => {
   }
 
   const searchTexts = async (pagination: PaginationDto, sort: SortDto) => {
-    const token = Cookies.get("token") ?? null;
-
-    if (!userName) {
-      alert("Имя пользователя не может быть пустым.");
-      navigate("/");
-      return;
-    }
+    if (!userName) return;
 
     const result = await SearchTextsByNameAPI(pagination, sort, filter, userName, token);
 
@@ -123,6 +120,7 @@ const Profile = (props: Props) => {
     }
 
     searchTexts(pagination, sort);
+    checkFriendship();
 
   }, [userName]);
 
@@ -157,6 +155,54 @@ const Profile = (props: Props) => {
     searchTexts(pagination, sort);
   }
 
+  const [areFriends, setArefriends] = useState<boolean>(false);
+  const [sentRequest, setSentRequest] = useState<boolean>(false);
+  const [recievedRequest, setRecievedRequest] = useState<boolean>(false);
+  const [noBind, setNoBind] = useState<boolean>(false);
+
+  const checkFriendship = async () => {
+    if (!token) return;
+    if (!userName) return;
+
+    const friendsCheckPromise = AreFriendsAPI(token, userName);
+    const sentRequestCheckPromise = GetRequestFromMeAPI(token, userName);
+    const recievedRequestCheckPromise = GetRequestToMeAPI(token, userName);
+
+    const friendsCheck = await friendsCheckPromise;
+    const sentRequestCheck = await sentRequestCheckPromise;
+    const recievedRequestCheck = await recievedRequestCheckPromise;
+
+    if (typeof (friendsCheck) === "boolean" && friendsCheck) {
+      setArefriends(true);
+    } else if (!isExceptionDto(sentRequestCheck)) {
+      setSentRequest(true);
+    } else if (!isExceptionDto(recievedRequestCheck)) {
+      setRecievedRequest(true);
+    } else {
+      setNoBind(true);
+    }
+  }
+
+  const onSendRequestClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+    throw new Error('Function not implemented.')
+  }
+
+  const onDeleteRequestClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+    throw new Error('Function not implemented.')
+  }
+
+  const onAproveRequestClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+    throw new Error('Function not implemented.')
+  }
+
+  const onRejectRequestClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+    throw new Error('Function not implemented.')
+  }
+
+  const onDeleteFriendClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+    throw new Error('Function not implemented.')
+  }
+
   return (
     <div className="profile">
       <div className="header">
@@ -165,7 +211,21 @@ const Profile = (props: Props) => {
           <p className="name">{userName}</p>
         </div>
         <div className="action-button">
-          <button type="button">Добавить в друзья</button>
+          {noBind &&
+            <button type="button" onClick={onSendRequestClick}>Отправить запрос в друзья</button>
+          }
+          {sentRequest &&
+            <button type="button" onClick={onDeleteRequestClick}>Удалить запрос в друзья</button>
+          }
+          {recievedRequest &&
+            <div>
+              <button type="button" onClick={onAproveRequestClick}>Одобрить запрос в друзья</button>
+              <button type="button" onClick={onRejectRequestClick}>Отвергнуть запрос в друзья</button>
+            </div>
+          }
+          {areFriends &&
+            <button type="button" onClick={onDeleteFriendClick}>Удалить из списка друзей</button>
+          }
         </div>
       </div>
 
