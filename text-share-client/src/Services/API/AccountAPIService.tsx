@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ExceptionDto, FriendRequestDto, PaginatedResponseDto, PaginationDto, ProcessFriendRequestDto, UserWithoutTokenDto } from "../../Dtos"
+import { ExceptionDto, FriendRequestDto, PaginatedResponseDto, PaginationDto, ProcessFriendRequestDto, UpdateUserDto, UserWithoutTokenDto, UserWithTokenDto } from "../../Dtos"
 import { translateException } from "../TranslatorService";
 import { handleApiError } from "../ErrorHandler";
 
@@ -199,6 +199,22 @@ export const GetRecievedFriendRequestsAPI = async(pagination: PaginationDto, isA
         });
 
         return data.data as PaginatedResponseDto<FriendRequestDto>;
+    } catch (error) {
+        return translateException(handleApiError(error as Error));
+    }
+}
+
+export const ChangeProfileContentAPI = async (update: UpdateUserDto, token: string): Promise<UserWithTokenDto | ExceptionDto> => {
+    try {
+        const url = process.env.REACT_APP_SERVER_URL_PATH + "api/accounts";
+        
+        const data = await axios.put(url, update, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        return data.data as UserWithTokenDto;
     } catch (error) {
         return translateException(handleApiError(error as Error));
     }

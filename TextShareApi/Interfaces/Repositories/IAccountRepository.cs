@@ -14,4 +14,5 @@ public interface IAccountRepository
         bool isAscending,
         List<Expression<Func<AppUser, bool>>>? predicates);
     Task<bool> ContainsAccountByName(string userName);
+    Task<bool> ContainsAccountByEmail(string email);
 }

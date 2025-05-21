@@ -1,6 +1,8 @@
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TextShareApi.Attributes;
+using TextShareApi.ClassesLib;
 using TextShareApi.Dtos.Accounts;
 using TextShareApi.Dtos.Exception;
 using TextShareApi.Dtos.QueryOptions;
@@ -54,6 +56,25 @@ public class AccountController : ControllerBase {
 
         var (user, token) = result.Value;
         
+        return Ok(user.ToUserWithTokenDto(token));
+    }
+
+    [HttpPut]
+    [Authorize]
+    public async Task<IActionResult> Update([FromBody] UpdateUserDto updateDto) {
+        if (updateDto.UserName != null && IsEmail(updateDto.UserName))
+            return this.ToActionResult(new BadRequestException("One or more validation errors occurred.",
+                [$"The Field {nameof(updateDto.UserName)} cannot represent an email."]));
+        
+        var userName = User.GetUserName();
+        if (userName == null) // Never executed.
+            throw new ArgumentNullException(nameof(userName));
+
+        var result = await _accountService.Update(userName, updateDto);
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        
+        var (user, token) = result.Value;
+
         return Ok(user.ToUserWithTokenDto(token));
     }
 

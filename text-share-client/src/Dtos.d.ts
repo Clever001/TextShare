@@ -22,6 +22,11 @@ export interface UserWithoutTokenDto {
     userName: string
 }
 
+export interface UpdateUserDto {
+    userName: string | null,
+    email: string | null
+}
+
 // Exception
 
 export interface ExceptionInput {

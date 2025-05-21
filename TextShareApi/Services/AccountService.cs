@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Identity;
 using TextShareApi.ClassesLib;
+using TextShareApi.Dtos.Accounts;
 using TextShareApi.Dtos.QueryOptions;
 using TextShareApi.Exceptions;
 using TextShareApi.Interfaces.Repositories;
@@ -61,6 +62,32 @@ public class AccountService : IAccountService {
         if (!validPassword) return Result<(AppUser, string)>.Failure(new UnauthorizedException());
 
         var token = _tokenService.CreateToken(user);
+        return Result<(AppUser, string)>.Success((user, token));
+    }
+
+    public async Task<Result<(AppUser, string)>> Update(string userName, UpdateUserDto update) {
+        var user = await _userManager.FindByNameAsync(userName);
+        if (user == null) return Result<(AppUser, string)>.Failure(new ServerException());
+
+        if (update.UserName != null && update.UserName != user.UserName) {
+            bool exists = await _accountRepository.ContainsAccountByName(update.UserName);
+            if (exists)
+                return Result<(AppUser, string)>.Failure(new BadRequestException("Account with such userName already exists."));
+            
+            user.UserName = update.UserName;
+        }
+
+        if (update.Email != null && update.Email != user.Email) {
+            bool exists = await _accountRepository.ContainsAccountByEmail(update.Email);
+            if (exists)
+                return Result<(AppUser, string)>.Failure(new BadRequestException("Account with such email already exists."));
+            
+            user.Email = update.Email;
+        }
+        
+        await _userManager.UpdateAsync(user);
+        var token = _tokenService.CreateToken(user);
+        
         return Result<(AppUser, string)>.Success((user, token));
     }
 
