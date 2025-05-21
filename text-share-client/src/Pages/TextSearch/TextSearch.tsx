@@ -144,7 +144,7 @@ const TextSearch = (props: Props) => {
 
   function handlePageChange(newPage: number): void {
     if (newPage < 1 || (texts && newPage > texts.totalPages)) {
-        return; 
+      return; 
     }
     setCurrentPage(newPage);
     

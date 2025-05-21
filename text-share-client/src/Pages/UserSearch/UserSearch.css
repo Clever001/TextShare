@@ -1,0 +1,105 @@
+.user-search {
+    margin-top:60px;
+    color:#000;
+}
+
+.user-search .title {
+    font-size:18px;
+    border-bottom:1px solid #BABABA;
+}
+
+.user-search .error {
+    color:red;
+}
+
+/* .user-search .search-bar {
+    margin:10px 0;
+} */
+
+.user-search input, .user-search select {
+    border:1px solid #BABABA;
+    border-radius:5px;
+    outline:none;
+}
+
+.user-search input:hover, .user-search select:hover {
+    border-color:#000;
+}
+
+.user-search .search-bar button {
+    border:none;
+    outline:none;
+    background-color:#BABABA;
+}
+
+.user-search table {
+    width:100%;
+}
+.user-search table td {
+    padding:4px 0;
+}
+.user-search .col1 {
+    width:70%;
+}
+.user-search .col1 > * {
+    width:90%;
+}
+
+.user-search .col2 > * {
+    width:100%;
+}
+
+.user-search p {
+    margin:auto 0;
+}
+
+
+.user-search .search-bar, .user-search .filters {
+    width:auto;
+    max-width:700px;
+}
+
+.user-search button {
+    color:#fff;
+}
+
+.user-search .filters {
+    border: 1px solid #BABABA;
+    border-radius:5px;
+    padding:7px;
+}
+
+
+
+.user-search .result {
+    margin-top:30px;
+}
+
+
+.user-search .result .icon {
+    width: 50px;
+}
+
+.user-search .result .userName {
+    color:red !important;
+}
+
+.user-search .result .first-row {
+    width: 200px;
+}
+
+.user-search .result .buttons-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.user-search button {
+    background-color: #BABABA;
+}
+
+
+.user-search .myrow {
+    display:flex;
+    flex-direction:row;
+}

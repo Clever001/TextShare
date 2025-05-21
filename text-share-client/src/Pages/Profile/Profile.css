@@ -44,8 +44,8 @@
 /* filters */
 
 .profile .filters {
-    width: 65%;
-    min-width: 320px;
+    width:auto;
+    max-width:700px;
     border: 1px solid #BABABA;
     border-radius:5px;
     padding:7px;
@@ -58,6 +58,10 @@
 
 .profile table td {
     padding:4px 0;
+}
+
+.profile p {
+    margin:auto 0;
 }
 
 .profile table .col1 {

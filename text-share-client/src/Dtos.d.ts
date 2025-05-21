@@ -17,6 +17,11 @@ export interface LoginDto {
     password: string
 }
 
+export interface UserWithoutTokenDto {
+    id: string,
+    userName: string
+}
+
 // Exception
 
 export interface ExceptionInput {
