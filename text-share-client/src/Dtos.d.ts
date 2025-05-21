@@ -152,7 +152,7 @@ export interface TextFilterDto {
     tags: string[] | null,
     syntax: string | null,
     accessType: string | null,
-    hasPassword: bool | null
+    hasPassword: boolean | null
 }
 
 export interface TextFilterWithoutNameDto {

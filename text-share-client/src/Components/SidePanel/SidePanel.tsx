@@ -51,7 +51,7 @@ const SidePanel = (props: Props) => {
         tags: null,
         syntax: null,
         accessType: null,
-        hasPassword: undefined
+        hasPassword: null
       }
 
       const result = await SearchTextsAPI(pagination, sort, filter, token);

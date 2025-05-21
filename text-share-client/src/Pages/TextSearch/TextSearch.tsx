@@ -12,19 +12,38 @@ import { isExceptionDto } from '../../Services/ErrorHandler'
 type Props = {}
 
 const TextSearch = (props: Props) => {
-  const [texts, setTexts] = useState<PaginatedResponseDto<TextWithoutContentDto> | null>(null)
-  var filter: TextFilterDto = {
-    ownerName: null,
-    title: null,
-    tags: null,
-    syntax: null,
-    accessType: null,
-    hasPassword: undefined
-  }
-  const [currentPage, setCurrentPage] = useState<number>(1)
-
   const [searchParams, setSearchParams] = useSearchParams();
-  const query = decodeURIComponent(searchParams.get("query") ?? "");
+  const query = searchParams.get("title") ?? "";
+  const [texts, setTexts] = useState<PaginatedResponseDto<TextWithoutContentDto> | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(toNumber(searchParams.get("pageNumber")));
+
+  var filter: TextFilterDto = {
+    ownerName: searchParams.get("ownerName"),
+    title: query,
+    tags: (searchParams.get("tags") == "") ? null : searchParams.get("tags")?.split(" ") ?? null,
+    syntax: searchParams.get("syntax"),
+    accessType: searchParams.get("accessType"),
+    hasPassword: toBoolean(searchParams.get("hasPassword"))
+  }
+
+  function toBoolean(value: string | null): boolean | null {
+    if (value === "true") {
+      return true;
+    }
+    if (value === "false") {
+      return false;
+    }
+    return null;
+  }
+
+  function toNumber(value: string | null): number {
+    if (!value) return 1;
+    try {
+      return Number.parseInt(value)
+    } catch (parseError) {
+      return 1;
+    }
+  }
 
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
@@ -36,18 +55,8 @@ const TextSearch = (props: Props) => {
 
   useEffect(() => {
     const search = async () => {
-      const newFilter:TextFilterDto = {
-        ownerName: null,
-        title: query,
-        tags: null,
-        syntax: null,
-        accessType: null,
-        hasPassword: undefined
-      }
-      filter = newFilter;
-
       const pagination: PaginationDto = {
-        pageNumber: 1,
+        pageNumber: toNumber(searchParams.get("pageNumber")),
         pageSize: 10
       }
 
@@ -58,10 +67,8 @@ const TextSearch = (props: Props) => {
 
       await performSearch(pagination, sort);
     }
-    
-    if (query) {
-      search()
-    }
+
+    search()
   }, [query])
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -111,7 +118,15 @@ const TextSearch = (props: Props) => {
   }
 
   const performSearch = async (pagination: PaginationDto, sort: SortDto) => {
-    setSearchParams(filter.title ?? "");
+    setSearchParams({
+      ownerName: filter.ownerName ?? "",
+      title: filter.title ?? "",
+      tags: filter.tags?.join("") ?? "",
+      syntax: filter.syntax ?? "",
+      accessType: filter.accessType ?? "",
+      hasPassword: (filter.hasPassword ?? "").toString(),
+      pageNumber: pagination.pageNumber.toString()
+    });
 
     var token = Cookies.get("token");
 
@@ -144,10 +159,10 @@ const TextSearch = (props: Props) => {
 
   function handlePageChange(newPage: number): void {
     if (newPage < 1 || (texts && newPage > texts.totalPages)) {
-      return; 
+      return;
     }
     setCurrentPage(newPage);
-    
+
     const pagination: PaginationDto = {
       pageNumber: newPage,
       pageSize: 10
@@ -170,7 +185,7 @@ const TextSearch = (props: Props) => {
             <table>
               <tbody>
                 <tr>
-                  <td className="col1"><input type="text" name="title" id="" defaultValue={query ? query : ""}/></td>
+                  <td className="col1"><input type="text" name="title" id="" defaultValue={query ? query : ""} /></td>
                   <td><button type="submit">Искать</button></td>
                 </tr>
               </tbody>
@@ -181,15 +196,15 @@ const TextSearch = (props: Props) => {
               <tbody>
                 <tr>
                   <td className="col1"><p>Автор</p></td>
-                  <td className="col2"><input type="text" name="ownerName" /></td>
+                  <td className="col2"><input type="text" name="ownerName" defaultValue={filter.ownerName ?? ""} /></td>
                 </tr>
                 <tr>
                   <td className="col1"><p>Теги</p></td>
-                  <td className="col2"><input type="text" name="tags" /></td>
+                  <td className="col2"><input type="text" name="tags" defaultValue={filter.tags?.join(" ") ?? ""}/></td>
                 </tr>
                 <tr>
                   <td className="col1"><p>Тип синтаксиса</p></td>
-                  <td className="col2"><select name="syntax">
+                  <td className="col2"><select name="syntax" defaultValue={filter.syntax ?? ""}>
                     <option value=""></option>
                     {getSyntaxes().map(s => {
                       return (
@@ -201,7 +216,7 @@ const TextSearch = (props: Props) => {
                 <tr>
                   <td className="col1"><p>Тип доступа</p></td>
                   <td className="col2">
-                    <select name="accessType">
+                    <select name="accessType" defaultValue={filter.accessType ?? ""}>
                       <option value=""></option>
                       <option value="byReferencePublic">Публичный</option>
                       <option value="byReferenceAuthorized">Публичный с авторизацией</option>
@@ -213,7 +228,7 @@ const TextSearch = (props: Props) => {
                 <tr>
                   <td className="col1"><p>Наличие пароля</p></td>
                   <td className="col2">
-                    <select name="hasPassword">
+                    <select name="hasPassword" defaultValue={filter.hasPassword?.toString() ?? ""}>
                       <option value=""></option>
                       <option value="true">Есть пароль</option>
                       <option value="false">Нет пароля</option>
@@ -229,7 +244,7 @@ const TextSearch = (props: Props) => {
 
       <div className="result">
         <div className="title">Результаты поиска</div>
-        {texts ? 
+        {texts ?
           <table>
             <thead>
               <tr>
@@ -247,12 +262,12 @@ const TextSearch = (props: Props) => {
               }))}
             </tbody>
           </table>
-        :
+          :
           "Нет данных!"
         }
       </div>
 
-      {texts && 
+      {texts &&
         <div className="pagination-controls">
           <button
             onClick={() => handlePageChange(currentPage - 1)}

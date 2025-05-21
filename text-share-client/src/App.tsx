@@ -28,7 +28,7 @@ const App = () => {
 
     const header_onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        navigate(`/?query=${encodeURIComponent(header_query)}`);
+        navigate(`/?title=${encodeURIComponent(header_query)}`);
     }
 
     const header_onUserClick = (e: React.FormEvent<HTMLFormElement>) => {
