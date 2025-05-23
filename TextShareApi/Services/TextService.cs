@@ -1,6 +1,4 @@
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using TextShareApi.ClassesLib;
 using TextShareApi.Dtos.Enums;
 using TextShareApi.Dtos.QueryOptions;
@@ -62,7 +60,8 @@ public class TextService : ITextService {
             Description = dto.Description,
             Content = dto.Content,
             Syntax = dto.Syntax,
-            Tags = new()
+            Tags = new(),
+            ExpiryDate = dto.ExpiryDate,
         };
         var securitySettings = new TextSecuritySettings {
             TextId = text.Id,
@@ -96,6 +95,11 @@ public class TextService : ITextService {
         var text = await _textRepository.GetText(textId);
         if (text == null) return Result<Text>.Failure(new NotFoundException("Text not found."));
 
+        var now = DateTime.UtcNow;
+        if (now >= text.ExpiryDate) {
+            return Result<Text>.Failure(new NotFoundException("Text not found."));
+        }
+
         var userId = curUserName == null ? null : await _accountRepository.GetAccountId(curUserName);
 
         var securityCheckResult = await _textSecurityService.PassReadSecurityChecks(text, userId, requestPassword);
@@ -117,7 +121,10 @@ public class TextService : ITextService {
         int take = pagination.PageSize;
 
         // Filtering
-        var predicates = new List<Expression<Func<Text, bool>>>();
+        var now = DateTime.UtcNow;
+        var predicates = new List<Expression<Func<Text, bool>>> {
+            t => t.ExpiryDate > now
+        };
         
         if (filter.OwnerName != null)
             predicates.Add(t => t.Owner.UserName!.ToLower().Contains(filter.OwnerName!.ToLower()));
@@ -180,7 +187,9 @@ public class TextService : ITextService {
     }
 
     public async Task<Result<List<Text>>> GetLatestTexts() {
+        var now = DateTime.UtcNow;
         var predicates = new List<Expression<Func<Text, bool>>> {
+            t => t.ExpiryDate > now,
             t => t.TextSecuritySettings.AccessType == AccessType.ByReferencePublic ||
                  t.TextSecuritySettings.AccessType == AccessType.ByReferenceAuthorized,
             t => t.TextSecuritySettings.Password == null
@@ -203,6 +212,10 @@ public class TextService : ITextService {
         var text = await _textRepository.GetText(textId);
         if (text == null) return Result<Text>.Failure(new NotFoundException("Text not found."));
 
+        var now = DateTime.UtcNow;
+        if (now >= text.ExpiryDate) {
+            return Result<Text>.Failure(new NotFoundException("Text not found."));
+        }
 
         // Security check
         var curUserId = await _accountRepository.GetAccountId(curUserName);
@@ -239,6 +252,7 @@ public class TextService : ITextService {
                     : new Tag { Name = tag });
             }
         }
+        if (dto.ExpiryDate.HasValue) text.ExpiryDate = dto.ExpiryDate.Value;
 
         if (dto.AccessType != null) text.TextSecuritySettings.AccessType = dto.AccessType.Value;
         if (dto.UpdatePassword) text.TextSecuritySettings.Password = dto.Password;
@@ -253,6 +267,11 @@ public class TextService : ITextService {
     public async Task<Result> Delete(string textId, string curUserName) {
         var text = await _textRepository.GetText(textId);
         if (text == null) return Result.Failure(new NotFoundException("Text not found."));
+
+        var now = DateTime.UtcNow;
+        if (now >= text.ExpiryDate) {
+            return Result.Failure(new NotFoundException("Text not found."));
+        }
 
 
         // Security check

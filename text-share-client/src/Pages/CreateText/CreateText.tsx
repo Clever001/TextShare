@@ -136,6 +136,11 @@ const CreateText = (props: Props) => {
       return;
     }
 
+    if (getFormValue("expiryDate") == "") {
+      setErrors(["Необходимо установить дату и время удаления текста, прежде чем продолжить"]);
+      return;
+    }
+
     const createDto: CreateTextDto = {
       title: getFormValue("title"),
       description: getFormValue("description"),
@@ -143,7 +148,8 @@ const CreateText = (props: Props) => {
       syntax: getFormValue("syntax"),
       tags: getFormValue("tags").split(" "),
       accessType: getFormValue("accessType"),
-      password: hasPassword ? getFormValue("password") : null
+      password: hasPassword ? getFormValue("password") : null,
+      expiryDate: new Date(getFormValue("expiryDate") ?? "")
     }
 
     const response = await CreateTextAPI(createDto, token);
@@ -212,6 +218,10 @@ const CreateText = (props: Props) => {
                       );
                     })}
                   </select></td>
+                </tr>
+                <tr>
+                  <td className="col1"><p>Дата и время удаления текста</p></td>
+                  <td className="col2"><input type="datetime-local" name="expiryDate"/></td>
                 </tr>
                 <tr>
                   <td className="col1"><p>Тип доступа</p></td>

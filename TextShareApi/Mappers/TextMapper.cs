@@ -16,7 +16,8 @@ public static class TextMapper {
             UpdatedOn = text.UpdatedOn,
             OwnerName = text.Owner.UserName!,
             AccessType = text.TextSecuritySettings.AccessType.ToString(),
-            HasPassword = text.TextSecuritySettings.Password != null
+            HasPassword = text.TextSecuritySettings.Password != null,
+            ExpiryDate = text.ExpiryDate
         };
     }
 
@@ -31,7 +32,8 @@ public static class TextMapper {
             UpdatedOn = text.UpdatedOn,
             OwnerName = text.Owner.UserName!,
             AccessType = text.TextSecuritySettings.AccessType.ToString(),
-            HasPassword = text.TextSecuritySettings.Password != null
+            HasPassword = text.TextSecuritySettings.Password != null,
+            ExpiryDate = text.ExpiryDate
         };
     }
 }

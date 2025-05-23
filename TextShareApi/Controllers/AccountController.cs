@@ -2,17 +2,13 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TextShareApi.Attributes;
-using TextShareApi.ClassesLib;
 using TextShareApi.Dtos.Accounts;
 using TextShareApi.Dtos.Exception;
 using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Dtos.QueryOptions.Filters;
 using TextShareApi.Exceptions;
 using TextShareApi.Extensions;
-using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;
-using TextShareApi.Models;
 
 namespace TextShareApi.Controllers;
 

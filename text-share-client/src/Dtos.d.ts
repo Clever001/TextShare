@@ -54,7 +54,8 @@ export interface TextWithoutContentInput {
     updatedOn: string | null,
     ownerName: string,
     accessType: string,
-    hasPassword: boolean
+    hasPassword: boolean,
+    expiryDate: string
 }
 
 export interface TextWithoutContentDto {
@@ -67,7 +68,8 @@ export interface TextWithoutContentDto {
     updatedOn: Date | null,
     ownerName: string,
     accessType: string,
-    hasPassword: boolean
+    hasPassword: boolean,
+    expiryDate: Date
 }
 
 export interface PaginatedResponseDto<T> {
@@ -89,7 +91,8 @@ export interface TextWithContentInput {
     updatedOn: string | null,
     ownerName: string,
     accessType: string,
-    hasPassword: boolean
+    hasPassword: boolean,
+    expiryDate: string
 }
 
 export interface TextWithContentDto {
@@ -103,7 +106,8 @@ export interface TextWithContentDto {
     updatedOn: Date | null,
     ownerName: string,
     accessType: string,
-    hasPassword: boolean
+    hasPassword: boolean,
+    expiryDate: Date
 }
 
 export interface UpdateTextDto {
@@ -114,7 +118,8 @@ export interface UpdateTextDto {
     tags: string[] | null,
     accessType: string | null,
     password: string | null,
-    updatePassword: bool
+    updatePassword: bool,
+    expiryDate: Date | null
 }
 
 export interface CreateTextDto {
@@ -124,7 +129,8 @@ export interface CreateTextDto {
     syntax: string,
     tags: string[],
     accessType: string,
-    password: string | null
+    password: string | null,
+    expiryDate: Date
 }
 
 // FriendRequest

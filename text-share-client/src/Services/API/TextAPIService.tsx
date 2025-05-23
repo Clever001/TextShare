@@ -39,7 +39,8 @@ const BaseTextsSearch = async (pagination: PaginationDto, sort: SortDto, filter:
                         updatedOn: ti.updatedOn ? new Date(ti.updatedOn) : null,
                         ownerName: ti.ownerName,
                         accessType: ti.accessType,
-                        hasPassword: ti.hasPassword
+                        hasPassword: ti.hasPassword,
+                        expiryDate: new Date(ti.expiryDate)
                     };
                 }),
                 totalItems: data.totalItems,
@@ -88,7 +89,8 @@ export const SearchSocietyTextsAPI = async () : Promise<TextWithoutContentDto[] 
                 updatedOn: t.updatedOn ? new Date(t.updatedOn) : null,
                 ownerName: t.ownerName,
                 accessType: t.accessType,
-                hasPassword: t.hasPassword
+                hasPassword: t.hasPassword,
+                expiryDate: new Date(t.expiryDate)
             }
         })
         
@@ -123,7 +125,8 @@ export const SearchTextByIdAPI = async (id: string, token: string | null, passwo
             updatedOn: data.updatedOn ? new Date(data.updatedOn) : null,
             ownerName: data.ownerName,
             accessType: data.accessType,
-            hasPassword: data.hasPassword
+            hasPassword: data.hasPassword,
+            expiryDate: new Date(data.expiryDate)
         }
 
         return convertedData;
@@ -155,7 +158,8 @@ export const UpdateTextAPI = async (id: string, updateDto: UpdateTextDto, token:
             updatedOn: data.updatedOn ? new Date(data.updatedOn) : null,
             ownerName: data.ownerName,
             accessType: data.accessType,
-            hasPassword: data.hasPassword
+            hasPassword: data.hasPassword,
+            expiryDate: new Date(data.expiryDate)
         };
 
         return convertedData;
@@ -186,7 +190,8 @@ export const CreateTextAPI = async (createDto: CreateTextDto, token: string) : P
             updatedOn: data.updatedOn ? new Date(data.updatedOn) : null,
             ownerName: data.ownerName,
             accessType: data.accessType,
-            hasPassword: data.hasPassword
+            hasPassword: data.hasPassword,
+            expiryDate: new Date(data.expiryDate)
         };
 
         return convertedData;

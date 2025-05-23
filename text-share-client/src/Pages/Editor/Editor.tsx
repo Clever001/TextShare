@@ -82,10 +82,23 @@ const Editor = (props: Props) => {
     setDescription(result.description);
     setSyntax(result.syntax);
     setTags(result.tags.join(" "));
+    setExpiry(formatForDateTimeLocal(result.expiryDate) ?? "");
     setAccessType(result.accessType);
     setHasPassword(result.hasPassword);
     return result;
   }
+
+  const formatForDateTimeLocal = (date: Date | undefined): string | undefined => {
+    if (!date) return undefined;
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Месяцы начинаются с 0
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
 
   useEffect(() => {
     let isMounted = true; // Флаг для отслеживания состояния монтирования
@@ -164,7 +177,8 @@ const Editor = (props: Props) => {
       tags: null,
       accessType: null,
       password: null,
-      updatePassword: false
+      updatePassword: false,
+      expiryDate: null
     };
 
 
@@ -175,6 +189,8 @@ const Editor = (props: Props) => {
     if (description != text?.description) { updateDto.description = description; }
     // Content
     if (editorInstance.current?.getValue() != text?.content) { updateDto.content = editorInstance.current?.getValue() ?? null; }
+    // ExpiryDate
+    if (expiry != formatForDateTimeLocal(text?.expiryDate)) {updateDto.expiryDate = new Date(expiry); }
     // Syntax
     if (syntax != text?.syntax) { updateDto.syntax = syntax; }
     // Tags
@@ -211,7 +227,8 @@ const Editor = (props: Props) => {
     if (updateDto.title == null && updateDto.accessType == null &&
       updateDto.content == null && updateDto.syntax == null &&
       updateDto.tags == null && updateDto.accessType == null &&
-      updateDto.updatePassword == false && updateDto.description == null
+      updateDto.updatePassword == false && updateDto.description == null &&
+      updateDto.expiryDate == null
     ) {
       setErrors(["Вы не внесли никаких изменений в текст."]);
       return;
@@ -222,7 +239,7 @@ const Editor = (props: Props) => {
     if (isExceptionDto(result)) {
       switch (result.httpCode) {
         case 400: // BadRequest
-          if (result.details) 
+          if (result.details)
             setErrors(result.details);
           else
             setErrors([result.description]);
@@ -254,6 +271,7 @@ const Editor = (props: Props) => {
   const [description, setDescription] = useState<string>("");
   const [syntax, setSyntax] = useState<string>("");
   const [tags, setTags] = useState<string>("");
+  const [expiry, setExpiry] = useState<string>("");
   const [accessType, setAccessType] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [hasPassword, setHasPassword] = useState<boolean>(false);
@@ -271,6 +289,7 @@ const Editor = (props: Props) => {
     }
   }
   const onTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => { setTags(e.target.value); }
+  const onExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => { setExpiry(e.target.value); }
   const onAccessTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => { setAccessType(e.target.value); }
   const onPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => { setPassword(e.target.value); }
   const onHasPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -294,6 +313,7 @@ const Editor = (props: Props) => {
     }
   }
   const returnTags = (e: SyntheticEvent) => { setTags(text?.tags?.join(" ") ?? ""); };
+  const returnExpiry = (e: SyntheticEvent) => { setExpiry(formatForDateTimeLocal(text?.expiryDate) ?? ""); }
   const returnAccessType = (e: SyntheticEvent) => { setAccessType(text?.accessType ?? "") };
   const returnHasPassword = (e: SyntheticEvent) => { setHasPassword(text?.hasPassword ?? false); }
 
@@ -355,6 +375,11 @@ const Editor = (props: Props) => {
                     <td className="col1"><p>Теги</p></td>
                     <td className="col2"><input type="text" name="tags" value={tags} onChange={onTagsChange} /></td>
                     <td className="col3"><img src="img/return_black.svg" alt="return" onClick={returnTags} /></td>
+                  </tr>
+                  <tr>
+                    <td className="col1"><p>Дата и время удаления</p></td>
+                    <td className="col2"><input type="datetime-local" name="expiryDate" value={expiry} onChange={onExpiryChange} /></td>
+                    <td className="col3"><img src="img/return_black.svg" alt="return" onClick={returnExpiry} /></td>
                   </tr>
                   <tr>
                     <td className="col1"><p>Тип синтаксиса</p></td>

@@ -76,7 +76,8 @@ public class TextRepository : ITextRepository {
                 UserName = t.Owner.UserName
             },
             Tags = t.Tags,
-            TextSecuritySettings = t.TextSecuritySettings
+            TextSecuritySettings = t.TextSecuritySettings,
+            ExpiryDate = t.ExpiryDate
         }).ToListAsync());
     }
 
@@ -104,7 +105,26 @@ public class TextRepository : ITextRepository {
         return true;
     }
 
-    public async Task<bool> ContainsText(string textId) {
+    public async Task<int> DeleteExpiredTexts() {
+        var now = DateTime.UtcNow;
+        var expiredTexts = await _context.Texts
+            .Include(t => t.TextSecuritySettings)
+            .Where(t => t.ExpiryDate <= now)
+            .ToListAsync();
+
+        if (expiredTexts.Count == 0) {
+            return 0;
+        }
+
+        var expiredTextSettings = expiredTexts.Select(t => t.TextSecuritySettings).ToList();
+        _context.TextSecuritySettings.RemoveRange(expiredTextSettings);
+        _context.Texts.RemoveRange(expiredTexts);
+        await _context.SaveChangesAsync();
+        return expiredTexts.Count;
+    }
+
+    public async Task<bool> ContainsText(string textId)
+    {
         return await _context.Texts.AnyAsync(t => t.Id == textId);
     }
 

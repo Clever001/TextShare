@@ -12,4 +12,5 @@ public class TextDto {
     public string OwnerName { get; set; } = string.Empty;
     public string AccessType { get; set; } = string.Empty;
     public bool HasPassword { get; set; }
+    public DateTime ExpiryDate { get; set; }
 }

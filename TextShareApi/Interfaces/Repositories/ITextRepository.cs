@@ -6,7 +6,8 @@ namespace TextShareApi.Interfaces.Repositories;
 /// <summary>
 ///     В возвращаемые тексты включены параметры безопасности и имя пользователя.
 /// </summary>
-public interface ITextRepository {
+public interface ITextRepository
+{
     Task AddText(Text text, TextSecuritySettings textSecuritySettings);
     Task<Text?> GetText(string textId);
     Task<(int, List<Text>)> GetTexts<T>(int skip,
@@ -17,6 +18,7 @@ public interface ITextRepository {
         bool generateCount);
     Task UpdateText(Text dto);
     Task<bool> DeleteText(string textId);
+    Task<int> DeleteExpiredTexts();
     Task<bool> ContainsText(string textId);
     Task<bool> ContainsText(string title, string ownerId);
 }

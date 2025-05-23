@@ -17,8 +17,8 @@ public class Text {
     public DateTime? UpdatedOn { get; set; } = null;
     public string OwnerId { get; set; }
     public AppUser Owner { get; set; }
-    
-    
+    public DateTime ExpiryDate { get; set; }
+
     public List<Tag> Tags { get; set; } = new List<Tag>();
     public TextSecuritySettings TextSecuritySettings { get; set; }
 }

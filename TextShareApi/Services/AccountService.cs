@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Identity;
 using TextShareApi.ClassesLib;
 using TextShareApi.Dtos.Accounts;

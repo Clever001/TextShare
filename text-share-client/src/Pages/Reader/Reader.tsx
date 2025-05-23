@@ -167,6 +167,13 @@ const Reader = (props: Props) => {
     return `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
   };
 
+  const convertDateTime = (d: Date): string => {
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+
+    return `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()} ${hours}:${minutes}`;
+  };
+
   // Логика копирования текста
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const onCopy = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -250,7 +257,7 @@ const Reader = (props: Props) => {
         </div>
       )}
 
-      {error && 
+      {error &&
         <div className="error">{error}</div>
       }
 
@@ -268,6 +275,7 @@ const Reader = (props: Props) => {
                   </Link>
                   <p className="date">{convertDate(text.createdOn)}</p>
                   <p className="syntax">{text.syntax}</p>
+                  <p className="expiryDate">время удаления: {convertDateTime(text.expiryDate)}</p>
                 </div>
               </div>
             </div>
