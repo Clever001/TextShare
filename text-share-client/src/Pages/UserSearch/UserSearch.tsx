@@ -309,7 +309,7 @@ const UserSearch = (props: Props) => {
               return (
                 <tr>
                   <td className="myrow first-row">
-                    <Link to={`/profile/${userName}`} className="icon"><img src="img/user_icon_black.svg" alt="user" /></Link>
+                    <Link to={`/profile/${userName}`} className="icon"><img src="/img/user_icon_black.svg" alt="user" /></Link>
                     <Link to={`/profile/${userName}`} className="userName">{userName}</Link>
                   </td>
                   {searchType === "friends" &&

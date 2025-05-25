@@ -266,7 +266,7 @@ const Reader = (props: Props) => {
         <div className="text">
           <div className="header">
             <div className="info">
-              <img src="img/user_icon_black.svg" alt="user" />
+              <img src="/img/user_icon_black.svg" alt="user" />
               <div className="text-type-info">
                 <p className="title">{text.title}</p>
                 <div className="sub-info">
@@ -281,14 +281,14 @@ const Reader = (props: Props) => {
             </div>
             <div className="actions">
               <a onClick={onCopy} className="copy-button">
-                <img src="img/copy_black.svg" alt="copy" />
+                <img src="/img/copy_black.svg" alt="copy" />
                 {isCopied && (
                   <span className="copy-notification">Текст скопирован!</span>
                 )}
               </a>
-              <Link to={`/editor/${text.id}`}><img src="img/edit_black.svg" alt="edit" /></Link>
-              <a onClick={handleDownload}><img src="img/download_black.svg" alt="download" /></a>
-              <a onClick={deleteText}><img src="img/delete_black.svg" alt="delete" /></a>
+              <Link to={`/editor/${text.id}`}><img src="/img/edit_black.svg" alt="edit" /></Link>
+              <a onClick={handleDownload}><img src="/img/download_black.svg" alt="download" /></a>
+              <a onClick={deleteText}><img src="/img/delete_black.svg" alt="delete" /></a>
             </div>
           </div>
           <div className="content" ref={editorRef} style={{ height: '80vh' }} />

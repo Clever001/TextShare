@@ -360,7 +360,7 @@ const Editor = (props: Props) => {
                   <tr>
                     <td className="col1"><p>Заголовок текста</p></td>
                     <td className="col2"><input type="text" name="title" value={title} onChange={onTitleChange} /></td>
-                    <td className="col3"><img src="img/return_black.svg" alt="return" onClick={returnTitle} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnTitle} /></td>
                   </tr>
                   <tr>
                     <td className="col1">
@@ -369,17 +369,17 @@ const Editor = (props: Props) => {
                     <td className="col2">
                       <textarea name="description" value={description} onChange={onDescriptionChange} />
                     </td>
-                    <td className="col3"><img src="img/return_black.svg" alt="return" onClick={returnDescription} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnDescription} /></td>
                   </tr>
                   <tr>
                     <td className="col1"><p>Теги</p></td>
                     <td className="col2"><input type="text" name="tags" value={tags} onChange={onTagsChange} /></td>
-                    <td className="col3"><img src="img/return_black.svg" alt="return" onClick={returnTags} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnTags} /></td>
                   </tr>
                   <tr>
                     <td className="col1"><p>Дата и время удаления</p></td>
                     <td className="col2"><input type="datetime-local" name="expiryDate" value={expiry} onChange={onExpiryChange} /></td>
-                    <td className="col3"><img src="img/return_black.svg" alt="return" onClick={returnExpiry} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnExpiry} /></td>
                   </tr>
                   <tr>
                     <td className="col1"><p>Тип синтаксиса</p></td>
@@ -391,7 +391,7 @@ const Editor = (props: Props) => {
                         );
                       })}
                     </select></td>
-                    <td className="col3"><img src="img/return_black.svg" alt="return" onClick={returnSyntax} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnSyntax} /></td>
                   </tr>
                   <tr>
                     <td className="col1"><p>Тип доступа</p></td>
@@ -404,14 +404,14 @@ const Editor = (props: Props) => {
                         <option value="Personal">Приватный</option>
                       </select>
                     </td>
-                    <td className="col3"><img src="img/return_black.svg" alt="return" onClick={returnAccessType} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnAccessType} /></td>
                   </tr>
                   <tr>
                     <td className="col-1"><p>Наличие пароля</p></td>
                     <td>
                       <input type="checkbox" name="hasPassword" checked={hasPassword} onChange={onHasPasswordChange} />
                     </td>
-                    <td className="col3"><img src="img/return_black.svg" alt="return" onClick={returnHasPassword} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnHasPassword} /></td>
                   </tr>
                   {text.hasPassword &&
                     <tr>

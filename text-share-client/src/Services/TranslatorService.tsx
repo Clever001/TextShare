@@ -30,6 +30,8 @@ staticTranslates.set("Passwords must have at least one digit ('0'-'9').",
     "Пароль должен содержать хотя бы одну цифру ('0'-'9').");
 staticTranslates.set("The expiry date cannot be later than the current date + 10 minutes.",
     "Дата и время удаления текста не могут быть выставлены ранее, чем текущее время + 10 минут.");
+staticTranslates.set("The Title field is required.",
+    "Поле названия обязательно для заполнения.")
 
 let templateTranslates : {[Key: string] : string} = {};
 templateTranslates["Username '{0}' is already taken."] = "Имя '{0}' уже используется другим пользователем";

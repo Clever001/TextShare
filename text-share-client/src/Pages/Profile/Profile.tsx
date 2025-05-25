@@ -291,7 +291,7 @@ const Profile = (props: Props) => {
     <div className="profile">
       <div className="header">
         <div className="info">
-          <img src="img/user_icon_black.svg" alt="user" />
+          <img src="/img/user_icon_black.svg" alt="user" />
           <p className="name">{userName}</p>
         </div>
         <div className="action-button">
