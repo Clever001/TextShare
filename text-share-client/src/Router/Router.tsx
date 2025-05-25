@@ -9,6 +9,7 @@ import UserSearch from '../Pages/UserSearch/UserSearch';
 import Auth from '../Pages/Auth/Auth';
 import ProfileContentChange from '../Pages/ProfileContentChange/ProfileContentChange';
 import CreateText from '../Pages/CreateText/CreateText';
+import NotFound from '../Pages/NotFound/NotFound';
 
 
 export const router = createBrowserRouter([
@@ -24,7 +25,8 @@ export const router = createBrowserRouter([
             { path: "createText/", element: <CreateText />},
             { path: "userSearch/", element: <UserSearch />},
             { path: "auth/", element: <Auth/>},
-            { path: "profileContentChange/", element: <ProfileContentChange />}
+            { path: "profileContentChange/", element: <ProfileContentChange />},
+            { path: "*", element: <NotFound />}
         ]
     }
 ]);

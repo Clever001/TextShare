@@ -1,0 +1,12 @@
+.not-found {
+    margin-top:60px;
+}
+
+.not-found .title {
+    border-bottom:1px solid #BABABA;
+    font-size:18px;
+}
+
+.not-found .content {
+    margin-top:10px;
+}
