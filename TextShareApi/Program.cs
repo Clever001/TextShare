@@ -79,6 +79,11 @@ builder.Services.AddCors(options => {
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
+    options.AddPolicy("AllowAll", policy => {
+        policy.WithOrigins("http://localhost")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
 });
 
 
@@ -86,6 +91,13 @@ builder.Services.AddCors(options => {
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope()) {
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if ((await dbContext.Database.GetPendingMigrationsAsync()).Any()) {
+        await dbContext.Database.MigrateAsync();
+    }
+}
 
 app.UseCors("AllowAll");
 

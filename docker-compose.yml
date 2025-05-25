@@ -1,6 +1,50 @@
 ﻿services:
+  db:
+    image: postgres:15-alpine
+    container_name: db
+    restart: always
+    shm_size: 256mb
+    ports:
+      - "9342:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: text_share
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   textshareapi:
     image: textshareapi
+    container_name: textshareapi
     build:
       context: .
       dockerfile: TextShareApi/Dockerfile
+    ports:
+      - "7285:7285"
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_URLS=https://+:7285
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/localhost.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=123vV123@
+      - ConnectionStrings__DefaultConnection=Host=db;Database=text_share;Username=postgres;Password=postgres
+    entrypoint: >
+      sh -c "./wait-for-it.sh db:5432 --timeout=30 &&
+          dotnet ./TextShareApi.dll"
+
+  textshareclient:
+    image: textshareclient
+    container_name: textshareclient
+    build:
+      context: .
+      dockerfile: text-share-client/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - textshareapi
+    environment:
+      - REACT_APP_SERVER_URL_PATH=https://localhost:7285/
+      - REACT_APP_CLIENT_URL_PATH=http://localhost/
+
+volumes:
+  postgres_data:
