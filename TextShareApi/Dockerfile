@@ -19,9 +19,6 @@ ENV PATH="${PATH}:/root/.dotnet/tools"
 # Создаем миграции
 RUN dotnet ef migrations add InitialCreate
 
-# Получаем sql скрипт
-RUN dotnet ef migrations script -o /src/apply-migrations.sql
-
 # Публикация с Native AOT
 RUN dotnet publish "TextShareApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish \
     --self-contained false \
@@ -35,7 +32,6 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     libicu-dev \
-    postgresql-client \
     && rm -rf /var/lib/apt/lists/* 
 
 # Устанавливаем wait-for-it.sh, чтобы подождать, когда будет запущена бд.
@@ -45,15 +41,8 @@ RUN apt-get update && apt-get install -y wget && wget https://raw.githubusercont
 # Копируем скомпилированные файлы
 COPY --from=build /app/publish .
 
-# Копируем sql скрипт
-COPY --from=build /src/apply-migrations.sql .
-
 # Копируем сертификат
 COPY --from=build /src/TextShareApi/certs/localhost.pfx /https/
-
-# Создаем .pgpass
-RUN echo "db:5432:text_share:postgres:postgres" > /root/.pgpass && \
-    chmod 600 /root/.pgpass
 
 # Порт приложения
 EXPOSE 7285

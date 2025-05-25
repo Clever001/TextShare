@@ -29,10 +29,11 @@
 }
 
 .editor .text button {
-    background-color: #BABABA;
+    background-color: rgb(0, 123, 255);
     color: #fff;
     border:none;
     margin-bottom: 150px;
+    border-radius:10px;
 }
 
 

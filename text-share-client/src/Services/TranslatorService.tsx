@@ -26,6 +26,10 @@ staticTranslates.set("Text with Composite of fields Title and AppUserId already 
     "Текст с таким названием уже существует.")
 staticTranslates.set("You do not have permission to access this resource.",
     "У вас недостаточно прав для выполняния данного действия.")
+staticTranslates.set("Passwords must have at least one digit ('0'-'9').",
+    "Пароль должен содержать хотя бы одну цифру ('0'-'9').");
+staticTranslates.set("The expiry date cannot be later than the current date + 10 minutes.",
+    "Дата и время удаления текста не могут быть выставлены ранее, чем текущее время + 10 минут.");
 
 let templateTranslates : {[Key: string] : string} = {};
 templateTranslates["Username '{0}' is already taken."] = "Имя '{0}' уже используется другим пользователем";

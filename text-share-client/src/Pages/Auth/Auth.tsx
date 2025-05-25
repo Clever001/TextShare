@@ -134,11 +134,11 @@ const Auth = ({}: Props) => {
         <form onSubmit={onLoginSubmit}>
           <div>
             <label htmlFor="userName">Имя пользователя или почта</label>
-            <input type="text" id="userName"/>
+            <input type="text" id="userName" key={"userName"}/>
           </div>
           <div>
             <label htmlFor="password">Пароль</label>
-            <input type="text" id="userName" />
+            <input type="password" id="password" key={"password"}/>
           </div>
           <div>
             {errors.length > 0 && 
@@ -160,19 +160,19 @@ const Auth = ({}: Props) => {
         <form onSubmit={onRegisterSubmit}>
           <div>
             <label htmlFor="userName">Имя пользователя</label>
-            <input type="text" id="userName"/>
+            <input type="text" id="userName" key={"userName"}/>
           </div>
           <div>
             <label htmlFor="email">Электронная почта</label>
-            <input type="text" id="email" />
+            <input type="text" id="email" key={"email"}/>
           </div>
           <div>
             <label htmlFor="password">Пароль</label>
-            <input type="text" id="password" />
+            <input type="password" id="password" key={"password"}/>
           </div>
           <div>
             <label htmlFor="second-password">Повторите пароль</label>
-            <input type="text" id="second-password" />
+            <input type="password" id="second-password" key={"secondPassword"}/>
           </div>
           <div>
             {errors.length > 0 && 

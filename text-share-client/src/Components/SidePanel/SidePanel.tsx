@@ -80,7 +80,7 @@ const SidePanel = (props: Props) => {
 
   const getSocietyTexts = async () => {
     const result = await SearchSocietyTextsAPI();
-    
+
     if (isExceptionDto(result)) {
       console.log(result)
       return
@@ -98,7 +98,7 @@ const SidePanel = (props: Props) => {
     getSocietyTexts();
   }, []);
 
-  const russianPluralWords : {[Key: string] : string[]} = {
+  const russianPluralWords: { [Key: string]: string[] } = {
     'year': ['лет', 'года', 'год'],
     'month': ['месяцев', 'месяца', 'месяц'],
     'day': ['дней', 'дня', 'день'],
@@ -107,7 +107,7 @@ const SidePanel = (props: Props) => {
     'second': ['секунд', 'секунды', 'секунда']
   }
 
-  const getRussianPlural = (num: number, period: string) :string => {
+  const getRussianPlural = (num: number, period: string): string => {
     const pluralWords = russianPluralWords[period];
     if (Math.floor(num / 10) % 10 == 1)
       return pluralWords[0];
@@ -118,7 +118,7 @@ const SidePanel = (props: Props) => {
     return pluralWords[0];
   }
 
-  const getTimeAgo = (d: Date) :string => {
+  const getTimeAgo = (d: Date): string => {
     const now = new Date();
     const ellapsed = now.getTime() - d.getTime();
 
@@ -129,7 +129,7 @@ const SidePanel = (props: Props) => {
     const months = Math.floor(days / 30);
     const years = Math.floor(months / 12);
 
-    var result:string = "";
+    var result: string = "";
 
     if (years > 0) {
       result = `${years} ${getRussianPlural(years, 'year')}`;
@@ -149,19 +149,20 @@ const SidePanel = (props: Props) => {
     return result;
   }
 
-  const accessTypes : {[Key: string] : string} = {
-    'ByReferencePublic' : 'Публичный',
+  const accessTypes: { [Key: string]: string } = {
+    'ByReferencePublic': 'Публичный',
     'ByReferenceAuthorized': 'С авторизацией',
-    'OnlyFriends' : 'Для друзей',
-    'Personal' : 'Приватный'
+    'OnlyFriends': 'Для друзей',
+    'Personal': 'Приватный'
   }
 
   return (
     <div className="side-panel">
-      {validAuth && 
+      {validAuth &&
         <div className="my-texts">
           <div className="title">Мои тексты</div>
           <div className="text">
+            {myTexts.length === 0 && "Вы еще не создали ни одного текста."}
             {myTexts.map(t => {
               return (
                 <Link to={"/reader/" + encodeURIComponent(t.id)}>
@@ -177,15 +178,16 @@ const SidePanel = (props: Props) => {
       <div className="society-texts">
         <div className="title">Тексты сообщества</div>
         <div className="text">
-            {societyTexts.map(t => {
-              return (
-                <Link to={"/reader/" + encodeURIComponent(t.id)}>
-                  <p>{t.title}</p>
-                  <p>{(t.syntax !== "") ? t.syntax : "text"} | {getTimeAgo(t.createdOn)} | {accessTypes[t.accessType]}</p>
-                </Link>
-              )
-            })}
-          </div>
+          {societyTexts.length === 0 && "Еще ни один текст не был создан."}
+          {societyTexts.map(t => {
+            return (
+              <Link to={"/reader/" + encodeURIComponent(t.id)}>
+                <p>{t.title}</p>
+                <p>{(t.syntax !== "") ? t.syntax : "text"} | {getTimeAgo(t.createdOn)} | {accessTypes[t.accessType]}</p>
+              </Link>
+            )
+          })}
+        </div>
       </div>
     </div>
   )
