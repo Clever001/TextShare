@@ -82,7 +82,6 @@ const SidePanel = (props: Props) => {
     const result = await SearchSocietyTextsAPI();
 
     if (isExceptionDto(result)) {
-      console.log(result)
       return
     }
 

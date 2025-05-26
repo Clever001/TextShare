@@ -4,6 +4,14 @@ FROM node:20-alpine AS builder
 # Установка рабочей директории
 WORKDIR /app
 
+# Добавление аргументов для переменных окружения
+ARG REACT_APP_SERVER_URL_PATH
+ARG REACT_APP_CLIENT_URL_PATH
+
+# Преобразование ARG в ENV для использования во время сборки
+ENV REACT_APP_SERVER_URL_PATH=${REACT_APP_SERVER_URL_PATH}
+ENV REACT_APP_CLIENT_URL_PATH=${REACT_APP_CLIENT_URL_PATH}
+
 # Копирование package.json и package-lock.json
 COPY text-share-client/package*.json ./
 

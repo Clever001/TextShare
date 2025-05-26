@@ -141,8 +141,6 @@ const TextSearch = (props: Props) => {
       return;
     }
 
-    console.log(result);
-
     setTexts(result);
   }
 

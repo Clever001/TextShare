@@ -81,10 +81,8 @@ public class TextSecurityService : ITextSecurityService {
         
         if (password == null) return Result.Failure(new BadRequestException("Password is not provided."));
 
-        var sw = Stopwatch.StartNew();
         var passwordCheck = _passwordHasher.VerifyHashedPassword(user,
             securitySettings.Password, password);
-        sw.Stop();
         if (passwordCheck == PasswordVerificationResult.Failed) return Result.Failure(new BadRequestException("Provided password is not correct."));
 
         return Result.Success();

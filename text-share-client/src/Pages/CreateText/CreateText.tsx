@@ -37,7 +37,6 @@ const CreateText = (props: Props) => {
 
       if (!editorRef.current) {
         for (let i = 0; i != 20; i++) {
-          console.log("Жду", i);
           await new Promise(resolve => setTimeout(resolve, 100));
           if (editorRef.current) break;
         }

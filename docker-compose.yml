@@ -38,13 +38,13 @@
     build:
       context: .
       dockerfile: text-share-client/Dockerfile
+      args:
+        - REACT_APP_SERVER_URL_PATH=https://localhost:7285/
+        - REACT_APP_CLIENT_URL_PATH=http://localhost/
     ports:
       - "80:80"
     depends_on:
       - textshareapi
-    environment:
-      - REACT_APP_SERVER_URL_PATH=https://localhost:7285/
-      - REACT_APP_CLIENT_URL_PATH=http://localhost/
 
 volumes:
   postgres_data:

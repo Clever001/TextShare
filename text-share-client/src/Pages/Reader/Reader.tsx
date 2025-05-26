@@ -91,14 +91,10 @@ const Reader = (props: Props) => {
   const initializeEditor = async (loadedText: TextWithContentDto) => {
     if (!editorRef.current) {
       for (let i = 0; i != 20; i++) {
-        console.log("Жду", i);
         await new Promise(resolve => setTimeout(resolve, 100));
         if (editorRef.current) break;
       }
     }
-
-    console.log("!editorRef.current", !editorRef.current)
-    console.log("!loadedText", !loadedText);
 
     if (!editorRef.current || !loadedText) return;
 
@@ -120,7 +116,6 @@ const Reader = (props: Props) => {
     const updateText = async () => {
       if (!editorRef.current) {
         for (let i = 0; i != 20; i++) {
-          console.log("Жду", i);
           await new Promise(resolve => setTimeout(resolve, 100));
           if (editorRef.current) break;
         }
@@ -211,7 +206,6 @@ const Reader = (props: Props) => {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
       } catch (error) {
-        console.log(error);
         alert("Произошла ошибка при закачивании текста.");
       }
     }

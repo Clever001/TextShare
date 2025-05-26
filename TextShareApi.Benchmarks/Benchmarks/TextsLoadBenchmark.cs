@@ -154,7 +154,7 @@ public class TextsLoadBenchmark {
 
         await _minioClient.GetObjectAsync(getObjectArgs);
 
-        if (result == "" || result.Length < 5000)
+        if (result == "" || result.Length < 75000)
             throw new NullReferenceException($"Cannot find text: \"{result}\"");
     }
     
@@ -190,7 +190,7 @@ public class TextsLoadBenchmark {
 
         await _minioClient.GetObjectAsync(getObjectArgs);
 
-        if (result == "" || result.Length < 5000)
+        if (result == "" || result.Length < 1500000)
             throw new NullReferenceException($"Cannot find text: \"{result}\"");
     }
 }

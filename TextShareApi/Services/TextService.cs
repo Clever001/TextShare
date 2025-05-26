@@ -43,8 +43,9 @@ public class TextService : ITextService {
             return Result<Text>.Failure(new BadRequestException("Password cannot be empty."));
         }
 
-        var userId = await _accountRepository.GetAccountId(curUserName);
-        if (userId == null) return Result<Text>.Failure(new NotFoundException("Current user not found."));
+        var user = await _accountRepository.GetAccountByName(curUserName);
+        string? userId = user?.Id;
+        if (user == null || userId == null) return Result<Text>.Failure(new NotFoundException("Current user not found."));
 
         bool containsText = await _textRepository.ContainsText(dto.Title, userId);
         if (containsText)
@@ -67,16 +68,21 @@ public class TextService : ITextService {
             TextId = text.Id,
             Text = text,
             AccessType = dto.AccessType,
-            Password = dto.Password,
         };
 
+        if (dto.Password != null) {
+            securitySettings.Password = _textSecurityService.HashPassword(user, dto.Password);
+        }
+
         // Adding Tags
-        if (dto.Tags.Count > 0) {
+        if (dto.Tags.Count > 0)
+        {
             var existingTags = new Dictionary<string, Tag>(
                 (await _tagRepository.GetTags(t => dto.Tags.Contains(t.Name))).Select(t =>
                     new KeyValuePair<string, Tag>(t.Name, t)));
 
-            foreach (string tag in dto.Tags.Distinct().Select(t => t.ToLower())) {
+            foreach (string tag in dto.Tags.Distinct().Select(t => t.ToLower()))
+            {
                 text.Tags.Add(existingTags.TryGetValue(tag, out var existingTag)
                     ? existingTag
                     : new Tag { Name = tag });

@@ -56,7 +56,6 @@ const BaseTextsSearch = async (pagination: PaginationDto, sort: SortDto, filter:
 }
 
 export const SearchTextsAPI = async (pagination: PaginationDto, sort: SortDto, filter: TextFilterDto, token: string | null) : Promise<PaginatedResponseDto<TextWithoutContentDto> | ExceptionDto> => {
-    console.log("Server URL:", process.env.REACT_APP_SERVER_URL_PATH);
     const baseUrl = process.env.REACT_APP_SERVER_URL_PATH + "api/text";
     return await BaseTextsSearch(pagination, sort, filter, token, baseUrl);
 }
@@ -205,7 +204,6 @@ export const DeleteTextAPI = async (id: string, token: string) : Promise<null | 
     try {
         const url = process.env.REACT_APP_SERVER_URL_PATH + "api/text/" + id;
 
-        console.log(url);
         const result = await axios.delete(url, {
             headers: {
                 "Authorization" : `Bearer ${token}`

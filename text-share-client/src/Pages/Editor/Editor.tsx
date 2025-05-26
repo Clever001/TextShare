@@ -55,7 +55,6 @@ const Editor = (props: Props) => {
           setErrors(["У вас недостаточно прав для доступа на редактирование данного текста."]);
           break;
         default:
-          console.log("http code:", result.httpCode);
           setErrors([result.description]);
           break;
       }
@@ -113,7 +112,6 @@ const Editor = (props: Props) => {
 
       if (!editorRef.current) {
         for (let i = 0; i != 20; i++) {
-          console.log("Жду", i);
           await new Promise(resolve => setTimeout(resolve, 100));
           if (editorRef.current) break;
         }
