@@ -21,12 +21,13 @@ public class FriendController : ControllerBase {
 
     [HttpGet]
     [Authorize]
-    public async Task<IActionResult> GetFriends([FromQuery] PaginationDto pagination, [FromQuery] bool isAscending, [FromQuery] string? friendName) {
+    public async Task<IActionResult> GetFriends([FromQuery] PaginationDto pagination, [FromQuery] bool isAscending,
+        [FromQuery] string? friendName) {
         var senderName = User.GetUserName();
 
         var result = await _friendService.GetFriends(pagination, isAscending, friendName, senderName!);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
-        
+
         return Ok(result.Value.Convert(u => u.ToUserWithoutTokenDto()));
     }
 
@@ -34,10 +35,10 @@ public class FriendController : ControllerBase {
     [Authorize]
     public async Task<IActionResult> AreFriends([FromRoute] string userName) {
         var senderName = User.GetUserName();
-        
+
         var result = await _friendService.AreFriendsByName(senderName!, userName);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
-        
+
         return Ok(result.Value ? "Are friends" : "Are not friends");
     }
 
@@ -48,7 +49,7 @@ public class FriendController : ControllerBase {
 
         var result = await _friendService.RemoveFriend(senderName!, userName);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
-        
+
         return Ok("Friend deleted");
     }
 }

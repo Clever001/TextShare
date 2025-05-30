@@ -10,9 +10,7 @@ public class ExpiryDateAttribute : ValidationAttribute {
             case DateTime dt: {
                 var maxAllowed = DateTime.UtcNow.AddMinutes(10);
 
-                if (dt > maxAllowed) {
-                    return ValidationResult.Success;
-                }
+                if (dt > maxAllowed) return ValidationResult.Success;
 
                 return new ValidationResult("The expiry date cannot be later than the current date + 10 minutes.");
             }

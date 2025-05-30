@@ -19,7 +19,7 @@ public class Result<T> {
     }
 
     public static Result<T> Success(T value) {
-        return new Result<T>(true, value,  default!);
+        return new Result<T>(true, value, default!);
     }
 
     public static Result<T> Failure(IApiException exception) {

@@ -5,7 +5,7 @@ public class TextDto {
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Syntax { get; set; } = string.Empty;
-    public List<string> Tags { get; set; } = new List<string>();
+    public List<string> Tags { get; set; } = new();
     public string Content { get; set; } = string.Empty;
     public DateTime CreatedOn { get; set; }
     public DateTime? UpdatedOn { get; set; }

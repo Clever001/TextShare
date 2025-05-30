@@ -1,11 +1,6 @@
 namespace TextShareApi.Exceptions;
 
 public sealed class BadRequestException : IApiException {
-    public string Code { get; init; } = "BadRequest";
-    public int CodeNumber { get; init; } = 400;
-    public string Description { get; init; } = "Request contains client error.";
-    public List<string>? Details { get; init; } = null;
-
     public BadRequestException() { }
 
     public BadRequestException(string description) {
@@ -16,4 +11,9 @@ public sealed class BadRequestException : IApiException {
         Description = description;
         Details = details;
     }
+
+    public string Code { get; init; } = "BadRequest";
+    public int CodeNumber { get; init; } = 400;
+    public string Description { get; init; } = "Request contains client error.";
+    public List<string>? Details { get; init; }
 }

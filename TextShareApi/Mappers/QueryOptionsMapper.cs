@@ -5,7 +5,7 @@ namespace TextShareApi.Mappers;
 
 public static class QueryOptionsMapper {
     public static bool IsValid(this SortDto dto, Type type) {
-        string searchType = dto.SortBy;
+        var searchType = dto.SortBy;
         var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
         return props.Any(propInfo =>
@@ -22,7 +22,8 @@ public static class QueryOptionsMapper {
         };
     }
 
-    public static PaginatedResponseDto<T> ToPaginatedResponse<T>(this List<T> list, PaginationDto pagination, int count) {
+    public static PaginatedResponseDto<T>
+        ToPaginatedResponse<T>(this List<T> list, PaginationDto pagination, int count) {
         return new PaginatedResponseDto<T> {
             Items = list,
             CurrentPage = pagination.PageNumber,
@@ -30,5 +31,5 @@ public static class QueryOptionsMapper {
             TotalItems = count,
             TotalPages = (int)Math.Ceiling(count / (double)pagination.PageSize)
         };
-    } 
+    }
 }

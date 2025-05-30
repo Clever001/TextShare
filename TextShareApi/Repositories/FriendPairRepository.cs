@@ -50,36 +50,24 @@ public class FriendPairRepository : IFriendPairRepository {
         bool isAscending,
         List<Expression<Func<FriendPair, bool>>>? predicates,
         bool includeSender,
-        bool includeRecipient) 
-    {
+        bool includeRecipient) {
         IQueryable<FriendPair> pairs = _context.FriendPairs;
         if (includeSender) pairs = pairs.Include(p => p.FirstUser);
         if (includeRecipient) pairs = pairs.Include(p => p.SecondUser);
-        
+
         // Filtering
-        if (predicates != null) {
-            foreach (var predicate in predicates) {
+        if (predicates != null)
+            foreach (var predicate in predicates)
                 pairs = pairs.Where(predicate);
-            }
-        }
-        int count = pairs.Count();
-        
+        var count = pairs.Count();
+
         // Ordering
-        pairs = isAscending ? 
-            pairs.OrderBy(keyOrder) : 
-            pairs.OrderByDescending(keyOrder);
-        
+        pairs = isAscending ? pairs.OrderBy(keyOrder) : pairs.OrderByDescending(keyOrder);
+
         // Pagination
         pairs = pairs.Skip(skip).Take(take);
-        
-        return (count, await pairs.ToListAsync());
-    }
 
-    public async Task<List<FriendPair>> GetFriendPairs(Expression<Func<FriendPair, bool>> predicate) {
-        return await _context.FriendPairs
-            .Include(p => p.SecondUser)
-            .Where(predicate)
-            .ToListAsync();
+        return (count, await pairs.ToListAsync());
     }
 
     public async Task<bool> DeleteFriendPairs(string firstUserId, string secondUserId) {
@@ -99,5 +87,12 @@ public class FriendPairRepository : IFriendPairRepository {
     public async Task<bool> ContainsFriendPair(string firstUserId, string secondUserId) {
         return await _context.FriendPairs
             .AnyAsync(p => p.FirstUserId == firstUserId && p.SecondUserId == secondUserId);
+    }
+
+    public async Task<List<FriendPair>> GetFriendPairs(Expression<Func<FriendPair, bool>> predicate) {
+        return await _context.FriendPairs
+            .Include(p => p.SecondUser)
+            .Where(predicate)
+            .ToListAsync();
     }
 }

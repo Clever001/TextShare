@@ -13,7 +13,7 @@ public static class Extensions {
             Details = exception.Details
         });
     }
-    
+
     public static string? GetUserName(this ClaimsPrincipal principal) {
         return principal.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.GivenName))?.Value;
     }

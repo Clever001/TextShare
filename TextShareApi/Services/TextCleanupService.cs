@@ -1,9 +1,8 @@
-
 using TextShareApi.Interfaces.Repositories;
 
 public sealed class TextCleanupService : BackgroundService {
-    private ILogger<TextCleanupService> _logger;
-    private IServiceScopeFactory _scopeFactory;
+    private readonly ILogger<TextCleanupService> _logger;
+    private readonly IServiceScopeFactory _scopeFactory;
 
     public TextCleanupService(ILogger<TextCleanupService> logger, IServiceScopeFactory scopeFactory) {
         _logger = logger;
@@ -14,15 +13,14 @@ public sealed class TextCleanupService : BackgroundService {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
         _logger.LogInformation("Text cleanup service started.");
 
-        while (!stoppingToken.IsCancellationRequested)
-        {
+        while (!stoppingToken.IsCancellationRequested) {
             try {
                 _logger.LogInformation($"{DateTime.Now} : Start of expired texts deletion.");
 
                 using var scope = _scopeFactory.CreateAsyncScope();
                 var textRepo = scope.ServiceProvider.GetRequiredService<ITextRepository>();
 
-                int deletionCount = await textRepo.DeleteExpiredTexts();
+                var deletionCount = await textRepo.DeleteExpiredTexts();
 
                 _logger.LogInformation($"{DateTime.Now} : Deleted {deletionCount} expired texts.");
             }
@@ -33,7 +31,7 @@ public sealed class TextCleanupService : BackgroundService {
             try {
                 await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
             }
-            catch (TaskCanceledException){}
+            catch (TaskCanceledException) { }
         }
 
         _logger.LogInformation("Text cleanup service finished its work.");

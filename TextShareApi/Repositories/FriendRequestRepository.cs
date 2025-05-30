@@ -35,27 +35,24 @@ public class FriendRequestRepository : IFriendRequestRepository {
         int take,
         Expression<Func<FriendRequest, T>> keyOrder,
         bool isAscending,
-        List<Expression<Func<FriendRequest, bool>>>? predicates) 
-    {
+        List<Expression<Func<FriendRequest, bool>>>? predicates) {
         IQueryable<FriendRequest> requests = _context.FriendRequests
             .Include(r => r.Sender)
             .Include(r => r.Recipient);
-        
+
         // Filtering
-        if (predicates != null) {
-            foreach (var predicate in predicates) {
+        if (predicates != null)
+            foreach (var predicate in predicates)
                 requests = requests.Where(predicate);
-            }
-        }
-        
-        int count = await requests.CountAsync();
-        
+
+        var count = await requests.CountAsync();
+
         // Ordering
         requests = isAscending ? requests.OrderBy(keyOrder) : requests.OrderByDescending(keyOrder);
-        
+
         // Pagination
         requests = requests.Skip(skip).Take(take);
-        
+
         return (count, await requests.ToListAsync());
     }
 

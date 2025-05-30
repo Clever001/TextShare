@@ -92,9 +92,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope()) {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if ((await dbContext.Database.GetPendingMigrationsAsync()).Any()) {
-        await dbContext.Database.MigrateAsync();
-    }
+    if ((await dbContext.Database.GetPendingMigrationsAsync()).Any()) await dbContext.Database.MigrateAsync();
 }
 
 app.UseCors("AllowAll");

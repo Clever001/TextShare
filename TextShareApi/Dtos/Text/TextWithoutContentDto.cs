@@ -5,7 +5,7 @@ public class TextWithoutContentDto {
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string Syntax { get; set; } = string.Empty;
-    public List<string> Tags { get; set; } = new List<string>();
+    public List<string> Tags { get; set; } = new();
     public DateTime CreatedOn { get; set; }
     public DateTime? UpdatedOn { get; set; }
     public string OwnerName { get; set; } = string.Empty;

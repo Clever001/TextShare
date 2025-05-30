@@ -35,33 +35,26 @@ public class TextRepository : ITextRepository {
         Expression<Func<Text, T>> keyOrder,
         bool isAscending,
         List<Expression<Func<Text, bool>>>? predicates,
-        bool generateCount) 
-    {
+        bool generateCount) {
         IQueryable<Text> texts = _context.Texts
             .Include(t => t.TextSecuritySettings)
             .Include(t => t.Owner)
-                .ThenInclude(u => u.FriendPairs)
+            .ThenInclude(u => u.FriendPairs)
             .Include(t => t.Tags);
-        
+
         // Filtering
-        if (predicates != null) {
-            foreach (var predicate in predicates) {
+        if (predicates != null)
+            foreach (var predicate in predicates)
                 texts = texts.Where(predicate);
-            }
-        }
-        
-        int count = generateCount ? 
-            await texts.CountAsync() : 
-            -1;
-        
+
+        var count = generateCount ? await texts.CountAsync() : -1;
+
         // Ordering
-        texts = isAscending ? 
-            texts.OrderBy(keyOrder) : 
-            texts.OrderByDescending(keyOrder);
-        
+        texts = isAscending ? texts.OrderBy(keyOrder) : texts.OrderByDescending(keyOrder);
+
         // Pagination
         texts = texts.Skip(skip).Take(take);
-        
+
         return (count, await texts.Select(t => new Text {
             Id = t.Id,
             Title = t.Title,
@@ -94,10 +87,9 @@ public class TextRepository : ITextRepository {
 
         var securitySettings = await _context.TextSecuritySettings.FindAsync(textId);
 
-        if (securitySettings == null) {
+        if (securitySettings == null)
             // Never executed. Text always has Security Settings table.
             _logger.LogError("SecuritySettings does not exist. Cannot delete");
-        }
 
         if (securitySettings != null) _context.TextSecuritySettings.Remove(securitySettings);
         _context.Texts.Remove(text);
@@ -112,9 +104,7 @@ public class TextRepository : ITextRepository {
             .Where(t => t.ExpiryDate <= now)
             .ToListAsync();
 
-        if (expiredTexts.Count == 0) {
-            return 0;
-        }
+        if (expiredTexts.Count == 0) return 0;
 
         var expiredTextSettings = expiredTexts.Select(t => t.TextSecuritySettings).ToList();
         _context.TextSecuritySettings.RemoveRange(expiredTextSettings);
@@ -123,8 +113,7 @@ public class TextRepository : ITextRepository {
         return expiredTexts.Count;
     }
 
-    public async Task<bool> ContainsText(string textId)
-    {
+    public async Task<bool> ContainsText(string textId) {
         return await _context.Texts.AnyAsync(t => t.Id == textId);
     }
 

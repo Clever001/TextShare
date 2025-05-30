@@ -57,7 +57,7 @@ public class TextController : ControllerBase {
         if (!sort.IsValid(typeof(Text)))
             return this.ToActionResult(new BadRequestException("SortBy contains invalid property name."));
 
-        string? senderName = User.GetUserName();
+        var senderName = User.GetUserName();
 
         if (Request.Headers.ContainsKey("Authorization") && senderName is null or "")
             return this.ToActionResult(new ForbiddenException());
@@ -71,12 +71,11 @@ public class TextController : ControllerBase {
     [HttpGet("byName")]
     public async Task<IActionResult> GetByUserName([FromQuery] PaginationDto pagination,
         [FromQuery] SortDto sort,
-        [FromQuery] TextFilterWithoutOwnerDto filter, [FromQuery] string ownerName)
-    {
+        [FromQuery] TextFilterWithoutOwnerDto filter, [FromQuery] string ownerName) {
         if (!sort.IsValid(typeof(Text)))
             return this.ToActionResult(new BadRequestException("SortBy contains invalid property name."));
 
-        string? senderName = User.GetUserName();
+        var senderName = User.GetUserName();
 
         if (Request.Headers.ContainsKey("Authorization") && senderName is null or "")
             return this.ToActionResult(new ForbiddenException());

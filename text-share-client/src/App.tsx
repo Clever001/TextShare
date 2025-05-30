@@ -78,9 +78,6 @@ const App = () => {
         navigate("/profile/" + userName);
     }
 
-    // Side bar
-
-
 
     return (
         <div className="app">

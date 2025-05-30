@@ -4,5 +4,5 @@ public enum UserSearchType {
     UserSearch,
     FriendSearch,
     SentFriendRequestSearch,
-    ReceivedFriendRequestSearch,
+    ReceivedFriendRequestSearch
 }

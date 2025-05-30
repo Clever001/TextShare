@@ -12,9 +12,9 @@ using TextShareApi.Models;
 namespace TextShareApi.Services;
 
 public class AccountService : IAccountService {
+    private readonly IAccountRepository _accountRepository;
     private readonly ITokenService _tokenService;
     private readonly UserManager<AppUser> _userManager;
-    private readonly IAccountRepository _accountRepository;
 
     public AccountService(ITokenService tokenService, UserManager<AppUser> userManager,
         IAccountRepository accountRepository) {
@@ -69,42 +69,43 @@ public class AccountService : IAccountService {
         if (user == null) return Result<(AppUser, string)>.Failure(new ServerException());
 
         if (update.UserName != null && update.UserName != user.UserName) {
-            bool exists = await _accountRepository.ContainsAccountByName(update.UserName);
+            var exists = await _accountRepository.ContainsAccountByName(update.UserName);
             if (exists)
-                return Result<(AppUser, string)>.Failure(new BadRequestException("Account with such userName already exists."));
-            
+                return Result<(AppUser, string)>.Failure(
+                    new BadRequestException("Account with such userName already exists."));
+
             user.UserName = update.UserName;
         }
 
         if (update.Email != null && update.Email != user.Email) {
-            bool exists = await _accountRepository.ContainsAccountByEmail(update.Email);
+            var exists = await _accountRepository.ContainsAccountByEmail(update.Email);
             if (exists)
-                return Result<(AppUser, string)>.Failure(new BadRequestException("Account with such email already exists."));
-            
+                return Result<(AppUser, string)>.Failure(
+                    new BadRequestException("Account with such email already exists."));
+
             user.Email = update.Email;
         }
-        
+
         await _userManager.UpdateAsync(user);
         var token = _tokenService.CreateToken(user);
-        
+
         return Result<(AppUser, string)>.Success((user, token));
     }
 
     public async Task<Result<PaginatedResponseDto<AppUser>>> GetUsers(PaginationDto pagination, string? userName) {
-        int skip = (pagination.PageNumber - 1) * pagination.PageSize;
-        int take = pagination.PageSize;
+        var skip = (pagination.PageNumber - 1) * pagination.PageSize;
+        var take = pagination.PageSize;
         Expression<Func<AppUser, string?>> orderBy = u => u.UserName;
         Expression<Func<AppUser, bool>>? nameFilter = null;
-        if (userName != null && userName.Trim() != "") nameFilter = u => u.UserName!.ToLower().Contains(userName.ToLower());
+        if (userName != null && userName.Trim() != "")
+            nameFilter = u => u.UserName!.ToLower().Contains(userName.ToLower());
 
         var (count, users) = await _accountRepository.GetAllAccounts(
-            skip: skip,
-            take: take,
-            keyOrder: orderBy,
-            isAscending: true,
-            predicates: nameFilter == null ?
-                null:
-                [nameFilter]
+            skip,
+            take,
+            orderBy,
+            true,
+            nameFilter == null ? null : [nameFilter]
         );
 
         return Result<PaginatedResponseDto<AppUser>>.Success(users.ToPaginatedResponse(pagination, count));

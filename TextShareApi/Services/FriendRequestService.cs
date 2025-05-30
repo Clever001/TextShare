@@ -26,16 +26,13 @@ public class FriendRequestService : IFriendRequestService {
 
     public async Task<Result<FriendRequest>> Create(string senderName, string recipientName) {
         if (senderName == recipientName)
-            return Result<FriendRequest>.Failure(new BadRequestException("Sender name and recipient name cannot be the same."));
-        
+            return Result<FriendRequest>.Failure(
+                new BadRequestException("Sender name and recipient name cannot be the same."));
+
         var (senderId, recipientId) = await _accountRepository.GetAccountIds(senderName, recipientName);
-        if (senderId == null) {
-            return Result<FriendRequest>.Failure(new NotFoundException("Sender not found."));
-        }
-        if (recipientId == null) {
-            return Result<FriendRequest>.Failure(new NotFoundException("Recipient not found."));
-        }
-        
+        if (senderId == null) return Result<FriendRequest>.Failure(new NotFoundException("Sender not found."));
+        if (recipientId == null) return Result<FriendRequest>.Failure(new NotFoundException("Recipient not found."));
+
 
         var areFriends = await _friendPairRepository.ContainsFriendPair(senderId, recipientId);
         if (areFriends) return Result<FriendRequest>.Failure(new BadRequestException("Users are friends already."));
@@ -57,14 +54,10 @@ public class FriendRequestService : IFriendRequestService {
     public async Task<Result> Delete(string senderName, string recipientName) {
         if (senderName == recipientName)
             return Result.Failure(new BadRequestException("Sender name and recipient name cannot be the same."));
-        
+
         var (senderId, recipientId) = await _accountRepository.GetAccountIds(senderName, recipientName);
-        if (senderId == null) {
-            return Result.Failure(new NotFoundException("Sender not found."));
-        }
-        if (recipientId == null) {
-            return Result.Failure(new NotFoundException("Recipient not found."));
-        }
+        if (senderId == null) return Result.Failure(new NotFoundException("Sender not found."));
+        if (recipientId == null) return Result.Failure(new NotFoundException("Recipient not found."));
 
         var isDeleted = await _friendRequestRepository.DeleteRequest(senderId, recipientId);
         if (!isDeleted) return Result.Failure(new BadRequestException("Did not exist from the beginning."));
@@ -73,15 +66,12 @@ public class FriendRequestService : IFriendRequestService {
 
     public async Task<Result<FriendRequest>> Process(string senderName, string recipientName, bool acceptRequest) {
         if (senderName == recipientName)
-            return Result<FriendRequest>.Failure(new BadRequestException("Sender name and recipient name cannot be the same."));
+            return Result<FriendRequest>.Failure(
+                new BadRequestException("Sender name and recipient name cannot be the same."));
 
         var (senderId, recipientId) = await _accountRepository.GetAccountIds(senderName, recipientName);
-        if (senderId == null) {
-            return Result<FriendRequest>.Failure(new NotFoundException("Sender not found."));
-        }
-        if (recipientId == null) {
-            return Result<FriendRequest>.Failure(new NotFoundException("Recipient not found."));
-        }
+        if (senderId == null) return Result<FriendRequest>.Failure(new NotFoundException("Sender not found."));
+        if (recipientId == null) return Result<FriendRequest>.Failure(new NotFoundException("Recipient not found."));
 
         var request = await _friendRequestRepository.GetRequest(senderId, recipientId);
         if (request == null) return Result<FriendRequest>.Failure(new NotFoundException("Request not found."));
@@ -101,20 +91,15 @@ public class FriendRequestService : IFriendRequestService {
 
     public async Task<Result<FriendRequest>> GetFriendRequest(string senderName, string recipientName) {
         if (senderName == recipientName)
-            return Result<FriendRequest>.Failure(new BadRequestException("Sender name and recipient name cannot be the same."));
+            return Result<FriendRequest>.Failure(
+                new BadRequestException("Sender name and recipient name cannot be the same."));
 
         var (senderId, recipientId) = await _accountRepository.GetAccountIds(senderName, recipientName);
-        if (senderId == null) {
-            return Result<FriendRequest>.Failure(new NotFoundException("Sender not found."));
-        }
-        if (recipientId == null) {
-            return Result<FriendRequest>.Failure(new NotFoundException("Recipient not found."));
-        }
+        if (senderId == null) return Result<FriendRequest>.Failure(new NotFoundException("Sender not found."));
+        if (recipientId == null) return Result<FriendRequest>.Failure(new NotFoundException("Recipient not found."));
 
         var request = await _friendRequestRepository.GetRequest(senderId, recipientId);
-        if (request == null) {
-            return Result<FriendRequest>.Failure(new NotFoundException("Request not found."));
-        }
+        if (request == null) return Result<FriendRequest>.Failure(new NotFoundException("Request not found."));
 
         return Result<FriendRequest>.Success(request);
     }
@@ -122,29 +107,28 @@ public class FriendRequestService : IFriendRequestService {
     public async Task<Result<PaginatedResponseDto<FriendRequest>>> GetSentFriendRequests(PaginationDto pagination,
         bool isAscending,
         string senderName,
-        string? recipientName) 
-    {
+        string? recipientName) {
         var senderId = await _accountRepository.GetAccountId(senderName);
         if (senderId == null)
             return Result<PaginatedResponseDto<FriendRequest>>.Failure(new ServerException("Sender not found."));
-        
-        int skip = (pagination.PageNumber - 1) * pagination.PageSize;
-        int take = pagination.PageSize;
+
+        var skip = (pagination.PageNumber - 1) * pagination.PageSize;
+        var take = pagination.PageSize;
 
         Expression<Func<FriendRequest, string>> orderBy = p => p.Recipient.UserName!;
 
         var predicates = new List<Expression<Func<FriendRequest, bool>>> {
-            p => p.SenderId == senderId,
+            p => p.SenderId == senderId
         };
-        if (recipientName != null && recipientName.Trim() != "") 
+        if (recipientName != null && recipientName.Trim() != "")
             predicates.Add(p => p.Recipient.UserName!.ToLower().Contains(recipientName.ToLower()));
 
         var (count, pairs) = await _friendRequestRepository.GetFriendRequests(
-            skip: skip,
-            take: take,
-            keyOrder: orderBy,
-            isAscending: isAscending,
-            predicates: predicates
+            skip,
+            take,
+            orderBy,
+            isAscending,
+            predicates
         );
 
         return Result<PaginatedResponseDto<FriendRequest>>.Success(pairs.ToPaginatedResponse(pagination, count));
@@ -153,29 +137,28 @@ public class FriendRequestService : IFriendRequestService {
     public async Task<Result<PaginatedResponseDto<FriendRequest>>> GetReceivedFriendRequests(PaginationDto pagination,
         bool isAscending,
         string? senderName,
-        string recipientName) 
-    {
+        string recipientName) {
         var recipientId = await _accountRepository.GetAccountId(recipientName);
         if (recipientId == null)
             return Result<PaginatedResponseDto<FriendRequest>>.Failure(new ServerException("Recipient not found."));
-        
-        int skip = (pagination.PageNumber - 1) * pagination.PageSize;
-        int take = pagination.PageSize;
-        
+
+        var skip = (pagination.PageNumber - 1) * pagination.PageSize;
+        var take = pagination.PageSize;
+
         Expression<Func<FriendRequest, string>> orderBy = p => p.Sender.UserName!;
 
         var predicates = new List<Expression<Func<FriendRequest, bool>>> {
-            p => p.RecipientId == recipientId,
+            p => p.RecipientId == recipientId
         };
-        if (senderName != null && senderName.Trim() != "") 
+        if (senderName != null && senderName.Trim() != "")
             predicates.Add(p => p.Sender.UserName!.ToLower().Contains(senderName.ToLower()));
-        
+
         var (count, pairs) = await _friendRequestRepository.GetFriendRequests(
-            skip: skip,
-            take: take,
-            keyOrder: orderBy,
-            isAscending: isAscending,
-            predicates: predicates
+            skip,
+            take,
+            orderBy,
+            isAscending,
+            predicates
         );
 
         return Result<PaginatedResponseDto<FriendRequest>>.Success(pairs.ToPaginatedResponse(pagination, count));

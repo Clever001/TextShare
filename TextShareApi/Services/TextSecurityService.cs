@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using TextShareApi.ClassesLib;
 using TextShareApi.Dtos.Enums;
@@ -59,9 +58,7 @@ public class TextSecurityService : ITextSecurityService {
             }
         }
 
-        if (requestSenderId == text.OwnerId) {
-            return Result.Success();
-        }
+        if (requestSenderId == text.OwnerId) return Result.Success();
 
         return PassPasswordCheck(text, password);
     }
@@ -78,12 +75,13 @@ public class TextSecurityService : ITextSecurityService {
         var user = text.Owner;
 
         if (securitySettings.Password == null) return Result.Success();
-        
+
         if (password == null) return Result.Failure(new BadRequestException("Password is not provided."));
 
         var passwordCheck = _passwordHasher.VerifyHashedPassword(user,
             securitySettings.Password, password);
-        if (passwordCheck == PasswordVerificationResult.Failed) return Result.Failure(new BadRequestException("Provided password is not correct."));
+        if (passwordCheck == PasswordVerificationResult.Failed)
+            return Result.Failure(new BadRequestException("Provided password is not correct."));
 
         return Result.Success();
     }

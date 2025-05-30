@@ -13,12 +13,12 @@ using TextShareApi.Models;
 namespace TextShareApi.Services;
 
 public class TextService : ITextService {
-    private readonly IAccountRepository _accountRepository; 
+    private readonly IAccountRepository _accountRepository;
     private readonly ILogger<TextService> _logger;
+    private readonly ITagRepository _tagRepository;
     private readonly ITextRepository _textRepository;
     private readonly ITextSecurityService _textSecurityService;
     private readonly IUniqueIdService _uniqueIdService;
-    private readonly ITagRepository _tagRepository;
 
     public TextService(ITextRepository textRepository,
         ITextSecurityService textSecurityService,
@@ -35,23 +35,20 @@ public class TextService : ITextService {
     }
 
     public async Task<Result<Text>> Create(string curUserName, CreateTextDto dto) {
-        if (dto.Title == "") {
-            return Result<Text>.Failure(new BadRequestException("Title cannot be empty."));
-        }
+        if (dto.Title == "") return Result<Text>.Failure(new BadRequestException("Title cannot be empty."));
 
-        if (dto?.Password == "") {
-            return Result<Text>.Failure(new BadRequestException("Password cannot be empty."));
-        }
+        if (dto?.Password == "") return Result<Text>.Failure(new BadRequestException("Password cannot be empty."));
 
         var user = await _accountRepository.GetAccountByName(curUserName);
-        string? userId = user?.Id;
-        if (user == null || userId == null) return Result<Text>.Failure(new NotFoundException("Current user not found."));
+        var userId = user?.Id;
+        if (user == null || userId == null)
+            return Result<Text>.Failure(new NotFoundException("Current user not found."));
 
-        bool containsText = await _textRepository.ContainsText(dto.Title, userId);
+        var containsText = await _textRepository.ContainsText(dto.Title, userId);
         if (containsText)
             return Result<Text>.Failure(new BadRequestException(
-                description: "Text already exists.",
-                details: ["Text with Composite of fields Title and AppUserId already exists."]
+                "Text already exists.",
+                ["Text with Composite of fields Title and AppUserId already exists."]
             ));
 
         var text = new Text {
@@ -61,32 +58,27 @@ public class TextService : ITextService {
             Description = dto.Description,
             Content = dto.Content,
             Syntax = dto.Syntax,
-            Tags = new(),
-            ExpiryDate = dto.ExpiryDate,
+            Tags = new List<Tag>(),
+            ExpiryDate = dto.ExpiryDate
         };
         var securitySettings = new TextSecuritySettings {
             TextId = text.Id,
             Text = text,
-            AccessType = dto.AccessType,
+            AccessType = dto.AccessType
         };
 
-        if (dto.Password != null) {
-            securitySettings.Password = _textSecurityService.HashPassword(user, dto.Password);
-        }
+        if (dto.Password != null) securitySettings.Password = _textSecurityService.HashPassword(user, dto.Password);
 
         // Adding Tags
-        if (dto.Tags.Count > 0)
-        {
+        if (dto.Tags.Count > 0) {
             var existingTags = new Dictionary<string, Tag>(
                 (await _tagRepository.GetTags(t => dto.Tags.Contains(t.Name))).Select(t =>
                     new KeyValuePair<string, Tag>(t.Name, t)));
 
-            foreach (string tag in dto.Tags.Distinct().Select(t => t.ToLower()))
-            {
+            foreach (var tag in dto.Tags.Distinct().Select(t => t.ToLower()))
                 text.Tags.Add(existingTags.TryGetValue(tag, out var existingTag)
                     ? existingTag
                     : new Tag { Name = tag });
-            }
         }
 
         await _textRepository.AddText(text, securitySettings);
@@ -102,17 +94,13 @@ public class TextService : ITextService {
         if (text == null) return Result<Text>.Failure(new NotFoundException("Text not found."));
 
         var now = DateTime.UtcNow;
-        if (now >= text.ExpiryDate) {
-            return Result<Text>.Failure(new NotFoundException("Text not found."));
-        }
+        if (now >= text.ExpiryDate) return Result<Text>.Failure(new NotFoundException("Text not found."));
 
         var userId = curUserName == null ? null : await _accountRepository.GetAccountId(curUserName);
 
         var securityCheckResult = await _textSecurityService.PassReadSecurityChecks(text, userId, requestPassword);
 
-        if (!securityCheckResult.IsSuccess) {
-            return Result<Text>.Failure(securityCheckResult.Exception);
-        }
+        if (!securityCheckResult.IsSuccess) return Result<Text>.Failure(securityCheckResult.Exception);
 
         return Result<Text>.Success(text);
     }
@@ -120,18 +108,17 @@ public class TextService : ITextService {
     public async Task<Result<PaginatedResponseDto<Text>>> GetTexts(PaginationDto pagination,
         SortDto sort,
         TextFilterDto filter,
-        string? senderName) 
-    {
+        string? senderName) {
         // Pagination
-        int skip = (pagination.PageNumber - 1) * pagination.PageSize;
-        int take = pagination.PageSize;
+        var skip = (pagination.PageNumber - 1) * pagination.PageSize;
+        var take = pagination.PageSize;
 
         // Filtering
         var now = DateTime.UtcNow;
         var predicates = new List<Expression<Func<Text, bool>>> {
             t => t.ExpiryDate > now
         };
-        
+
         if (filter.OwnerName != null)
             predicates.Add(t => t.Owner.UserName!.ToLower().Contains(filter.OwnerName!.ToLower()));
 
@@ -140,7 +127,7 @@ public class TextService : ITextService {
 
         if (filter.Tags is { Count: > 0 })
             predicates.Add(text => filter.Tags.All(tag => text.Tags.Any(t => t.Name == tag)));
-        
+
         if (filter.Syntax != null)
             predicates.Add(text => text.Syntax == filter.Syntax);
 
@@ -149,47 +136,32 @@ public class TextService : ITextService {
 
         if (filter.HasPassword != null)
             predicates.Add(text => text.TextSecuritySettings.Password == null != filter.HasPassword);
-        
+
         // Security settings check
         if (senderName == null) {
-            predicates.Add(text => text.TextSecuritySettings.AccessType == AccessType.ByReferencePublic || 
+            predicates.Add(text => text.TextSecuritySettings.AccessType == AccessType.ByReferencePublic ||
                                    text.TextSecuritySettings.AccessType == AccessType.ByReferenceAuthorized);
         }
         else {
             var senderId = await _accountRepository.GetAccountId(senderName);
             if (senderId == null)
                 return Result<PaginatedResponseDto<Text>>.Failure(new ServerException("Sender not found."));
-            predicates.Add(text => (text.TextSecuritySettings.AccessType == AccessType.ByReferencePublic) || 
-                                   (text.TextSecuritySettings.AccessType == AccessType.ByReferenceAuthorized) || 
+            predicates.Add(text => text.TextSecuritySettings.AccessType == AccessType.ByReferencePublic ||
+                                   text.TextSecuritySettings.AccessType == AccessType.ByReferenceAuthorized ||
                                    (text.TextSecuritySettings.AccessType == AccessType.OnlyFriends &&
-                                    (text.OwnerId == senderId || text.Owner.FriendPairs.Select(p => p.SecondUserId).Contains(senderId))) || 
-                                   (text.TextSecuritySettings.AccessType == AccessType.Personal && 
+                                    (text.OwnerId == senderId || text.Owner.FriendPairs.Select(p => p.SecondUserId)
+                                        .Contains(senderId))) ||
+                                   (text.TextSecuritySettings.AccessType == AccessType.Personal &&
                                     text.OwnerId == senderId));
         }
-        
+
         // Sorting and Gathering texts
         var (isValid, getTexts) = GenerateGetTextsFunc(sort.SortBy);
-        if (!isValid) return Result<PaginatedResponseDto<Text>>.Failure(new BadRequestException("Invalid Sort By field."));
+        if (!isValid)
+            return Result<PaginatedResponseDto<Text>>.Failure(new BadRequestException("Invalid Sort By field."));
         var (count, texts) = await getTexts(skip, take, sort.SortAscending, predicates);
-        
-        return Result<PaginatedResponseDto<Text>>.Success(texts.ToPaginatedResponse(pagination, count));
-    }
 
-    private (bool isValid, Func<int, int, bool, List<Expression<Func<Text, bool>>>, Task<(int, List<Text>)>>) 
-        GenerateGetTextsFunc(string sortBy) {
-        return sortBy.ToLower() switch {
-            "id" => (true, (skip, take, asc, predicates) => 
-                    _textRepository.GetTexts(skip, take, t => t.Id, asc, predicates, true)),
-            "title" => (true, (skip, take, asc, predicates) => 
-                    _textRepository.GetTexts(skip, take, t => t.Title, asc, predicates, true)),
-            "syntax" => (true, (skip, take, asc, predicates) => 
-                    _textRepository.GetTexts(skip, take, t => t.Syntax, asc, predicates, true)),
-            "createdon" => (true, (skip, take, asc, predicates) =>
-                    _textRepository.GetTexts(skip, take, t => t.CreatedOn, asc, predicates, true)),
-            "updatedon" => (true, (skip, take, asc, predicates) =>
-                    _textRepository.GetTexts(skip, take, t => t.UpdatedOn, asc, predicates, true)),
-            _ => (false, null!)
-        };
+        return Result<PaginatedResponseDto<Text>>.Success(texts.ToPaginatedResponse(pagination, count));
     }
 
     public async Task<Result<List<Text>>> GetLatestTexts() {
@@ -200,16 +172,16 @@ public class TextService : ITextService {
                  t.TextSecuritySettings.AccessType == AccessType.ByReferenceAuthorized,
             t => t.TextSecuritySettings.Password == null
         };
-        
+
         var (_, texts) = await _textRepository.GetTexts(
-            skip: 0,
-            take: 5,
-            keyOrder: t => t.CreatedOn,
-            isAscending: false,
-            predicates: predicates,
-            generateCount: false
+            0,
+            5,
+            t => t.CreatedOn,
+            false,
+            predicates,
+            false
         );
-        
+
         return Result<List<Text>>.Success(texts);
     }
 
@@ -219,9 +191,7 @@ public class TextService : ITextService {
         if (text == null) return Result<Text>.Failure(new NotFoundException("Text not found."));
 
         var now = DateTime.UtcNow;
-        if (now >= text.ExpiryDate) {
-            return Result<Text>.Failure(new NotFoundException("Text not found."));
-        }
+        if (now >= text.ExpiryDate) return Result<Text>.Failure(new NotFoundException("Text not found."));
 
         // Security check
         var curUserId = await _accountRepository.GetAccountId(curUserName);
@@ -231,7 +201,7 @@ public class TextService : ITextService {
 
         // Title existence check
         if (dto.Title != null) {
-            bool contains = await _textRepository.ContainsText(dto.Title, curUserId);
+            var contains = await _textRepository.ContainsText(dto.Title, curUserId);
             if (contains) return Result<Text>.Failure(new BadRequestException("This Title already exists."));
         }
 
@@ -252,12 +222,12 @@ public class TextService : ITextService {
                 (await _tagRepository.GetTags(t => dto.Tags.Contains(t.Name))).Select(t =>
                     new KeyValuePair<string, Tag>(t.Name, t)));
             text.Tags.Clear();
-            foreach (var tag in dto.Tags.Distinct().Select(t => t.ToLower())) {
+            foreach (var tag in dto.Tags.Distinct().Select(t => t.ToLower()))
                 text.Tags.Add(existingTags.TryGetValue(tag, out var existingTag)
                     ? existingTag
                     : new Tag { Name = tag });
-            }
         }
+
         if (dto.ExpiryDate.HasValue) text.ExpiryDate = dto.ExpiryDate.Value;
 
         if (dto.AccessType != null) text.TextSecuritySettings.AccessType = dto.AccessType.Value;
@@ -275,9 +245,7 @@ public class TextService : ITextService {
         if (text == null) return Result.Failure(new NotFoundException("Text not found."));
 
         var now = DateTime.UtcNow;
-        if (now >= text.ExpiryDate) {
-            return Result.Failure(new NotFoundException("Text not found."));
-        }
+        if (now >= text.ExpiryDate) return Result.Failure(new NotFoundException("Text not found."));
 
 
         // Security check
@@ -303,10 +271,10 @@ public class TextService : ITextService {
         TextFilterWithoutOwnerDto filter,
         string ownerName,
         string? senderName) {
-        bool accountExists = await _accountRepository.ContainsAccountByName(ownerName);
-        if (!accountExists) {
-            return Result<PaginatedResponseDto<Text>>.Failure(new NotFoundException("Account with this name was not found."));
-        }
+        var accountExists = await _accountRepository.ContainsAccountByName(ownerName);
+        if (!accountExists)
+            return Result<PaginatedResponseDto<Text>>.Failure(
+                new NotFoundException("Account with this name was not found."));
 
         var convertedFilter = new TextFilterDto {
             OwnerName = ownerName,
@@ -318,5 +286,22 @@ public class TextService : ITextService {
         };
 
         return await GetTexts(pagination, sort, convertedFilter, senderName);
+    }
+
+    private (bool isValid, Func<int, int, bool, List<Expression<Func<Text, bool>>>, Task<(int, List<Text>)>>)
+        GenerateGetTextsFunc(string sortBy) {
+        return sortBy.ToLower() switch {
+            "id" => (true, (skip, take, asc, predicates) =>
+                _textRepository.GetTexts(skip, take, t => t.Id, asc, predicates, true)),
+            "title" => (true, (skip, take, asc, predicates) =>
+                _textRepository.GetTexts(skip, take, t => t.Title, asc, predicates, true)),
+            "syntax" => (true, (skip, take, asc, predicates) =>
+                _textRepository.GetTexts(skip, take, t => t.Syntax, asc, predicates, true)),
+            "createdon" => (true, (skip, take, asc, predicates) =>
+                _textRepository.GetTexts(skip, take, t => t.CreatedOn, asc, predicates, true)),
+            "updatedon" => (true, (skip, take, asc, predicates) =>
+                _textRepository.GetTexts(skip, take, t => t.UpdatedOn, asc, predicates, true)),
+            _ => (false, null!)
+        };
     }
 }

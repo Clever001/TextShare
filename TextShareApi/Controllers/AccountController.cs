@@ -40,7 +40,7 @@ public class AccountController : ControllerBase {
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
         var (user, token) = result.Value;
-        
+
         return Ok(user.ToUserWithTokenDto(token));
     }
 
@@ -51,24 +51,24 @@ public class AccountController : ControllerBase {
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
         var (user, token) = result.Value;
-        
+
         return Ok(user.ToUserWithTokenDto(token));
     }
 
     [HttpPut]
     [Authorize]
-    public async Task<IActionResult> Update([FromBody] UpdateUserDto updateDto) {
+    public async Task<IActionResult> UpdateAccount([FromBody] UpdateUserDto updateDto) {
         if (updateDto.UserName != null && IsEmail(updateDto.UserName))
             return this.ToActionResult(new BadRequestException("One or more validation errors occurred.",
                 [$"The Field {nameof(updateDto.UserName)} cannot represent an email."]));
-        
+
         var userName = User.GetUserName();
         if (userName == null) // Never executed.
             throw new ArgumentNullException(nameof(userName));
 
         var result = await _accountService.Update(userName, updateDto);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
-        
+
         var (user, token) = result.Value;
 
         return Ok(user.ToUserWithTokenDto(token));
@@ -77,10 +77,9 @@ public class AccountController : ControllerBase {
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationDto pagination,
         [FromQuery] string? userName) {
-       
         var result = await _accountService.GetUsers(pagination, userName);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
-        
+
         return Ok(result.Value.Convert(u => u.ToUserWithoutTokenDto()));
     }
 

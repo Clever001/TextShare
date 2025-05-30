@@ -39,7 +39,7 @@ public class AppDbContext : IdentityDbContext<AppUser> {
         builder.Entity<Tag>()
             .HasMany<Text>(t => t.Texts)
             .WithMany(t => t.Tags);
-        
+
         builder.Entity<FriendRequest>().HasKey(r => new { r.SenderId, r.RecipientId });
         builder.Entity<FriendRequest>()
             .HasOne(r => r.Sender)

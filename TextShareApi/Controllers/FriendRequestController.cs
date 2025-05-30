@@ -52,10 +52,10 @@ public class FriendRequestController : ControllerBase {
         var senderName = User.GetUserName();
 
         var result = await _frService.GetSentFriendRequests(
-            pagination: pagination,
-            isAscending: isAscending,
-            senderName: senderName!,
-            recipientName: recipientName
+            pagination,
+            isAscending,
+            senderName!,
+            recipientName
         );
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
         return Ok(result.Value.Convert(r => r.ToDto()));
@@ -68,10 +68,10 @@ public class FriendRequestController : ControllerBase {
         var recipientName = User.GetUserName();
 
         var result = await _frService.GetReceivedFriendRequests(
-            pagination: pagination,
-            isAscending: isAscending,
-            senderName: senderName,
-            recipientName: recipientName!
+            pagination,
+            isAscending,
+            senderName,
+            recipientName!
         );
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
         return Ok(result.Value.Convert(r => r.ToDto()));
@@ -79,8 +79,7 @@ public class FriendRequestController : ControllerBase {
 
     [HttpGet("fromMe/{recipientName}")]
     [Authorize]
-    public async Task<IActionResult> GetRequestDetailFromMe([FromRoute] string recipientName)
-    {
+    public async Task<IActionResult> GetRequestDetailFromMe([FromRoute] string recipientName) {
         var senderName = User.GetUserName();
 
         var result = await _frService.GetFriendRequest(senderName!, recipientName);
@@ -91,8 +90,7 @@ public class FriendRequestController : ControllerBase {
 
     [HttpGet("toMe/{senderName}")]
     [Authorize]
-    public async Task<IActionResult> GetRequestDetailToMe([FromRoute] string senderName)
-    {
+    public async Task<IActionResult> GetRequestDetailToMe([FromRoute] string senderName) {
         var recipientName = User.GetUserName();
 
         var result = await _frService.GetFriendRequest(senderName, recipientName!);
@@ -110,7 +108,7 @@ public class FriendRequestController : ControllerBase {
         var result = await _frService.Process(senderName, curUserName!, requestDto.AcceptRequest);
 
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
-        
+
         return Ok(result.Value.ToDto());
     }
 }

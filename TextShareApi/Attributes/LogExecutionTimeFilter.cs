@@ -11,14 +11,14 @@ public class LogExecutionTimeFilter : IActionFilter {
         _logger = logger;
         _stopwatch = new Stopwatch();
     }
-    
+
     public void OnActionExecuting(ActionExecutingContext context) {
         _stopwatch.Start();
     }
 
     public void OnActionExecuted(ActionExecutedContext context) {
         _stopwatch.Stop();
-        
+
         var elapsedMilliseconds = _stopwatch.ElapsedMilliseconds;
         var elapsed = elapsedMilliseconds > 1000
             ? $"{elapsedMilliseconds / 1000} s. {elapsedMilliseconds % 1000} ms."
