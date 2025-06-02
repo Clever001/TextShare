@@ -102,6 +102,12 @@ const Editor = (props: Props) => {
   useEffect(() => {
     let isMounted = true; // Флаг для отслеживания состояния монтирования
 
+    window.MonacoEnvironment = {
+      getWorkerUrl: function (workerId, label) {
+        return 'data:text/javascript;charset=utf-8,'; // Пустой Worker
+      }
+    };
+
     const initializeEditor = async () => {
       if (!isMounted) return; // Проверяем, монтирован ли компонент
 

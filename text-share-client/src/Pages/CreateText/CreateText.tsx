@@ -32,6 +32,12 @@ const CreateText = (props: Props) => {
       return;
     }
 
+    window.MonacoEnvironment = {
+      getWorkerUrl: function (workerId, label) {
+        return 'data:text/javascript;charset=utf-8,'; // Пустой Worker
+      }
+    };
+
     const initializeEditor = async () => {
       if (!isMounted) return;
 

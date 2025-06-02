@@ -113,6 +113,12 @@ const Reader = (props: Props) => {
 
   // Обновление содержимого редактора при изменении текста
   useEffect(() => {
+    window.MonacoEnvironment = {
+      getWorkerUrl: function (workerId, label) {
+        return 'data:text/javascript;charset=utf-8,'; // Пустой Worker
+      }
+    };
+
     const updateText = async () => {
       if (!editorRef.current) {
         for (let i = 0; i != 20; i++) {
