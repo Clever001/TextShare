@@ -1,0 +1,1 @@
+k6 run --env USERNAME= --env PASSWORD= .\stress_test.js

@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using TextShareApi.Attributes;
 using TextShareApi.Dtos.Enums;
-
 namespace TextShareApi.Dtos.Text;
 
 public class CreateTextDto {
@@ -11,9 +10,9 @@ public class CreateTextDto {
 
     public string Content { get; set; } = string.Empty;
 
-    [MaxLength(35)] public string Syntax { get; set; } = string.Empty;
+    [Required] [MaxLength(35)] public string Syntax { get; set; } = string.Empty;
 
-    public List<string> Tags { get; set; } = new();
+    [ValidTags] public List<string> Tags { get; set; } = new();
 
     [Required] public AccessType AccessType { get; set; } = AccessType.Personal;
 

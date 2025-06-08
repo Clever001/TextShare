@@ -198,7 +198,8 @@ const Editor = (props: Props) => {
     // Syntax
     if (syntax != text?.syntax) { updateDto.syntax = syntax; }
     // Tags
-    const newTags = tags.split(" ");
+    var newTags = tags.split(" ");
+    newTags = newTags.filter((t) => t !== "");
     newTags.sort();
     const oldTags = text?.tags ?? [];
     if (newTags.length === oldTags.length) {
@@ -211,6 +212,8 @@ const Editor = (props: Props) => {
       }
 
       if (!areEqual) updateDto.tags = newTags;
+    } else {
+      updateDto.tags = newTags;
     }
     // AccessType
     if (accessType != text?.accessType) { updateDto.accessType = accessType; }
@@ -364,7 +367,7 @@ const Editor = (props: Props) => {
                   <tr>
                     <td className="col1"><p>Заголовок текста</p></td>
                     <td className="col2"><input type="text" name="title" value={title} onChange={onTitleChange} /></td>
-                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnTitle} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnTitle} title='Вернуть начальное значение'/></td>
                   </tr>
                   <tr>
                     <td className="col1">
@@ -373,17 +376,17 @@ const Editor = (props: Props) => {
                     <td className="col2">
                       <textarea name="description" value={description} onChange={onDescriptionChange} />
                     </td>
-                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnDescription} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnDescription} title='Вернуть начальное значение'/></td>
                   </tr>
                   <tr>
                     <td className="col1"><p>Теги</p></td>
                     <td className="col2"><input type="text" name="tags" value={tags} onChange={onTagsChange} /></td>
-                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnTags} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnTags} title='Вернуть начальное значение'/></td>
                   </tr>
                   <tr>
                     <td className="col1"><p>Дата и время удаления</p></td>
                     <td className="col2"><input type="datetime-local" name="expiryDate" value={expiry} onChange={onExpiryChange} /></td>
-                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnExpiry} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnExpiry} title='Вернуть начальное значение'/></td>
                   </tr>
                   <tr>
                     <td className="col1"><p>Тип синтаксиса</p></td>
@@ -395,27 +398,26 @@ const Editor = (props: Props) => {
                         );
                       })}
                     </select></td>
-                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnSyntax} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnSyntax} title='Вернуть начальное значение'/></td>
                   </tr>
                   <tr>
                     <td className="col1"><p>Тип доступа</p></td>
                     <td className="col2">
                       <select name="accessType" value={accessType} onChange={onAccessTypeChange}>
-                        <option value=""></option>
                         <option value="ByReferencePublic">Публичный</option>
                         <option value="ByReferenceAuthorized">Публичный с авторизацией</option>
                         <option value="OnlyFriends">Только для друзей</option>
                         <option value="Personal">Приватный</option>
                       </select>
                     </td>
-                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnAccessType} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnAccessType} title='Вернуть начальное значение'/></td>
                   </tr>
                   <tr>
                     <td className="col-1"><p>Наличие пароля</p></td>
                     <td>
                       <input type="checkbox" name="hasPassword" checked={hasPassword} onChange={onHasPasswordChange} />
                     </td>
-                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnHasPassword} /></td>
+                    <td className="col3"><img src="/img/return_black.svg" alt="return" onClick={returnHasPassword} title='Вернуть начальное значение'/></td>
                   </tr>
                   {text.hasPassword &&
                     <tr>

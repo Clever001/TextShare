@@ -270,7 +270,7 @@ const Reader = (props: Props) => {
               <div className="text-type-info">
                 <p className="title">{text.title}</p>
                 <div className="sub-info">
-                  <Link to={`/profile/${encodeURIComponent(text.ownerName)}`}>
+                  <Link to={`/profile/${encodeURIComponent(text.ownerName)}`} title='Открыть профиль'>
                     <p className="owner-name">{text.ownerName}</p>
                   </Link>
                   <p className="date">{convertDate(text.createdOn)}</p>
@@ -280,18 +280,28 @@ const Reader = (props: Props) => {
               </div>
             </div>
             <div className="actions">
-              <a onClick={onCopy} className="copy-button">
+              <a onClick={onCopy} className="copy-button" title='Скопировать'>
                 <img src="/img/copy_black.svg" alt="copy" />
                 {isCopied && (
                   <span className="copy-notification">Текст скопирован!</span>
                 )}
               </a>
-              <Link to={`/editor/${text.id}`}><img src="/img/edit_black.svg" alt="edit" /></Link>
-              <a onClick={handleDownload}><img src="/img/download_black.svg" alt="download" /></a>
-              <a onClick={deleteText}><img src="/img/delete_black.svg" alt="delete" /></a>
+              <Link to={`/editor/${text.id}`}  title='Отредактировать'><img src="/img/edit_black.svg" alt="edit" /></Link>
+              <a onClick={handleDownload} title='Скачать'><img src="/img/download_black.svg" alt="download" /></a>
+              <a onClick={deleteText} title='Удалить'><img src="/img/delete_black.svg" alt="delete" /></a>
             </div>
           </div>
-          <div className="content" ref={editorRef} style={{ height: '80vh' }} />
+          
+          {text.description ? 
+            <div className="description"> 
+              Описание: <br/> {text.description}
+            </div>
+          :
+            <div className="description"> 
+              У текста нет описания
+            </div>
+          }
+          <div className="content" ref={editorRef} style={{ height: '72vh' }} />
         </div>
       )}
     </div>

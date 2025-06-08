@@ -17,7 +17,8 @@ using TextShareApi.Services;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options => {
         options.Filters.Add<ValidateModelStateAttribute>();
-        options.Filters.Add<LogExecutionTimeFilter>();
+        if (bool.Parse(builder.Configuration["LogExecutionTime"] ?? ""))
+            options.Filters.Add<LogExecutionTimeFilter>();
     }).ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = true; })
     .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 builder.Services.AddDbContext<AppDbContext>(options => {

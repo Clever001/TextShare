@@ -3,6 +3,10 @@
     color: #000;
 }
 
+.reader .description {
+    padding: 15px 0;
+}
+
 .reader .error {
     color:red;
 }

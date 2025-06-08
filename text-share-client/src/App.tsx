@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import './App.css';
 import Header from './Components/Header/Header';
@@ -55,7 +55,7 @@ const App = () => {
         const getUserName = async () => {
             if (validAuth) {
                 const userName = Cookies.get("userName");
-                if (typeof(userName) == "string") {
+                if (typeof (userName) == "string") {
                     header_setUserName(userName);
                 } else {
                     header_setUserName("")
@@ -79,17 +79,47 @@ const App = () => {
     }
 
 
+    const header_menuButtonRef = useRef<HTMLButtonElement>(null);
+    const header_menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (
+                header_menuHidden ||
+                header_menuButtonRef.current?.contains(e.target as Node) ||
+                header_menuRef.current?.contains(e.target as Node)
+            ) {
+                return;
+            }
+            header_setMenuHidden(true);
+        }
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [header_menuHidden]);
+
+    const header_closeMenu = () => {
+        header_setMenuHidden(true);
+    }
+
+
     return (
         <div className="app">
-            <Header 
+            <Header
                 userName={header_userName}
-                query={header_query} menuHidden={header_menuHidden}
+                query={header_query}
+                menuHidden={header_menuHidden}
                 onSearchQueryChange={header_onSearchQueryChange}
                 onSearchSubmit={header_onSearchSubmit}
                 onUserClick={header_onUserClick}
                 onShowMenuButtonClick={header_onShowMenuButtonClick}
-                onLogOutClick={Header_onLogOutClick} 
+                onLogOutClick={Header_onLogOutClick}
                 onProfileClick={Header_onProfileClick}
+                menuButtonRef={header_menuButtonRef}
+                menuRef={header_menuRef}
+                closeMenu={header_closeMenu}
             />
 
             <div className="container-fluid">

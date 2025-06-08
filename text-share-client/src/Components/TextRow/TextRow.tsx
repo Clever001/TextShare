@@ -17,24 +17,24 @@ const TextRow = ({ text, getIcon , includeOwner}: Props) => {
   return (
     <tr>
       <td>
-        <Link to={`/reader/${encodeURIComponent(text.id)}`}>{getIcon(text.accessType)}{text.title}</Link>
+        <Link to={`/reader/${encodeURIComponent(text.id)}`} title={text.description}>{getIcon(text.accessType)}{text.title}</Link>
       </td>
       {includeOwner && 
         <td>
-          <Link to={`/reader/${encodeURIComponent(text.id)}`}>{text.ownerName}</Link>
+          <Link to={`/reader/${encodeURIComponent(text.id)}`} title={text.description}>{text.ownerName}</Link>
         </td>
       }
       <td>
-        <Link to={`/reader/${encodeURIComponent(text.id)}`}>{dateToString(text.createdOn)}</Link>
+        <Link to={`/reader/${encodeURIComponent(text.id)}`} title={text.createdOn.toDateString()}>{dateToString(text.createdOn)}</Link>
       </td>
       <td>
-        <Link to={`/reader/${encodeURIComponent(text.id)}`}>{text.tags.slice(0, 3).join(" ")} {text.tags.length > 3 && "..."}</Link>
+        <Link to={`/reader/${encodeURIComponent(text.id)}`} title={text.tags.join(' ')}>{text.tags.slice(0, 3).join(" ")} {text.tags.length > 3 && "..."}</Link>
       </td>
       <td>
-        <Link to={`/reader/${encodeURIComponent(text.id)}`}>{text.syntax}</Link>
+        <Link to={`/reader/${encodeURIComponent(text.id)}`} title={text.description}>{text.syntax}</Link>
       </td>
       <td>
-        <Link to={`/reader/${encodeURIComponent(text.id)}`}>{text.hasPassword ? (<p>есть</p>) : (<p>нету</p>)}</Link>
+        <Link to={`/reader/${encodeURIComponent(text.id)}`} title={text.description}>{text.hasPassword ? (<p>есть</p>) : (<p>нету</p>)}</Link>
       </td>
     </tr>
   )

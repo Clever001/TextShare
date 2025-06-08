@@ -86,10 +86,10 @@ const CreateText = (props: Props) => {
   const [highlightSyntax, setHighlightSyntax] = useState<boolean>(true);
   const [syntax, setSyntax] = useState<string>("plaintext");
 
-  const updateHasPassword = (v:boolean) => {
+  const updateHasPassword = (v: boolean) => {
     setHasPassword(v);
   }
-  const updateHighlightSyntax = (v:boolean) => {
+  const updateHighlightSyntax = (v: boolean) => {
     if (!highlightSyntax && editorInstance.current) {
       const model = editorInstance.current.getModel();
       if (model) {
@@ -103,7 +103,7 @@ const CreateText = (props: Props) => {
     }
     setHighlightSyntax(v);
   }
-  const updateSyntax = (v:string) => {
+  const updateSyntax = (v: string) => {
     setSyntax(v);
     if (highlightSyntax && editorInstance.current) {
       const model = editorInstance.current.getModel();
@@ -157,6 +157,8 @@ const CreateText = (props: Props) => {
       expiryDate: new Date(getFormValue("expiryDate") ?? "")
     }
 
+    createDto.tags = createDto.tags.filter((t) => t !== "");
+
     const response = await CreateTextAPI(createDto, token);
 
     if (isExceptionDto(response)) {
@@ -166,7 +168,7 @@ const CreateText = (props: Props) => {
           openAuth();
           return;
         default:
-          if (response.details) 
+          if (response.details)
             setErrors(response.details);
           else
             setErrors([response.description]);
@@ -176,6 +178,25 @@ const CreateText = (props: Props) => {
 
     navigate("/reader/" + response.id);
   }
+
+
+  const [defaultExpiryDate, setDefaultExpiryDate] = useState<string>("");
+  
+  const formatToDateTimeLocal = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  useEffect(() => {
+    const date = new Date();
+    date.setMonth(date.getMonth() + 1);
+    setDefaultExpiryDate(formatToDateTimeLocal(date));
+  }, [])
 
   return (
     <div className="creation">
@@ -187,7 +208,7 @@ const CreateText = (props: Props) => {
               <div className="switch-container">
                 <p>Подсветка синтаксиса</p>
                 <label className="switch">
-                  <input type="checkbox" name="highlightSyntax" checked={highlightSyntax} onChange={e => updateHighlightSyntax(e.target.checked)}/>
+                  <input type="checkbox" name="highlightSyntax" checked={highlightSyntax} onChange={e => updateHighlightSyntax(e.target.checked)} />
                   <span className="slider"></span>
                 </label>
               </div>
@@ -226,7 +247,7 @@ const CreateText = (props: Props) => {
                 </tr>
                 <tr>
                   <td className="col1"><p>Дата и время удаления текста</p></td>
-                  <td className="col2"><input type="datetime-local" name="expiryDate"/></td>
+                  <td className="col2"><input type="datetime-local" name="expiryDate" defaultValue={defaultExpiryDate} /></td>
                 </tr>
                 <tr>
                   <td className="col1"><p>Тип доступа</p></td>

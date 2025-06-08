@@ -73,7 +73,7 @@
     width: 100%;
 }
 
-.editor input, .editor select {
+.editor input, .editor select, .editor textarea {
     outline:none;
     border:1px solid #BABABA;
     border-radius:5px;
