@@ -25,8 +25,8 @@
       - db
     environment:
       - ASPNETCORE_URLS=https://+:7285
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/localhost.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=123vV123@
+      # - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/localhost.pfx
+      # - ASPNETCORE_Kestrel__Certificates__Default__Password=123vV123@
       - ConnectionStrings__DefaultConnection=Host=db;Database=text_share;Username=postgres;Password=postgres
     entrypoint: >
       sh -c "./wait-for-it.sh db:5432 --timeout=30 &&
@@ -39,7 +39,7 @@
       context: .
       dockerfile: text-share-client/Dockerfile
       args:
-        - REACT_APP_SERVER_URL_PATH=https://localhost:7285/
+        - REACT_APP_SERVER_URL_PATH=http://localhost:7285/
         - REACT_APP_CLIENT_URL_PATH=http://localhost/
     ports:
       - "80:80"

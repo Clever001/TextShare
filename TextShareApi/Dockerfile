@@ -11,6 +11,8 @@ RUN dotnet restore "TextShareApi/TextShareApi.csproj"
 COPY . .
 WORKDIR "/src/TextShareApi"
 
+RUN dotnet new tool-manifest
+
 # Установка EF Core Tools
 RUN dotnet tool restore
 RUN dotnet tool install --global dotnet-ef --version 9.0.5
@@ -41,8 +43,8 @@ RUN apt-get update && apt-get install -y wget && wget https://raw.githubusercont
 # Копируем скомпилированные файлы
 COPY --from=build /app/publish .
 
-# Копируем сертификат
-COPY --from=build /src/TextShareApi/certs/localhost.pfx /https/
+# Копируем сертификат (Не копируем)
+# COPY --from=build /src/TextShareApi/certs/localhost.pfx /https/
 
 # Порт приложения
 EXPOSE 7285
