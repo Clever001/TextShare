@@ -31,7 +31,7 @@ function uuidv4() {
 
 
 export function setup() {
-    const tokenResponse = http.post('https://localhost:7285/api/accounts/login', 
+    const tokenResponse = http.post('http://localhost:7285/api/accounts/login', 
         JSON.stringify({
             userNameOrEmail: __ENV.USERNAME,
             password: __ENV.PASSWORD
@@ -59,13 +59,14 @@ export function setup() {
         'Authorization': `Bearer ${token}`
     };
     for (let i = 0; i != total_text_creation; i++) {
-        const response = http.post('https://localhost:7285/api/text', 
+        const response = http.post('http://localhost:7285/api/text', 
             JSON.stringify({
                 title: uuidv4(),
                 description: "",
                 content: file,
                 stynax: "plaintext",
                 tags: [],
+                syntax: 'plaintext',
                 accessType: "ByReferenceAuthorized",
                 password: null,
                 expiryDate: curDate
@@ -74,7 +75,7 @@ export function setup() {
         if (response.status !== 201) {
             console.error(`Failed to create text: ${response.status} - ${response.body}`);
             console.error(response.request.body.substring(0, 100));
-            continue;
+            throw Error();
         }
 
         ids.push(response.json('id'));
@@ -92,7 +93,7 @@ export default (data) => {
         'Authorization': `Bearer ${token}`
     };
 
-    const response = http.get('https://localhost:7285/api/text/' + id, {headers} )
+    const response = http.get('http://localhost:7285/api/text/' + id, {headers} )
 
     check(response, {
         [`Text received successfully`]: (r) => r.status === 200 && r.json('content') !== ''
@@ -113,7 +114,7 @@ export function teardown(data) {
         'Authorization': `Bearer ${token}`
     };
     for (let i = 0; i != ids.length; i++) {
-        const response = http.request('DELETE', `https://localhost:7285/api/text/${ids[i]}`, null, {
+        const response = http.request('DELETE', `http://localhost:7285/api/text/${ids[i]}`, null, {
             headers: headers
         });
 
