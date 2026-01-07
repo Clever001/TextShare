@@ -20,7 +20,8 @@ builder.Services.AddControllers(options => {
         if (bool.Parse(builder.Configuration["LogExecutionTime"] ?? ""))
             options.Filters.Add<LogExecutionTimeFilter>();
     }).ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = true; })
-    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+    .AddJsonOptions(options => { 
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 builder.Services.AddDbContext<AppDbContext>(options => {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
     // options.LogTo(Console.WriteLine, LogLevel.Information);

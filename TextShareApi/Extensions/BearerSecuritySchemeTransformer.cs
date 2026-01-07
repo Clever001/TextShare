@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.OpenApi;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace TextShareApi.Extensions;
 
@@ -11,21 +11,23 @@ internal sealed class BearerSecuritySchemeTransformer(
         CancellationToken cancellationToken) {
         var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
         if (authenticationSchemes.Any(authScheme => authScheme.Name == "Bearer")) {
-            var requirements = new Dictionary<string, OpenApiSecurityScheme> {
-                ["Bearer"] = new() {
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    In = ParameterLocation.Header,
-                    BearerFormat = "Json Web Token"
-                }
+            IOpenApiSecurityScheme bearerScheme = new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                In = ParameterLocation.Header,
+                BearerFormat = "Json Web Token"
             };
             document.Components ??= new OpenApiComponents();
-            document.Components.SecuritySchemes = requirements;
+            document.Components.SecuritySchemes = new Dictionary<string, IOpenApiSecurityScheme>()
+            {
+                ["Bearer"] = bearerScheme
+            };
 
             foreach (var operation in document.Paths.Values.SelectMany(path => path.Operations))
-                operation.Value.Security.Add(new OpenApiSecurityRequirement {
-                    [new OpenApiSecurityScheme { Reference = new OpenApiReference { Id = "Bearer", Type = ReferenceType.SecurityScheme } }] =
-                        Array.Empty<string>()
+                operation.Value.Security.Add(new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("Bearer", document, null)] = []
                 });
         }
     }

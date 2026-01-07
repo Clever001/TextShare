@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace TextShareApi.Attributes;
 
 public class NonEmptyStringAttribute : ValidationAttribute {
-    protected override ValidationResult IsValid(object value, ValidationContext validationContext) {
+    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext) {
         string? str = value as string;
 
         if (str != null && str.Trim() == "") {

@@ -18,9 +18,12 @@ public class AppDbContext : IdentityDbContext<AppUser> {
     protected override void OnModelCreating(ModelBuilder builder) {
         base.OnModelCreating(builder);
 
+        var adminGuid = new Guid("4d1a8b3b-5d7d-4b5a-b7b3-3e4f3cbf54a8");
+        var userGuid = new Guid("9f27a13e-4523-4b36-b9d1-981d356f0137");
+
         var roles = new List<IdentityRole> {
-            new() { Id = "4d1a8b3b-5d7d-4b5a-b7b3-3e4f3cbf54a8", Name = "Admin", NormalizedName = "ADMIN" },
-            new() { Id = "9f27a13e-4523-4b36-b9d1-981d356f0137", Name = "User", NormalizedName = "USER" }
+            new() { Id = adminGuid.ToString(), Name = "Admin", NormalizedName = "ADMIN" },
+            new() { Id = userGuid.ToString(), Name = "User", NormalizedName = "USER" }
         };
         builder.Entity<IdentityRole>().HasData(roles);
 
