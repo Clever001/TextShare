@@ -1,5 +1,5 @@
 # Stage 1: Сборка приложения
-FROM node:20-alpine AS builder
+FROM node:25-alpine AS builder
 
 # Установка рабочей директории
 WORKDIR /app

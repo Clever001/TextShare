@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Transactions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -92,10 +93,11 @@ builder.Services.AddCors(options => {
 builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope()) {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if ((await dbContext.Database.GetPendingMigrationsAsync()).Any()) await dbContext.Database.MigrateAsync();
-}
+// using (var scope = app.Services.CreateScope()) {
+//     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//     if ((await dbContext.Database.GetPendingMigrationsAsync()).Any()) 
+//         await dbContext.Database.MigrateAsync();
+// }
 
 app.UseCors("AllowAll");
 
@@ -104,8 +106,7 @@ app.UseCors("AllowAll");
 if (app.Environment.IsDevelopment()) {
     app.MapOpenApi();
     app.MapScalarApiReference(options => {
-        options.WithTitle("TextShare API")
-            .WithLayout(ScalarLayout.Modern);
+        options.WithTitle("TextShare API");
     });
     app.Use(async (context, next) => {
         if (context.Request.Path == "/") {

@@ -2,7 +2,6 @@
   db:
     image: postgres:18.1-alpine3.23
     container_name: db
-    restart: always
     shm_size: 256mb
     ports:
       - "9342:5432"
@@ -25,11 +24,11 @@
       - db
     environment:
       - ASPNETCORE_URLS=https://+:7285
-      # - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/localhost.pfx
-      # - ASPNETCORE_Kestrel__Certificates__Default__Password=123vV123@
+      # connection settings for aspnet
       - ConnectionStrings__DefaultConnection=Host=db;Database=text_share;Username=postgres;Password=postgres
     entrypoint: >
-      sh -c "./wait-for-it.sh db:5432 --timeout=30 &&
+      sh -c "./wait-for-it.sh db:5432 --timeout=30 && 
+          psql "postgresql://postgres:postgres@db:5432/text_share" -f ./migrations/migrations.sql && 
           dotnet ./TextShareApi.dll"
 
   textshareclient:

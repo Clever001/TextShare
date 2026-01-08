@@ -11,40 +11,38 @@ RUN dotnet restore "TextShareApi/TextShareApi.csproj"
 COPY . .
 WORKDIR "/src/TextShareApi"
 
-RUN dotnet new tool-manifest
-
 # Установка EF Core Tools
-RUN dotnet tool restore
-RUN dotnet tool install --global dotnet-ef
+RUN dotnet new tool-manifest && \
+    dotnet tool restore && \
+    dotnet tool install --global dotnet-ef
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
-# Создаем миграции
-RUN dotnet ef migrations add InitialCreate
-
 # Публикация с Native AOT
-RUN dotnet publish "TextShareApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish \
+RUN dotnet publish "TextShareApi.csproj" -c $BUILD_CONFIGURATION \
+    -o /app/publish \
     --self-contained false \
     -p:PublishAot=false
+
+# Создаем sql скрипт
+RUN dotnet ef migrations add InitialCreate && \
+    dotnet ef migrations script --output \
+    /app/publish/migrations/migrations.sql
+
+# Удаление BOM-метки
+RUN sed -i '1s/^\xEF\xBB\xBF//' /app/publish/migrations/migrations.sql
 
 # Финальный образ
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
-# Установка зависимостей (если нужны)
+# Установка зависимостей
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libssl-dev \
-    libicu-dev \
-    && rm -rf /var/lib/apt/lists/* 
-
-# Устанавливаем wait-for-it.sh, чтобы подождать, когда будет запущена бд.
-RUN apt-get update && apt-get install -y wget && wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
+    libicu-dev wget postgresql-client && \
+    wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
     && chmod +x ./wait-for-it.sh
 
 # Копируем скомпилированные файлы
 COPY --from=build /app/publish .
-
-# Копируем сертификат (Не копируем)
-# COPY --from=build /src/TextShareApi/certs/localhost.pfx /https/
 
 # Порт приложения
 EXPOSE 7285
