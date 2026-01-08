@@ -1,6 +1,6 @@
 ﻿services:
   db:
-    image: postgres:15-alpine
+    image: postgres:18.1-alpine3.23
     container_name: db
     restart: always
     shm_size: 256mb

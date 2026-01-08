@@ -1,5 +1,5 @@
 ﻿# Сборка приложения
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
@@ -15,7 +15,7 @@ RUN dotnet new tool-manifest
 
 # Установка EF Core Tools
 RUN dotnet tool restore
-RUN dotnet tool install --global dotnet-ef --version 9.0.5
+RUN dotnet tool install --global dotnet-ef
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
 # Создаем миграции
@@ -27,7 +27,7 @@ RUN dotnet publish "TextShareApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish
     -p:PublishAot=false
 
 # Финальный образ
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
 # Установка зависимостей (если нужны)

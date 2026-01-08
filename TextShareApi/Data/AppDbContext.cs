@@ -15,17 +15,15 @@ public class AppDbContext : IdentityDbContext<AppUser> {
     public DbSet<TextSecuritySettings> TextSecuritySettings { get; set; }
     public DbSet<Tag> Tags { get; set; }
 
+    private static readonly IdentityRole[] SeedRoles = {
+        new() { Id = "4d1a8b3b-5d7d-4b5a-b7b3-3e4f3cbf54a8", Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = "8d6f4527-714e-4ed7-89fc-13cae731b39b" },
+        new() { Id = "9f27a13e-4523-4b36-b9d1-981d356f0137", Name = "User", NormalizedName = "USER", ConcurrencyStamp = "3daa7139-2c08-4c90-8e32-e79861a4207f" }
+    };
+
     protected override void OnModelCreating(ModelBuilder builder) {
         base.OnModelCreating(builder);
 
-        var adminGuid = new Guid("4d1a8b3b-5d7d-4b5a-b7b3-3e4f3cbf54a8");
-        var userGuid = new Guid("9f27a13e-4523-4b36-b9d1-981d356f0137");
-
-        var roles = new List<IdentityRole> {
-            new() { Id = adminGuid.ToString(), Name = "Admin", NormalizedName = "ADMIN" },
-            new() { Id = userGuid.ToString(), Name = "User", NormalizedName = "USER" }
-        };
-        builder.Entity<IdentityRole>().HasData(roles);
+        builder.Entity<IdentityRole>().HasData(SeedRoles);
 
         builder.Entity<Text>().HasKey(t => t.Id);
         builder.Entity<Text>()
