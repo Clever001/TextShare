@@ -1,0 +1,20 @@
+{
+    "name": "TextShare dev container",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspace",
+    "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh"
+    },
+    "extensions": [
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit",
+        "jorgeserrano.vscode-csharp-snippets",
+        "dsznajder.es7-react-js-snippets",
+        "ecmel.vscode-html-css",
+        "patcx.vscode-nuget-gallery",
+        "wayou.vscode-todo-highlight"
+    ],
+    "forwardPorts": [7285, 3000, 5432, 5672, 15672],
+    "remoteUser": "root"
+}
