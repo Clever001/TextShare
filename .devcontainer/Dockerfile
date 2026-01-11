@@ -1,6 +1,16 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0
 
-RUN apt-get update && apt-get install -y \
+RUN rm /etc/dpkg/dpkg.cfg.d/excludes && \
+    rm -f /usr/bin/man && \
+    dpkg-divert --quiet --remove /usr/bin/man && \
+    apt-get update && \
+    apt-get install -y --reinstall man-db && \
+    apt-get install -y \
+    man-db \
+    manpages \
+    manpages-dev && \
+    apt-get install -y \
+    less \
     zsh \
     git \
     curl \
