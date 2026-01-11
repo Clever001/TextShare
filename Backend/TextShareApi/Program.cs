@@ -1,9 +1,12 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Transactions;
+using Auth;
+using Grpc.Net.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Protocols.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using TextShareApi.Attributes;
@@ -54,6 +57,11 @@ builder.Services.AddAuthentication(options => {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
+});
+
+builder.Services.AddGrpcClient<Greeter.GreeterClient>(options => {
+    options.Address = new Uri(builder.Configuration["GrpcServices:Auth"]
+        ?? throw new InvalidConfigurationException());
 });
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
