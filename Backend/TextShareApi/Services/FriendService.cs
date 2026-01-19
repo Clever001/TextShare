@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using TextShareApi.ClassesLib;
+using Shared;
 using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Exceptions;
+using Shared.Exceptions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;
@@ -18,6 +18,7 @@ public class FriendService : IFriendService {
         _accountRepository = accountRepository;
     }
 
+    // TODO: Check if this method needed.
     public async Task<Result> AddFriend(string firstUserName, string secondUserName) {
         if (firstUserName == secondUserName)
             return Result.Failure(new BadRequestException("First and second users cannot be same."));

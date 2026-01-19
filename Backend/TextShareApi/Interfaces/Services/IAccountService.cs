@@ -1,4 +1,4 @@
-using TextShareApi.ClassesLib;
+using Shared;
 using TextShareApi.Dtos.Accounts;
 using TextShareApi.Dtos.QueryOptions;
 using TextShareApi.Models;

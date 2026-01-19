@@ -1,0 +1,56 @@
+using Auth.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace Auth.Data;
+
+public class AppDbContext: IdentityDbContext<AppUser> {
+    public AppDbContext(DbContextOptions options) : base(options) {}
+
+    public DbSet<FriendPair> FriendPairs {get; set;}
+    public DbSet<FriendRequest> FriendRequests {get; set;}
+
+    private static readonly IdentityRole[] SeedRoles = {
+        new() { Id = "4d1a8b3b-5d7d-4b5a-b7b3-3e4f3cbf54a8", Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = "8d6f4527-714e-4ed7-89fc-13cae731b39b" },
+        new() { Id = "9f27a13e-4523-4b36-b9d1-981d356f0137", Name = "User", NormalizedName = "USER", ConcurrencyStamp = "3daa7139-2c08-4c90-8e32-e79861a4207f" }
+    };
+
+    protected override void OnModelCreating(ModelBuilder builder) {
+        base.OnModelCreating(builder);
+
+        builder.Entity<IdentityRole>().HasData(SeedRoles);
+
+        builder.Entity<FriendPair>().HasKey(fp => new {fp.FirstUserId, fp.SecondUserId});
+        builder.Entity<FriendPair>()
+            .HasOne(fp => fp.FirstUser)
+            .WithMany(u => u.FriendPairs)
+            .HasForeignKey(fp => fp.FirstUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<FriendPair>()
+            .HasOne(fp => fp.SecondUser)
+            .WithMany()
+            .HasForeignKey(fp => fp.SecondUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<FriendPair>()
+            .HasIndex(p => p.FirstUserId);
+        builder.Entity<FriendPair>()
+            .HasIndex(p => p.SecondUserId);
+
+        builder.Entity<FriendRequest>().HasKey(r => new { r.SenderId, r.RecipientId });
+        builder.Entity<FriendRequest>()
+            .HasOne(r => r.Sender)
+            .WithMany(u => u.FriendRequests)
+            .HasForeignKey(r => r.SenderId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<FriendRequest>()
+            .HasOne(r => r.Recipient)
+            .WithMany()
+            .HasForeignKey(r => r.RecipientId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<FriendRequest>()
+            .HasIndex(r => r.SenderId);
+        builder.Entity<FriendRequest>()
+            .HasIndex(r => r.RecipientId);
+    }
+}

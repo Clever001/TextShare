@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TextShareApi.Dtos.QueryOptions;
 using TextShareApi.Dtos.QueryOptions.Filters;
 using TextShareApi.Dtos.Text;
-using TextShareApi.Exceptions;
+using Shared.Exceptions;
 using TextShareApi.Extensions;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;

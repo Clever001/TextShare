@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+import "00-Protos/shared.proto";
+option csharp_namespace = "Auth.Grpc";
+
+package TextSecurity;
+
+service TextSecurityGrpc {
+    rpc PassReadSecurityChecks (PassReadChecksReq) returns (Shared.EmptyResult);
+    rpc PassWriteSecurityChecks (PassWriteChecksReq) returns (Shared.EmptyResult);
+    rpc HashPassword (HashPasswordReq) returns (PasswordHash);
+}
+
+// TODO: временно передается весь объект текста с TextSettings.
+// При первой возможности переместить таблицу TextSecuritySettings в Auth микросервис.
+// Для этого нужно будет поменять API взаимодействия с текстами в основном сервисе.
+message PassReadChecksReq {
+    TextLightWeightModel text = 1;
+    optional string request_sender_id = 2;
+    optional string password = 3;
+}
+
+message TextLightWeightModel {
+    TextSecuritySettings securitySettings = 1;
+    string owner_id = 2;
+}
+
+message TextSecuritySettings {
+    AccessType access_type = 1;
+    string password = 2;
+}
+
+enum AccessType {
+    UNSPECIFIED = 0;
+    PERSONAL = 1;
+    BY_REFERENCE_PUBLIC = 2;
+    BY_REFERENCE_AUTHORIZED = 3;
+    ONLY_FRIENDS = 4;
+}
+
+message PassWriteChecksReq {
+    TextLightWeightModel text = 1;
+    string request_sender_id = 2;
+}
+
+message HashPasswordReq {
+    string text_owner_id = 1;
+    string password = 2;
+}
+
+message PasswordHash {
+    string hash = 1;
+}

@@ -1,9 +1,9 @@
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity;
-using TextShareApi.ClassesLib;
+using Shared;
 using TextShareApi.Dtos.Accounts;
 using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Exceptions;
+using Shared.Exceptions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;

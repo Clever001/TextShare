@@ -37,7 +37,7 @@
         </PackageReference>
 
         
-        <Protobuf Include="../Auth/Protos/greet.proto" GrpcServices="Client" Link="Protos\%(Filename)%(Extension)" />
+        <!-- <Protobuf Include="../Auth/Protos/greet.proto" GrpcServices="Client" Link="Protos\%(Filename)%(Extension)" /> -->
     </ItemGroup>
 
     <ItemGroup>
@@ -49,6 +49,10 @@
     <ItemGroup>
         <!-- <Folder Include="certs\"/> -->
         <Folder Include="Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 
 </Project>

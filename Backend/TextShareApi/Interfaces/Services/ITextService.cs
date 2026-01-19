@@ -1,4 +1,4 @@
-using TextShareApi.ClassesLib;
+using Shared;
 using TextShareApi.Dtos.QueryOptions;
 using TextShareApi.Dtos.QueryOptions.Filters;
 using TextShareApi.Dtos.Text;

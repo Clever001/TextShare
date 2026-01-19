@@ -1,6 +1,6 @@
-using TextShareApi.Exceptions;
+using Shared.Exceptions;
 
-namespace TextShareApi.ClassesLib;
+namespace Shared;
 
 public class Result<T> {
     private Result(bool isSuccess, T value, IApiException exception) {

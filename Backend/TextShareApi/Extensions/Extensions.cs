@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using TextShareApi.Dtos.Exception;
-using TextShareApi.Exceptions;
+using Shared.Exceptions;
 
 namespace TextShareApi.Extensions;
 

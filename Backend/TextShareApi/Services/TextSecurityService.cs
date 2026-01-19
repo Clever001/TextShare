@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
-using TextShareApi.ClassesLib;
+using Shared;
 using TextShareApi.Dtos.Enums;
-using TextShareApi.Exceptions;
+using Shared.Exceptions;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
 
@@ -70,7 +70,7 @@ public class TextSecurityService : ITextSecurityService {
         return Result.Success();
     }
 
-    public Result PassPasswordCheck(Text text, string? password) {
+    private Result PassPasswordCheck(Text text, string? password) {
         var securitySettings = text.TextSecuritySettings;
         var user = text.Owner;
 

@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using TextShareApi.ClassesLib;
+using Shared;
 using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Exceptions;
+using Shared.Exceptions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;

@@ -1,4 +1,4 @@
-namespace TextShareApi.Exceptions;
+namespace Shared.Exceptions;
 
 public interface IApiException {
     public string Code { get; init; }

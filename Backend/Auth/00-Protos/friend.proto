@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+import "00-Protos/shared.proto";
+
+option csharp_namespace = "Auth.Grpc";
+package Friends;
+
+// Manages friends lists
+service FriendGrpc {
+    rpc GetFriends (FriendsFilter) returns (PaginatedFriendsResult);
+    rpc RemoveFriend (RemoveFriendReq) returns (Shared.EmptyResult);
+    rpc AreFriendsByName (AreFriendsByNameReq) returns (Shared.BooleanResult);
+    rpc AreFriendsById (AreFriendsByIdReq) returns (Shared.BooleanResult);
+}
+
+message FriendsFilter {
+    Shared.PaginationPageInfo pagination_page = 1;
+    bool is_ascending = 2;
+    optional string friend_name = 3;
+    string sender_name = 4;
+}
+
+message RemoveFriendReq {
+    string firse_user_name = 1;
+    string second_user_name = 2;
+}
+
+message AreFriendsByNameReq {
+    string first_user_name = 1;
+    string second_user_name = 2;
+}
+
+message AreFriendsByIdReq {
+    string first_user_id = 1;
+    string second_user_id = 2;
+}
+
+message PaginatedFriendsResult {
+    repeated Shared.UserWithoutToken items = 1;
+    Shared.PaginationResponse pagination = 2;
+}

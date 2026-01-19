@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+option csharp_namespace = "Auth.Grpc";
+package Shared;
+
+// Client requests pagination page
+message PaginationPageInfo {
+    int32 page_number = 1;
+    int32 page_size = 2;
+}
+
+// Backend responses with pagination info
+message PaginationResponse {
+    int32 total_items = 1;
+    int32 total_pages = 2;
+    int32 current_page = 3;
+    int32 page_size = 4;
+}
+
+// Exception description
+message ApiException {
+    string code = 1;
+    int32 code_number = 2;
+    string description = 3;
+    repeated string details = 4;
+}
+
+message UserWithoutToken {
+    string id = 1;
+    string user_name = 2;
+}
+
+// Information about user and his jwt token
+message UserWithToken {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    string token = 4;
+}
+
+// Returns exception if request ended with problem
+// else returns empty result
+message EmptyResult {
+    optional Shared.ApiException exception = 1;
+}
+
+message BooleanResult {
+    oneof result {
+        Shared.ApiException exception = 1;
+        bool are_friends = 2;
+    }
+}

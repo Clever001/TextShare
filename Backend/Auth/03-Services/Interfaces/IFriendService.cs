@@ -1,8 +1,7 @@
+using Auth.Models;
 using Shared;
-using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Models;
 
-namespace TextShareApi.Interfaces.Services;
+namespace Auth.Services.Interfaces;
 
 public interface IFriendService {
     Task<Result> AddFriend(string firstUserName, string secondUserName);

@@ -1,10 +1,10 @@
 using System.Linq.Expressions;
-using TextShareApi.ClassesLib;
+using Shared;
 using TextShareApi.Dtos.Enums;
 using TextShareApi.Dtos.QueryOptions;
 using TextShareApi.Dtos.QueryOptions.Filters;
 using TextShareApi.Dtos.Text;
-using TextShareApi.Exceptions;
+using Shared.Exceptions;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;

@@ -15,6 +15,6 @@
         "patcx.vscode-nuget-gallery",
         "wayou.vscode-todo-highlight"
     ],
-    "forwardPorts": [7285, 3000, 5432, 5672, 15672],
+    // "forwardPorts": [7285, 3000, 5432, 5672, 15672],
     "remoteUser": "root"
 }

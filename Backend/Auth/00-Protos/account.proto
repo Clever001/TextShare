@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+import "00-Protos/shared.proto";
+
+option csharp_namespace = "Auth.Grpc";
+package Accounts;
+
+// Manages user accounts and auth
+service AccountGrpc {
+  // Registers a new user. Generates the jwt token.
+  rpc RegisterUser (RegisterUserReq) returns (UserResult);
+  // Generates the jwt token.
+  rpc LoginUser (LoginReq) returns (UserResult);
+  // Updates user info.
+  rpc UpdateUser (UpdateUserReq) returns (UserResult);
+  // returs
+  rpc GetUsers (UsersFilter) returns (PaginatedUsersResult);
+}
+
+// Information about new user
+message RegisterUserReq {
+  string name = 1;
+  string email = 2;
+  string password = 3;
+}
+
+// For login you should identify user and use password
+message LoginReq {
+  string name_or_email = 1;
+  string password = 2;
+}
+
+// Only changing information needs to be set
+message UpdateUserReq {
+  string user_name = 1;
+  optional string name = 2;
+  optional string email = 3;
+}
+
+// Filters information about users
+message UsersFilter {
+  Shared.PaginationPageInfo pagination_page = 1;
+  optional string user_name = 2;
+}
+
+// Represents user of exception
+message UserResult {
+  oneof result {
+    Shared.ApiException exception = 1;
+    Shared.UserWithToken user = 2;
+  }
+}
+
+message PaginatedUsersResult {
+  repeated Shared.UserWithoutToken items = 1;
+  Shared.PaginationResponse pagination = 2;
+}

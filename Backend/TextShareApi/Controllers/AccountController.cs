@@ -5,7 +5,7 @@ using TextShareApi.Attributes;
 using TextShareApi.Dtos.Accounts;
 using TextShareApi.Dtos.Exception;
 using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Exceptions;
+using Shared.Exceptions;
 using TextShareApi.Extensions;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;

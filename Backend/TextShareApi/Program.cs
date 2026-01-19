@@ -1,8 +1,6 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Transactions;
-using Auth;
-using Grpc.Net.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +26,6 @@ builder.Services.AddControllers(options => {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 builder.Services.AddDbContext<AppDbContext>(options => {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-    // options.LogTo(Console.WriteLine, LogLevel.Information);
 });
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options => {
@@ -59,10 +56,10 @@ builder.Services.AddAuthentication(options => {
     };
 });
 
-builder.Services.AddGrpcClient<Greeter.GreeterClient>(options => {
-    options.Address = new Uri(builder.Configuration["GrpcServices:Auth"]
-        ?? throw new InvalidConfigurationException());
-});
+// builder.Services.AddGrpcClient<Greeter.GreeterClient>(options => {
+//     options.Address = new Uri(builder.Configuration["GrpcServices:Auth"]
+//         ?? throw new InvalidConfigurationException());
+// });
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IFriendPairRepository, FriendPairRepository>();
@@ -86,9 +83,11 @@ builder.Services.AddHostedService<TextCleanupService>();
 
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll", policy => {
-        policy.WithOrigins("http://localhost:3000")
+        if (builder.Environment.IsDevelopment()) {
+            policy.WithOrigins("http://localhost:3000")
             .AllowAnyMethod()
             .AllowAnyHeader();
+        }
         policy.WithOrigins("http://localhost")
             .AllowAnyMethod()
             .AllowAnyHeader();
