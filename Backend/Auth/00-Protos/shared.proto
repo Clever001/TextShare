@@ -4,7 +4,7 @@ option csharp_namespace = "Auth.Grpc";
 package Shared;
 
 // Client requests pagination page
-message PaginationPageInfo {
+message PaginationPage {
     int32 page_number = 1;
     int32 page_size = 2;
 }
@@ -18,7 +18,7 @@ message PaginationResponse {
 }
 
 // Exception description
-message ApiException {
+message GrpcException {
     string code = 1;
     int32 code_number = 2;
     string description = 3;
@@ -41,12 +41,12 @@ message UserWithToken {
 // Returns exception if request ended with problem
 // else returns empty result
 message EmptyResult {
-    optional Shared.ApiException exception = 1;
+    optional GrpcException exception = 1;
 }
 
 message BooleanResult {
     oneof result {
-        Shared.ApiException exception = 1;
+        GrpcException exception = 1;
         bool are_friends = 2;
     }
 }

@@ -8,6 +8,13 @@
         "dotnet-ef"
       ],
       "rollForward": false
+    },
+    "protoc": {
+      "version": "3.6.1",
+      "commands": [
+        "protoc"
+      ],
+      "rollForward": false
     }
   }
 }

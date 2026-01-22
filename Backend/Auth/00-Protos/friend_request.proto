@@ -8,11 +8,11 @@ package FriendRequests;
 // Manages friend requests
 service FriendRequestGrpc {
     rpc CreateFR (FRIndex) returns (FRResult);
-    rpc DeleteFR (FRIndex) returns (FRResult);
+    rpc DeleteFR (FRIndex) returns (Shared.EmptyResult);
     rpc ProcessFR (ProcessFRReq) returns (FRResult);
     rpc GetFR (FRIndex) returns (FRResult);
-    rpc GetSentFRs (FRFilter) returns (PaginatedFRsResult);
-    rpc GetReceivedFRs (FRFilter) returns (PaginatedFRsResult);
+    rpc GetSentFRs (SentFRFilter) returns (PaginatedFRsResult);
+    rpc GetReceivedFRs (RecievedRFilter) returns (PaginatedFRsResult);
 }
 
 // Index for finding FR
@@ -28,8 +28,15 @@ message ProcessFRReq {
 }
 
 // Filter FR
-message FRFilter {
-    Shared.PaginationPageInfo pagination_page = 1;
+message SentFRFilter {
+    Shared.PaginationPage pagination_page = 1;
+    bool is_ascending = 2;
+    string sender_name = 3;
+    optional string recipient_name = 4;
+}
+
+message RecievedRFilter {
+    Shared.PaginationPage pagination_page = 1;
     bool is_ascending = 2;
     optional string sender_name = 3;
     string recipient_name = 4;
@@ -38,7 +45,7 @@ message FRFilter {
 // Exception or FR
 message FRResult {
     oneof result {
-        Shared.ApiException exception = 1;
+        Shared.GrpcException exception = 1;
         FriendRequestData friend_request = 2;
     }
 }
@@ -46,11 +53,18 @@ message FRResult {
 message FriendRequestData {
     string sender_id = 1;
     string recipient_id = 2;
-    optional string is_accepted = 3;
+    optional bool is_accepted = 3;
+}
+
+message PaginatedFRs {
+    repeated FriendRequestData items = 1;
+    Shared.PaginationResponse pagination = 2;
 }
 
 // Paginated list of FRs
 message PaginatedFRsResult {
-    repeated FriendRequestData items = 1;
-    Shared.PaginationResponse pagination = 2;
+    oneof result {
+        Shared.GrpcException exception = 1;
+        PaginatedFRs friend_requests = 2;
+    }
 }

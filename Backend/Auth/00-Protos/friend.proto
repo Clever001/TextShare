@@ -14,7 +14,7 @@ service FriendGrpc {
 }
 
 message FriendsFilter {
-    Shared.PaginationPageInfo pagination_page = 1;
+    Shared.PaginationPage pagination_page = 1;
     bool is_ascending = 2;
     optional string friend_name = 3;
     string sender_name = 4;
@@ -35,7 +35,14 @@ message AreFriendsByIdReq {
     string second_user_id = 2;
 }
 
-message PaginatedFriendsResult {
+message PaginatedFriends {
     repeated Shared.UserWithoutToken items = 1;
     Shared.PaginationResponse pagination = 2;
+}
+
+message PaginatedFriendsResult {
+    oneof result {
+        PaginatedFriends friends = 1;
+        Shared.GrpcException exception = 2;
+    }
 }
