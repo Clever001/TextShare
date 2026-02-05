@@ -4,7 +4,7 @@ using TextShareApi.Dtos.Enums;
 using TextShareApi.Dtos.QueryOptions;
 using TextShareApi.Dtos.QueryOptions.Filters;
 using TextShareApi.Dtos.Text;
-using Shared.Exceptions;
+using Shared.ApiError;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;
@@ -35,18 +35,18 @@ public class TextService : ITextService {
     }
 
     public async Task<Result<Text>> Create(string curUserName, CreateTextDto dto) {
-        if (dto.Title == "") return Result<Text>.Failure(new BadRequestException("Title cannot be empty."));
+        if (dto.Title == "") return Result<Text>.Failure(new BadRequestApiError("Title cannot be empty."));
 
-        if (dto?.Password == "") return Result<Text>.Failure(new BadRequestException("Password cannot be empty."));
+        if (dto?.Password == "") return Result<Text>.Failure(new BadRequestApiError("Password cannot be empty."));
 
         var user = await _accountRepository.GetAccountByName(curUserName);
         var userId = user?.Id;
         if (user == null || userId == null)
-            return Result<Text>.Failure(new NotFoundException("Current user not found."));
+            return Result<Text>.Failure(new NotFoundApiError("Current user not found."));
 
         var containsText = await _textRepository.ContainsText(dto.Title, userId);
         if (containsText)
-            return Result<Text>.Failure(new BadRequestException(
+            return Result<Text>.Failure(new BadRequestApiError(
                 "Text already exists.",
                 ["Text with Composite of fields Title and AppUserId already exists."]
             ));
@@ -91,16 +91,16 @@ public class TextService : ITextService {
 
     public async Task<Result<Text>> GetById(string textId, string? curUserName, string? requestPassword) {
         var text = await _textRepository.GetText(textId);
-        if (text == null) return Result<Text>.Failure(new NotFoundException("Text not found."));
+        if (text == null) return Result<Text>.Failure(new NotFoundApiError("Text not found."));
 
         var now = DateTime.UtcNow;
-        if (now >= text.ExpiryDate) return Result<Text>.Failure(new NotFoundException("Text not found."));
+        if (now >= text.ExpiryDate) return Result<Text>.Failure(new NotFoundApiError("Text not found."));
 
         var userId = curUserName == null ? null : await _accountRepository.GetAccountId(curUserName);
 
         var securityCheckResult = await _textSecurityService.PassReadSecurityChecks(text, userId, requestPassword);
 
-        if (!securityCheckResult.IsSuccess) return Result<Text>.Failure(securityCheckResult.Exception);
+        if (!securityCheckResult.IsSuccess) return Result<Text>.Failure(securityCheckResult.Error);
 
         return Result<Text>.Success(text);
     }
@@ -145,7 +145,7 @@ public class TextService : ITextService {
         else {
             var senderId = await _accountRepository.GetAccountId(senderName);
             if (senderId == null)
-                return Result<PaginatedResponseDto<Text>>.Failure(new ServerException("Sender not found."));
+                return Result<PaginatedResponseDto<Text>>.Failure(new ServerApiError("Sender not found."));
             predicates.Add(text => text.TextSecuritySettings.AccessType == AccessType.ByReferencePublic ||
                                    text.TextSecuritySettings.AccessType == AccessType.ByReferenceAuthorized ||
                                    (text.TextSecuritySettings.AccessType == AccessType.OnlyFriends &&
@@ -158,7 +158,7 @@ public class TextService : ITextService {
         // Sorting and Gathering texts
         var (isValid, getTexts) = GenerateGetTextsFunc(sort.SortBy);
         if (!isValid)
-            return Result<PaginatedResponseDto<Text>>.Failure(new BadRequestException("Invalid Sort By field."));
+            return Result<PaginatedResponseDto<Text>>.Failure(new BadRequestApiError("Invalid Sort By field."));
         var (count, texts) = await getTexts(skip, take, sort.SortAscending, predicates);
 
         return Result<PaginatedResponseDto<Text>>.Success(texts.ToPaginatedResponse(pagination, count));
@@ -188,21 +188,21 @@ public class TextService : ITextService {
     public async Task<Result<Text>> Update(string textId, string curUserName,
         UpdateTextDto dto) {
         var text = await _textRepository.GetText(textId);
-        if (text == null) return Result<Text>.Failure(new NotFoundException("Text not found."));
+        if (text == null) return Result<Text>.Failure(new NotFoundApiError("Text not found."));
 
         var now = DateTime.UtcNow;
-        if (now >= text.ExpiryDate) return Result<Text>.Failure(new NotFoundException("Text not found."));
+        if (now >= text.ExpiryDate) return Result<Text>.Failure(new NotFoundApiError("Text not found."));
 
         // Security check
         var curUserId = await _accountRepository.GetAccountId(curUserName);
-        if (curUserId == null) return Result<Text>.Failure(new ServerException("Current user not found."));
+        if (curUserId == null) return Result<Text>.Failure(new ServerApiError("Current user not found."));
         var securityCheck = _textSecurityService.PassWriteSecurityChecks(text, curUserId);
-        if (!securityCheck.IsSuccess) return Result<Text>.Failure(securityCheck.Exception);
+        if (!securityCheck.IsSuccess) return Result<Text>.Failure(securityCheck.Error);
 
         // Title existence check
         if (dto.Title != null) {
             var contains = await _textRepository.ContainsText(dto.Title, curUserId);
-            if (contains) return Result<Text>.Failure(new BadRequestException("This Title already exists."));
+            if (contains) return Result<Text>.Failure(new BadRequestApiError("This Title already exists."));
         }
 
         // Hashing Password
@@ -242,17 +242,17 @@ public class TextService : ITextService {
 
     public async Task<Result> Delete(string textId, string curUserName) {
         var text = await _textRepository.GetText(textId);
-        if (text == null) return Result.Failure(new NotFoundException("Text not found."));
+        if (text == null) return Result.Failure(new NotFoundApiError("Text not found."));
 
         var now = DateTime.UtcNow;
-        if (now >= text.ExpiryDate) return Result.Failure(new NotFoundException("Text not found."));
+        if (now >= text.ExpiryDate) return Result.Failure(new NotFoundApiError("Text not found."));
 
 
         // Security check
         var curUserId = await _accountRepository.GetAccountId(curUserName);
-        if (curUserId == null) return Result.Failure(new ServerException("Current user not found."));
+        if (curUserId == null) return Result.Failure(new ServerApiError("Current user not found."));
         var securityCheck = _textSecurityService.PassWriteSecurityChecks(text, curUserId);
-        if (!securityCheck.IsSuccess) return Result.Failure(securityCheck.Exception);
+        if (!securityCheck.IsSuccess) return Result.Failure(securityCheck.Error);
 
 
         // Deleting text
@@ -260,7 +260,7 @@ public class TextService : ITextService {
         if (!deleted) {
             // Never executed. Text existence check was performed previously.
             _logger.LogWarning("Text did not exist from the beginning. Text not deleted.");
-            return Result.Failure(new ServerException());
+            return Result.Failure(new ServerApiError());
         }
 
         return Result.Success();
@@ -274,7 +274,7 @@ public class TextService : ITextService {
         var accountExists = await _accountRepository.ContainsAccountByName(ownerName);
         if (!accountExists)
             return Result<PaginatedResponseDto<Text>>.Failure(
-                new NotFoundException("Account with this name was not found."));
+                new NotFoundApiError("Account with this name was not found."));
 
         var convertedFilter = new TextFilterDto {
             OwnerName = ownerName,

@@ -4,13 +4,13 @@ option csharp_namespace = "Auth.Grpc";
 package Shared;
 
 // Client requests pagination page
-message PaginationPage {
+message PaginationGrpcPage {
     int32 page_number = 1;
     int32 page_size = 2;
 }
 
 // Backend responses with pagination info
-message PaginationResponse {
+message PaginationGrpcResponse {
     int32 total_items = 1;
     int32 total_pages = 2;
     int32 current_page = 3;
@@ -25,28 +25,20 @@ message GrpcException {
     repeated string details = 4;
 }
 
-message UserWithoutToken {
+message UserWithoutTokenGrpcDto {
     string id = 1;
     string user_name = 2;
+    string email = 3;
 }
 
 // Information about user and his jwt token
-message UserWithToken {
-    string id = 1;
-    string name = 2;
-    string email = 3;
+message UserWithTokenGrpcDto {
+    UserWithoutTokenGrpcDto user = 1;
     string token = 4;
 }
 
 // Returns exception if request ended with problem
 // else returns empty result
-message EmptyResult {
+message EmptyGrpcResult {
     optional GrpcException exception = 1;
-}
-
-message BooleanResult {
-    oneof result {
-        GrpcException exception = 1;
-        bool are_friends = 2;
-    }
 }

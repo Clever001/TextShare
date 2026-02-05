@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TextShareApi.Dtos.QueryOptions;
 using TextShareApi.Dtos.QueryOptions.Filters;
 using TextShareApi.Dtos.Text;
-using Shared.Exceptions;
+using Shared.ApiError;
 using TextShareApi.Extensions;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;
@@ -33,7 +33,7 @@ public class TextController : ControllerBase {
         }
 
         var result = await _textService.Create(senderName, createTextDto);
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return CreatedAtAction(nameof(GetById),
             new { id = result.Value.Id },
@@ -45,7 +45,7 @@ public class TextController : ControllerBase {
         var senderName = User.GetUserName();
 
         var getResult = await _textService.GetById(id, senderName, requestPassword);
-        if (!getResult.IsSuccess) return this.ToActionResult(getResult.Exception);
+        if (!getResult.IsSuccess) return this.ToActionResult(getResult.Error);
 
         return Ok(getResult.Value.ToTextDto());
     }
@@ -55,15 +55,15 @@ public class TextController : ControllerBase {
         [FromQuery] SortDto sort,
         [FromQuery] TextFilterDto filter) {
         if (!sort.IsValid(typeof(Text)))
-            return this.ToActionResult(new BadRequestException("SortBy contains invalid property name."));
+            return this.ToActionResult(new BadRequestApiError("SortBy contains invalid property name."));
 
         var senderName = User.GetUserName();
 
         if (Request.Headers.ContainsKey("Authorization") && senderName is null or "")
-            return this.ToActionResult(new ForbiddenException());
+            return this.ToActionResult(new ForbiddenApiError());
 
         var result = await _textService.GetTexts(pagination, sort, filter, senderName);
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return Ok(result.Value.Convert(t => t.ToTextWithoutContentDto()));
     }
@@ -73,15 +73,15 @@ public class TextController : ControllerBase {
         [FromQuery] SortDto sort,
         [FromQuery] TextFilterWithoutOwnerDto filter, [FromQuery] string ownerName) {
         if (!sort.IsValid(typeof(Text)))
-            return this.ToActionResult(new BadRequestException("SortBy contains invalid property name."));
+            return this.ToActionResult(new BadRequestApiError("SortBy contains invalid property name."));
 
         var senderName = User.GetUserName();
 
         if (Request.Headers.ContainsKey("Authorization") && senderName is null or "")
-            return this.ToActionResult(new ForbiddenException());
+            return this.ToActionResult(new ForbiddenApiError());
 
         var result = await _textService.GetTextsByName(pagination, sort, filter, ownerName, senderName);
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return Ok(result.Value.Convert(t => t.ToTextWithoutContentDto()));
     }
@@ -89,7 +89,7 @@ public class TextController : ControllerBase {
     [HttpGet("latests")]
     public async Task<IActionResult> GetLatests() {
         var result = await _textService.GetLatestTexts();
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return Ok(result.Value.Select(x => x.ToTextWithoutContentDto()).ToList());
     }
@@ -104,7 +104,7 @@ public class TextController : ControllerBase {
         }
 
         var result = await _textService.Update(textId, senderName, updateTextDto);
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return Ok(result.Value.ToTextDto());
     }
@@ -119,7 +119,7 @@ public class TextController : ControllerBase {
         }
 
         var result = await _textService.Delete(id, senderName);
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return NoContent();
     }

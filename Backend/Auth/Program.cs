@@ -1,7 +1,12 @@
 
-using Auth.Data;
-using Auth.Models;
-using Auth.Services;
+using System.Reflection.Metadata.Ecma335;
+using Auth.DbContext;
+using Auth.GrpcService;
+using Auth.Model;
+using Auth.Repository.Impl;
+using Auth.Repository.Interface;
+using Auth.Service.Impl;
+using Auth.Service.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +17,7 @@ builder.Services.AddGrpc();
 builder.Services.AddDbContext<AppDbContext>(options => {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-builder.Services.AddIdentity<AppUser, IdentityRole>(options => {
+builder.Services.AddIdentity<User, IdentityRole>(options => {
     options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
     options.User.RequireUniqueEmail = true;
     options.Password.RequireDigit = true;
@@ -21,13 +26,27 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options => {
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequiredLength = 8;
 }).AddEntityFrameworkStores<AppDbContext>();
+builder.Services.AddGrpc(options => {
+    options.Interceptors.Add<ExceptionInterceptor>();
+});
+builder.Services.AddGrpcReflection();
 
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Logging.AddConsole();
 
 var app = builder.Build();
 
-app.MapGrpcService<AccountGrpcService>();
-app.MapGrpcService<FriendRequestGrpcService>();
-app.MapGrpcService<FriendGrpcService>();
-app.MapGrpcService<TextSecurityGrpcService>();
+
+app.MapGrpcService<UserGrpcService>();
+// app.MapGrpcService<FriendRequestGrpcService>();
+// app.MapGrpcService<FriendGrpcService>();
+// app.MapGrpcService<TextSecurityGrpcService>();
+
+if (app.Environment.IsDevelopment()) {
+    app.MapGrpcReflectionService();
+}
 
 app.Run();

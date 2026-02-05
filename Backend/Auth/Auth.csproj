@@ -10,11 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="00-Protos/account.proto" GrpcServices="Server" />
-    <Protobuf Include="00-Protos/friend_request.proto" GrpcServices="Server" />
-    <Protobuf Include="00-Protos/friend.proto" GrpcServices="Server" />
+    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.76.0" />
+    <Protobuf Include="00-Protos/document_grant.proto" GrpcServices="Server" />
+    <Protobuf Include="00-Protos/document.proto" GrpcServices="Server" />
     <Protobuf Include="00-Protos/shared.proto" GrpcServices="None" />
-    <Protobuf Include="00-Protos/text_security.proto" GrpcServices="Server" />
+    <Protobuf Include="00-Protos/user.proto" GrpcServices="Server" />
  
     <PackageReference Include="Grpc.AspNetCore" Version="2.64.0" />
 
@@ -28,7 +28,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
   </ItemGroup>
 

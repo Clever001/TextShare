@@ -26,7 +26,7 @@ public class FriendController : ControllerBase {
         var senderName = User.GetUserName();
 
         var result = await _friendService.GetFriends(pagination, isAscending, friendName, senderName!);
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return Ok(result.Value.Convert(u => u.ToUserWithoutTokenDto()));
     }
@@ -37,7 +37,7 @@ public class FriendController : ControllerBase {
         var senderName = User.GetUserName();
 
         var result = await _friendService.AreFriendsByName(senderName!, userName);
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return Ok(result.Value ? "Are friends" : "Are not friends");
     }
@@ -48,7 +48,7 @@ public class FriendController : ControllerBase {
         var senderName = User.GetUserName();
 
         var result = await _friendService.RemoveFriend(senderName!, userName);
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return Ok("Friend deleted");
     }

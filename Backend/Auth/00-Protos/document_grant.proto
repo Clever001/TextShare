@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+import "00-Protos/shared.proto";
+
+option csharp_namespace = "Auth.Grpc";
+package DocumentGrants;
+
+service DocumentGrantGrpc {
+    rpc CreateDocumentGrant (CreateDocumentGrantGrpcReq)
+        returns (DocumentGrantGrpcResult);
+    rpc DeleteDocumentGrant (DeleteDocumentGrantGrpcReq)
+        returns (Shared.EmptyGrpcResult);
+    rpc GetAllDocumentGrants (DocumentGrantsGrpcPagedFilter)
+        returns (PagedDocumentGrantsGrpcResult);
+    rpc ProvideRoleByGrant (ProvideRoleByGrantReq)
+        returns (Shared.EmptyGrpcResult);
+    rpc ProvideRoleByRoleName (ProvideRoleByRoleNameReq)
+        returns (Shared.EmptyGrpcResult);
+}
+
+message CreateDocumentGrantGrpcReq {
+    string document_id = 1;
+    string role_name = 2;
+    string calling_user_id = 3;
+}
+
+message DeleteDocumentGrantGrpcReq {
+    string document_grant_id = 1;
+    string calling_user_id = 2;
+}
+
+message DocumentGrantsGrpcPagedFilter {
+    optional string document_id = 1;
+    optional string role_name = 2;
+    string calling_user_id = 3;
+}
+
+message ProvideRoleByGrantReq {
+    string document_grant_id = 1;
+    string calling_user_id = 2;
+}
+
+message ProvideRoleByRoleNameReq {
+    string document_id = 1;
+    string role_name = 2;
+    string calling_user_id = 3;
+}
+
+message DocumentGrantGrpcResult {
+    oneof result {
+        Shared.GrpcException expception = 1;
+        DocumentGrantGrpcResult document_grant = 2;
+    }
+}
+
+message DocumentGrantGrpcDto {
+    string document_grant_id = 1;
+    string document_id = 2;
+    string role_name = 3;
+}
+
+message PagedDocumentGrantsGrpcResult {
+    oneof result {
+        Shared.GrpcException exception = 1;
+        PagedDocumentGrantsGrpc document_grants = 2;
+    }
+}
+
+message PagedDocumentGrantsGrpc {
+    repeated DocumentGrantGrpcDto items = 1;
+    Shared.PaginationGrpcResponse pagination = 2;
+}

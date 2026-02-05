@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+import "00-Protos/shared.proto";
+
+option csharp_namespace = "Auth.Grpc";
+package Documents;
+
+service DocumentGrpc {
+    rpc CanReadDocument (CheckRightGrpcReq) returns (PermissionGrpcResult);
+    rpc CanCommentDocument (CheckRightGrpcReq) returns (PermissionGrpcResult);
+    rpc CanEditDocument (CheckRightGrpcReq) returns (PermissionGrpcResult);
+    rpc SaveDocumentMetadata (SaveDocumentGrpcReq) returns (Shared.EmptyGrpcResult);
+    rpc DeleteDocumentMetadata (DeleteDocumentGrpcReq) returns (Shared.EmptyGrpcResult);
+}
+
+message CheckRightGrpcReq {
+    string document_id = 1;
+    string calling_user_id = 2;
+}
+
+message SaveDocumentGrpcReq {
+    string document_id = 1;
+    string creator_id = 2;
+    string default_role_name = 3;
+}
+
+message DeleteDocumentGrpcReq {
+    string document_id = 1;
+}
+
+message PermissionGrpcResult {
+    oneof result {
+        bool is_approved = 1;
+        Shared.GrpcException exception = 2;
+    }
+}

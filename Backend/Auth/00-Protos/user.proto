@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+import "00-Protos/shared.proto";
+
+option csharp_namespace = "Auth.Grpc";
+package Accounts;
+
+service UserGrpc {
+  rpc RegisterUser (RegisterUserGrpcDto) returns (UserWithTokenGrpcResult);
+  rpc LoginUser (LoginUserGrpcDto) returns (UserWithTokenGrpcResult);
+  rpc UpdateUser (UpdateUserGrpcDto) returns (UserWithTokenGrpcResult);
+  rpc GetUsers (UsersGrpcPagedFilter) returns (PagedUsersWithoutTokenGrpcResult);
+}
+
+message RegisterUserGrpcDto {
+  string name = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message LoginUserGrpcDto {
+  string name_or_email = 1;
+  string password = 2;
+}
+
+message UpdateUserGrpcDto {
+  string initial_user_id = 1;
+  optional string new_name = 2;
+  optional string new_email = 3;
+}
+
+message UsersGrpcPagedFilter {
+  Shared.PaginationGrpcPage pagination_page = 1;
+  optional string user_name = 2;
+}
+
+message UserWithTokenGrpcResult {
+  oneof result {
+    Shared.GrpcException exception = 1;
+    Shared.UserWithTokenGrpcDto user = 2;
+  }
+}
+
+message PagedUsersWithoutTokenGrpcResult {
+  oneof result {
+    Shared.GrpcException exception = 1;
+    PagedUsersWithoutTokenGrpc users = 2;
+  }
+}
+
+message PagedUsersWithoutTokenGrpc {
+  repeated Shared.UserWithoutTokenGrpcDto items = 1;
+  Shared.PaginationGrpcResponse pagination = 2;
+}
+

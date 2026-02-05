@@ -5,7 +5,7 @@ using TextShareApi.Attributes;
 using TextShareApi.Dtos.Accounts;
 using TextShareApi.Dtos.Exception;
 using TextShareApi.Dtos.QueryOptions;
-using Shared.Exceptions;
+using Shared.ApiError;
 using TextShareApi.Extensions;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;
@@ -37,7 +37,7 @@ public class AccountController : ControllerBase {
         var result = await _accountService.Register(
             registerDto.UserName, registerDto.Email, registerDto.Password);
 
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         var (user, token) = result.Value;
 
@@ -48,7 +48,7 @@ public class AccountController : ControllerBase {
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto) {
         var result = await _accountService.Login(loginDto.UserNameOrEmail, loginDto.Password);
 
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         var (user, token) = result.Value;
 
@@ -59,7 +59,7 @@ public class AccountController : ControllerBase {
     [Authorize]
     public async Task<IActionResult> UpdateAccount([FromBody] UpdateUserDto updateDto) {
         if (updateDto.UserName != null && IsEmail(updateDto.UserName))
-            return this.ToActionResult(new BadRequestException("One or more validation errors occurred.",
+            return this.ToActionResult(new BadRequestApiError("One or more validation errors occurred.",
                 [$"The Field {nameof(updateDto.UserName)} cannot represent an email."]));
 
         var userName = User.GetUserName();
@@ -67,7 +67,7 @@ public class AccountController : ControllerBase {
             throw new ArgumentNullException(nameof(userName));
 
         var result = await _accountService.Update(userName, updateDto);
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         var (user, token) = result.Value;
 
@@ -78,7 +78,7 @@ public class AccountController : ControllerBase {
     public async Task<IActionResult> Get([FromQuery] PaginationDto pagination,
         [FromQuery] string? userName) {
         var result = await _accountService.GetUsers(pagination, userName);
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return Ok(result.Value.Convert(u => u.ToUserWithoutTokenDto()));
     }

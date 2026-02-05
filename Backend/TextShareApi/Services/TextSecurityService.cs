@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Shared;
 using TextShareApi.Dtos.Enums;
-using Shared.Exceptions;
+using Shared.ApiError;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Models;
 
@@ -24,7 +24,7 @@ public class TextSecurityService : ITextSecurityService {
         var textSecSettings = text.TextSecuritySettings;
         if (textSecSettings == null) {
             _logger.LogError("TextSecuritySettings is null");
-            return Result.Failure(new ServerException());
+            return Result.Failure(new ServerApiError());
         }
 
         switch (textSecSettings.AccessType) {
@@ -41,7 +41,7 @@ public class TextSecurityService : ITextSecurityService {
                 if (text.OwnerId == requestSenderId) break;
                 var areFriendsResult = await _friendService.AreFriendsById(text.OwnerId, requestSenderId);
                 if (!areFriendsResult.IsSuccess)
-                    return Result.Failure(areFriendsResult.Exception);
+                    return Result.Failure(areFriendsResult.Error);
                 if (!areFriendsResult.Value) return ForbiddenResult();
 
                 break;
@@ -54,7 +54,7 @@ public class TextSecurityService : ITextSecurityService {
                 break;
             }
             default: {
-                return Result.Failure(new ServerException());
+                return Result.Failure(new ServerApiError());
             }
         }
 
@@ -76,12 +76,12 @@ public class TextSecurityService : ITextSecurityService {
 
         if (securitySettings.Password == null) return Result.Success();
 
-        if (password == null) return Result.Failure(new BadRequestException("Password is not provided."));
+        if (password == null) return Result.Failure(new BadRequestApiError("Password is not provided."));
 
         var passwordCheck = _passwordHasher.VerifyHashedPassword(user,
             securitySettings.Password, password);
         if (passwordCheck == PasswordVerificationResult.Failed)
-            return Result.Failure(new BadRequestException("Provided password is not correct."));
+            return Result.Failure(new BadRequestApiError("Provided password is not correct."));
 
         return Result.Success();
     }
@@ -91,6 +91,6 @@ public class TextSecurityService : ITextSecurityService {
     }
 
     private Result ForbiddenResult() {
-        return Result.Failure(new ForbiddenException());
+        return Result.Failure(new ForbiddenApiError());
     }
 }

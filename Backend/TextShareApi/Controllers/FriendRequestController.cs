@@ -28,7 +28,7 @@ public class FriendRequestController : ControllerBase {
 
         var result = await _frService.Create(senderName!, recipientName);
 
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return Ok(result.Value.ToDto());
     }
@@ -40,7 +40,7 @@ public class FriendRequestController : ControllerBase {
 
         var result = await _frService.Delete(senderName!, recipientName);
 
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return NoContent();
     }
@@ -57,7 +57,7 @@ public class FriendRequestController : ControllerBase {
             senderName!,
             recipientName
         );
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
         return Ok(result.Value.Convert(r => r.ToDto()));
     }
 
@@ -73,7 +73,7 @@ public class FriendRequestController : ControllerBase {
             senderName,
             recipientName!
         );
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
         return Ok(result.Value.Convert(r => r.ToDto()));
     }
 
@@ -83,7 +83,7 @@ public class FriendRequestController : ControllerBase {
         var senderName = User.GetUserName();
 
         var result = await _frService.GetFriendRequest(senderName!, recipientName);
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return Ok(result.Value.ToDto());
     }
@@ -94,7 +94,7 @@ public class FriendRequestController : ControllerBase {
         var recipientName = User.GetUserName();
 
         var result = await _frService.GetFriendRequest(senderName, recipientName!);
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return Ok(result.Value.ToDto());
     }
@@ -107,7 +107,7 @@ public class FriendRequestController : ControllerBase {
 
         var result = await _frService.Process(senderName, curUserName!, requestDto.AcceptRequest);
 
-        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        if (!result.IsSuccess) return this.ToActionResult(result.Error);
 
         return Ok(result.Value.ToDto());
     }

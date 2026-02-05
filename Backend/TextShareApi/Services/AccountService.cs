@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Shared;
 using TextShareApi.Dtos.Accounts;
 using TextShareApi.Dtos.QueryOptions;
-using Shared.Exceptions;
+using Shared.ApiError;
 using TextShareApi.Interfaces.Repositories;
 using TextShareApi.Interfaces.Services;
 using TextShareApi.Mappers;
@@ -39,15 +39,15 @@ public class AccountService : IAccountService {
 
                 await _userManager.DeleteAsync(user);
 
-                return Result<(AppUser, string)>.Failure(new ServerException());
+                return Result<(AppUser, string)>.Failure(new ServerApiError());
             }
 
-            return Result<(AppUser, string)>.Failure(new BadRequestException(
+            return Result<(AppUser, string)>.Failure(new BadRequestApiError(
                 "Cannot create user with provided information.",
                 createResult.Errors.Select(e => e.Description).ToList()));
         }
         catch (Exception e) {
-            return Result<(AppUser, string)>.Failure(new ServerException());
+            return Result<(AppUser, string)>.Failure(new ServerApiError());
         }
     }
 
@@ -55,10 +55,10 @@ public class AccountService : IAccountService {
         var user = await _userManager.FindByNameAsync(nameOrEmail);
         if (user == null) user = await _userManager.FindByEmailAsync(nameOrEmail);
 
-        if (user == null) return Result<(AppUser, string)>.Failure(new UnauthorizedException());
+        if (user == null) return Result<(AppUser, string)>.Failure(new UnauthorizedApiError());
 
         var validPassword = await _userManager.CheckPasswordAsync(user, password);
-        if (!validPassword) return Result<(AppUser, string)>.Failure(new UnauthorizedException());
+        if (!validPassword) return Result<(AppUser, string)>.Failure(new UnauthorizedApiError());
 
         var token = _tokenService.CreateToken(user);
         return Result<(AppUser, string)>.Success((user, token));
@@ -66,13 +66,13 @@ public class AccountService : IAccountService {
 
     public async Task<Result<(AppUser, string)>> Update(string userName, UpdateUserDto update) {
         var user = await _userManager.FindByNameAsync(userName);
-        if (user == null) return Result<(AppUser, string)>.Failure(new ServerException());
+        if (user == null) return Result<(AppUser, string)>.Failure(new ServerApiError());
 
         if (update.UserName != null && update.UserName != user.UserName) {
             var exists = await _accountRepository.ContainsAccountByName(update.UserName);
             if (exists)
                 return Result<(AppUser, string)>.Failure(
-                    new BadRequestException("Account with such userName already exists."));
+                    new BadRequestApiError("Account with such userName already exists."));
 
             user.UserName = update.UserName;
         }
@@ -81,7 +81,7 @@ public class AccountService : IAccountService {
             var exists = await _accountRepository.ContainsAccountByEmail(update.Email);
             if (exists)
                 return Result<(AppUser, string)>.Failure(
-                    new BadRequestException("Account with such email already exists."));
+                    new BadRequestApiError("Account with such email already exists."));
 
             user.Email = update.Email;
         }
