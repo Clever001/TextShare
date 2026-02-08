@@ -1,7 +1,6 @@
 namespace Auth.Dto.Document;
 
-public record SaveDocumentRequest(
+public record UpdateDefaultRoleRequest(
     string DocumentId,
-    string CreatorId,
     string DefaultRoleName
 );

@@ -1,5 +1,6 @@
 using Auth.DbContext;
 using Auth.GrpcService;
+using Auth.GrpcService.Other;
 using Auth.Model;
 using Auth.Repository.Impl;
 using Auth.Repository.Interface;

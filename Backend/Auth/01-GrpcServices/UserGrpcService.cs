@@ -3,6 +3,7 @@ using Auth.Grpc;
 using Auth.Dto.Account;
 using Auth.Mapper;
 using Auth.Service.Interface;
+using Auth.GrpcService.Other;
 namespace Auth.GrpcService;
 
 public class UserGrpcService(

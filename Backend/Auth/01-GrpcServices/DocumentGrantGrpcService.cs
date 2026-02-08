@@ -12,8 +12,8 @@ public class DocumentGrantGGrpcService : DocumentGrantGrpc.DocumentGrantGrpcBase
         return base.DeleteDocumentGrant(request, context);
     }
 
-    public override Task<PagedDocumentGrantsGrpcResult> GetAllDocumentGrants(DocumentGrantsGrpcPagedFilter request, ServerCallContext context) {
-        return base.GetAllDocumentGrants(request, context);
+    public override Task<PagedDocumentGrantsGrpcResult> GetDocumentGrants(DocumentGrantsGrpcPagedFilter request, ServerCallContext context) {
+        return base.GetDocumentGrants(request, context);
     }
 
     public override Task<EmptyGrpcResult> ProvideRoleByGrant(ProvideRoleByGrantReq request, ServerCallContext context) {

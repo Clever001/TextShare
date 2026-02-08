@@ -1,7 +1,7 @@
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 
-namespace Auth.GrpcService;
+namespace Auth.GrpcService.Other;
 
 public class ExceptionInterceptor : Interceptor {
     public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(

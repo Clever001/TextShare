@@ -1,10 +1,15 @@
 using Auth.Model;
+using Auth.Other;
 
 namespace Auth.Repository.Interface;
 
 public interface IDocumentGrantRepository {
-    Task CreateDocumentRoleGrant(DocumentRoleGrant grant);
-    Task<DocumentRoleGrant> GetDocumentRoleGrant(string grantId);
-    Task UpdateDocumentRoleGrant(string grantId, DocumentRoleGrant grant);
-    Task DeleteDocumentRoleGrant(string grantId);
+    Task CreateDocumentGrant(DocumentRoleGrant grant);
+    Task<DocumentRoleGrant?> GetDocumentGrantById(string grantId);
+    Task<bool> ContainsDocumentGrantById(string grantId);
+    Task<SelectionOfItems<DocumentRoleGrant>> GetDocumentGrants<KeyOrderT>(
+        QueryFilter<DocumentRoleGrant, KeyOrderT> queryFilter
+    );
+    Task UpdateDocumentGrant(DocumentRoleGrant grant);
+    Task DeleteDocumentGrant(string grantId);
 }

@@ -10,11 +10,11 @@ service DocumentGrantGrpc {
         returns (DocumentGrantGrpcResult);
     rpc DeleteDocumentGrant (DeleteDocumentGrantGrpcReq)
         returns (Shared.EmptyGrpcResult);
-    rpc GetAllDocumentGrants (DocumentGrantsGrpcPagedFilter)
+    rpc GetDocumentGrants (DocumentGrantsGrpcPagedFilter)
         returns (PagedDocumentGrantsGrpcResult);
-    rpc ProvideRoleByGrant (ProvideRoleByGrantReq)
+    rpc ProvideRoleByGrant (ProvideRoleByGrantGrpcReq)
         returns (Shared.EmptyGrpcResult);
-    rpc ProvideRoleByRoleName (ProvideRoleByRoleNameReq)
+    rpc ProvideRoleByRoleName (ProvideRoleByRoleNameGrpcReq)
         returns (Shared.EmptyGrpcResult);
 }
 
@@ -35,28 +35,23 @@ message DocumentGrantsGrpcPagedFilter {
     string calling_user_id = 3;
 }
 
-message ProvideRoleByGrantReq {
+message ProvideRoleByGrantGrpcReq {
     string document_grant_id = 1;
     string calling_user_id = 2;
 }
 
-message ProvideRoleByRoleNameReq {
+message ProvideRoleByRoleNameGrpcReq {
     string document_id = 1;
     string role_name = 2;
-    string calling_user_id = 3;
+    string user_id_to_provide_role = 3;
+    string calling_user_id = 4;
 }
 
 message DocumentGrantGrpcResult {
     oneof result {
         Shared.GrpcException expception = 1;
-        DocumentGrantGrpcResult document_grant = 2;
+        DocumentGrantGrpcDto document_grant = 2;
     }
-}
-
-message DocumentGrantGrpcDto {
-    string document_grant_id = 1;
-    string document_id = 2;
-    string role_name = 3;
 }
 
 message PagedDocumentGrantsGrpcResult {
@@ -69,4 +64,10 @@ message PagedDocumentGrantsGrpcResult {
 message PagedDocumentGrantsGrpc {
     repeated DocumentGrantGrpcDto items = 1;
     Shared.PaginationGrpcResponse pagination = 2;
+}
+
+message DocumentGrantGrpcDto {
+    string document_grant_id = 1;
+    string document_id = 2;
+    string role_name = 3;
 }

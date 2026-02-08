@@ -6,16 +6,10 @@ option csharp_namespace = "Auth.Grpc";
 package Documents;
 
 service DocumentGrpc {
-    rpc CanReadDocument (CheckRightGrpcReq) returns (PermissionGrpcResult);
-    rpc CanCommentDocument (CheckRightGrpcReq) returns (PermissionGrpcResult);
-    rpc CanEditDocument (CheckRightGrpcReq) returns (PermissionGrpcResult);
     rpc SaveDocumentMetadata (SaveDocumentGrpcReq) returns (Shared.EmptyGrpcResult);
+    rpc UpdateDefaultRoleForDocument (UpdateDefaultRoleGrpcReq) returns (Shared.EmptyGrpcResult);
     rpc DeleteDocumentMetadata (DeleteDocumentGrpcReq) returns (Shared.EmptyGrpcResult);
-}
-
-message CheckRightGrpcReq {
-    string document_id = 1;
-    string calling_user_id = 2;
+    rpc GetUserRoleForDocument (UserRoleGrpcRequest) returns (UserRoleGrpcResult);
 }
 
 message SaveDocumentGrpcReq {
@@ -24,13 +18,32 @@ message SaveDocumentGrpcReq {
     string default_role_name = 3;
 }
 
+message UpdateDefaultRoleGrpcReq {
+    string document_id = 1;
+    string default_role_name = 2;
+}
+
 message DeleteDocumentGrpcReq {
     string document_id = 1;
 }
 
-message PermissionGrpcResult {
+message UserRoleGrpcRequest {
+    string user_id = 1;
+    string document_id = 2;
+}
+
+message UserRoleGrpcResult {
     oneof result {
-        bool is_approved = 1;
+        UserRoleGrpcDto user_role = 1;
         Shared.GrpcException exception = 2;
     }
+}
+
+message UserRoleGrpcDto {
+    string role_name = 1;
+    bool can_read = 2;
+    bool can_comment = 3;
+    bool can_edit = 4;
+    bool can_create_role_grants = 5;
+    bool can_manage_roles = 6;
 }

@@ -8,6 +8,7 @@ public class DocumentRole {
     public bool CanRead {get; set;}
     public bool CanComment {get; set;}
     public bool CanEdit {get; set;}
+    public bool CanDelete {get; set;}
     public bool CanCreateRoleGrants {get; set;}
     public bool CanManageRoles {get; set;}
 }

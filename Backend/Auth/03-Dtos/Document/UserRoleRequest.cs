@@ -1,5 +1,6 @@
 namespace Auth.Dto.Document;
 
-public record DeleteDocumentRequest(
+public record UserRoleRequest(
+    string UserId,
     string DocumentId
 );

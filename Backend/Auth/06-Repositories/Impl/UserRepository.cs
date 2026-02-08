@@ -44,6 +44,24 @@ public class UserRepository (
         return await userManager.FindByEmailAsync(userEmail);
     }
 
+    public async Task<bool> ContainsById(string userId) {
+        return await dbContext.Users.AnyAsync(
+            u => u.Id == userId
+        );
+    }
+
+    public async Task<bool> ContainsByName(string userName) {
+        return await dbContext.Users.AnyAsync(
+            u => u.NormalizedUserName == userName.ToUpperInvariant()
+        );
+    }
+
+    public async Task<bool> ContainsByEmail(string userEmail) {
+        return await dbContext.Users.AnyAsync(
+            u => u.NormalizedEmail == userEmail.ToUpperInvariant()
+        );
+    }
+
     public async Task<bool> IsValidPassword(User user, string password) {
         return await userManager.CheckPasswordAsync(user, password);
     }

@@ -9,6 +9,9 @@ public interface IUserRepository {
     Task<User?> FindById(string userId);
     Task<User?> FindByName(string userName);
     Task<User?> FindByEmail(string userEmail);
+    Task<bool> ContainsById(string userId);
+    Task<bool> ContainsByName(string userName);
+    Task<bool> ContainsByEmail(string email);
     Task<bool> IsValidPassword(User user, string password);
     Task<SelectionOfItems<User>> GetUsersCollection<KeyOrderT>(
         QueryFilter<User, KeyOrderT> queryFilter

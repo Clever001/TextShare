@@ -7,16 +7,20 @@ namespace Auth.DbContext;
 public class DocumentRolesPredefinedSet : ICollection<DocumentRole> {
     private readonly static ImmutableArray<DocumentRole> roles = ImmutableArray.Create(
         new DocumentRole() { Name = "Reader",
-            CanRead = true, CanComment = false, CanEdit = false, 
+            CanRead = true, CanComment = false, CanEdit = false,
+            CanDelete = false, 
             CanCreateRoleGrants = false, CanManageRoles = false },
         new DocumentRole() { Name = "Commentator",
+            CanDelete = false,
             CanRead = true, CanComment = true, CanEdit = false, 
             CanCreateRoleGrants = false, CanManageRoles = false },
         new DocumentRole() { Name = "Editor",
             CanRead = true, CanComment = true, CanEdit = true, 
+            CanDelete = false,
             CanCreateRoleGrants = false, CanManageRoles = false },
         new DocumentRole() { Name = "Administrator",
             CanRead = true, CanComment = true, CanEdit = true, 
+            CanDelete = true,
             CanCreateRoleGrants = true, CanManageRoles = true }
     );
 
