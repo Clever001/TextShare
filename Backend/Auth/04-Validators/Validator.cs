@@ -1,4 +1,4 @@
-using Auth.Other;
+using Auth.CustomException;
 
 namespace Auth.Validator;
 

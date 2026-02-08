@@ -37,19 +37,19 @@ message UsersGrpcPagedFilter {
 message UserWithTokenGrpcResult {
   oneof result {
     Shared.GrpcException exception = 1;
-    Shared.UserWithTokenGrpcDto user = 2;
+    Shared.UserWithTokenGrpcDto user_with_token = 2;
   }
 }
 
 message PagedUsersWithoutTokenGrpcResult {
   oneof result {
     Shared.GrpcException exception = 1;
-    PagedUsersWithoutTokenGrpc users = 2;
+    PagedUsersWithoutTokenGrpc paged_users_without_token = 2;
   }
 }
 
 message PagedUsersWithoutTokenGrpc {
-  repeated Shared.UserWithoutTokenGrpcDto items = 1;
+  repeated Shared.UserWithoutTokenGrpcDto users_without_token = 1;
   Shared.PaginationGrpcResponse pagination = 2;
 }
 

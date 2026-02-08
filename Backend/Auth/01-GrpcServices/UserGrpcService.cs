@@ -22,7 +22,7 @@ public class UserGrpcService(
             return SharedMapper.ConvertToGrpcResult(
                 serviceOpResult: registrationResult,
                 onSuccess: (convertable) => new UserWithTokenGrpcResult() {
-                    User = UserMapper.ConvertToGrpcDto(convertable)
+                    UserWithToken = UserMapper.ConvertToGrpcDto(convertable)
                 },
                 onFailure: (apiError) => new UserWithTokenGrpcResult() {
                     Exception = SharedMapper.ConvertToGrpcDto(apiError)
@@ -47,7 +47,7 @@ public class UserGrpcService(
             return SharedMapper.ConvertToGrpcResult(
                 serviceOpResult: loginResult,
                 onSuccess: (convertable) => new UserWithTokenGrpcResult() {
-                    User = UserMapper.ConvertToGrpcDto(convertable)
+                    UserWithToken = UserMapper.ConvertToGrpcDto(convertable)
                 },
                 onFailure: (apiError) => new UserWithTokenGrpcResult() {
                     Exception = SharedMapper.ConvertToGrpcDto(apiError)
@@ -74,7 +74,7 @@ public class UserGrpcService(
             return SharedMapper.ConvertToGrpcResult(
                 serviceOpResult: updateResult,
                 onSuccess: (convertable) => new UserWithTokenGrpcResult() {
-                    User = UserMapper.ConvertToGrpcDto(convertable)
+                    UserWithToken = UserMapper.ConvertToGrpcDto(convertable)
                 },
                 onFailure: (apiError) => new UserWithTokenGrpcResult() {
                     Exception = SharedMapper.ConvertToGrpcDto(apiError)
@@ -101,7 +101,7 @@ public class UserGrpcService(
             return SharedMapper.ConvertToGrpcResult(
                 serviceOpResult: usersCollectionResult,
                 onSuccess: (convertable) => new PagedUsersWithoutTokenGrpcResult() {
-                    Users = UserMapper.ConvertToGrpcDto(convertable)
+                    PagedUsersWithoutToken = UserMapper.ConvertToGrpcDto(convertable)
                 },
                 onFailure: (apiError) => new PagedUsersWithoutTokenGrpcResult() {
                     Exception = SharedMapper.ConvertToGrpcDto(apiError)

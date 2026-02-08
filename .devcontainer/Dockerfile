@@ -25,6 +25,7 @@ RUN rm /etc/dpkg/dpkg.cfg.d/excludes && \
     locales  \
     nano && \
     go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest && \
+    go install github.com/fullstorydev/grpcui/cmd/grpcui@latest && \
 
 # install node
     curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \

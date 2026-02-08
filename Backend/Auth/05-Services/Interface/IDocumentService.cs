@@ -1,12 +1,12 @@
 using Auth.Dto.Document;
-using Shared;
+using Shared.Result;
 
 namespace Auth.Service.Interface;
 
 public interface IDocumentService {
-    Task<Result<bool>> CanReadDocument(CheckRightRequest req);
-    Task<Result<bool>> CanCommentDocument(CheckRightRequest req);
-    Task<Result<bool>> CanEditDocument(CheckRightRequest req);
-    Task<Result> SaveDocumentMetadata(SaveDocumentRequest documentDto);
-    Task<Result> DeleteDocumentMetadata(DeleteDocumentRequest req);
+    Task<ApiResult<bool>> CanReadDocument(CheckRightRequest req);
+    Task<ApiResult<bool>> CanCommentDocument(CheckRightRequest req);
+    Task<ApiResult<bool>> CanEditDocument(CheckRightRequest req);
+    Task<ApiResult> SaveDocumentMetadata(SaveDocumentRequest documentDto);
+    Task<ApiResult> DeleteDocumentMetadata(DeleteDocumentRequest req);
 }

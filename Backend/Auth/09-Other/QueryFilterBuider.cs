@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
 using Auth.Dto.Shared;
+using Auth.CustomException;
+
 
 namespace Auth.Other;
 

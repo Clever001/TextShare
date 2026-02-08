@@ -22,7 +22,7 @@ public static class UserMapper {
         var grpcUsersDto = new PagedUsersWithoutTokenGrpc() {
             Pagination = SharedMapper.ConvertToGrpcDto(users)
         };
-        grpcUsersDto.Items.AddRange(
+        grpcUsersDto.UsersWithoutToken.AddRange(
             users.Items.Select(ConvertToGrpcDto)
         );
         return grpcUsersDto;

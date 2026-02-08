@@ -1,6 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Identity;
-namespace Auth.Other;
+namespace Auth.CustomException;
 
 public class BusinessLogicException : Exception {
 
@@ -18,36 +18,6 @@ public class BusinessLogicException : Exception {
         Exception? innerException
     ) : base(message ?? defaultMessage, innerException) {
         
-    }
-
-    public static BusinessLogicException 
-    CreateFromIdentityErrors(
-        string? message,
-        IEnumerable<IdentityError>? errors
-    ) {
-        var fullMessageBuilder = new StringBuilder();
-        fullMessageBuilder.AppendLine(message ?? defaultMessage);
-        fullMessageBuilder.AppendLine();
-
-        if (errors != null) {
-            fullMessageBuilder.AppendLine("Identity errors information:");
-            foreach (var error in errors) {
-                fullMessageBuilder.AppendLine(
-                    ParseIdentityErrorToString(error)
-                );
-            }
-        }
-
-        return new BusinessLogicException(fullMessageBuilder.ToString());
-    }
-
-    private static string ParseIdentityErrorToString(IdentityError error) {
-        return $$"""
-                {
-                    "{{nameof(error.Code)}}": "{{error.Code}}";
-                    "{{nameof(error.Description)}}": ""{{error.Description}};
-                }
-                """;
     }
 
     public static void ThrowIfLessThan(

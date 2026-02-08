@@ -1,13 +1,13 @@
 using Auth.Grpc;
 using Auth.Other;
-using Shared;
 using Shared.ApiError;
+using Shared.Result;
 
 namespace Auth.Mapper;
 
 public static class SharedMapper {
     public static TResult ConvertToGrpcResult<TConvertable, TResult>(
-        Result<TConvertable> serviceOpResult,
+        ApiResult<TConvertable> serviceOpResult,
         Func<TConvertable, TResult> onSuccess,
         Func<IApiError, TResult> onFailure
     ) {

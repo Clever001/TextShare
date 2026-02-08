@@ -1,9 +1,11 @@
+using Auth.CustomException;
 using Auth.DbContext;
 using Auth.Model;
 using Auth.Other;
 using Auth.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Shared.Result;
 
 namespace Auth.Repository.Impl;
 
@@ -11,12 +13,23 @@ public class UserRepository (
     AppDbContext dbContext,
     UserManager<User> userManager
 ) : IUserRepository {
-    public async Task<IdentityResult> CreateUser(User user, string password) {
-        return await userManager.CreateAsync(user, password);
-    }
 
-    public async Task<IdentityResult> AddUserToRole(User user, string role) {
-        return await userManager.AddToRoleAsync(user, "User");
+    public async Task<EntityResult> CreateUser(User user, string password) {
+        var creationResult = await userManager.CreateAsync(user);
+        if (!creationResult.Succeeded) {
+            return creationResult.ToEntityResult();
+        }
+        
+        var addingToRoleResult = await userManager.AddToRoleAsync(user, "User");
+        if (!addingToRoleResult.Succeeded) {
+            await userManager.DeleteAsync(user);
+            throw DbCallException.CreateFromIdentityErrors(
+                "Couldn't add user to role", 
+                addingToRoleResult.Errors
+            );
+        }
+
+        return creationResult.ToEntityResult();
     }
 
     public async Task<User?> FindById(string userId) {
@@ -31,27 +44,11 @@ public class UserRepository (
         return await userManager.FindByEmailAsync(userEmail);
     }
 
-    public async Task<bool> ContainsById(string userId) {
-        return await dbContext.Users.AnyAsync(u => u.Id == userId);
-    }
-
-    public async Task<bool> ContainsByName(string userName) {
-        return await dbContext.Users.AnyAsync(u => 
-            u.NormalizedUserName == userName.ToUpperInvariant()
-        );
-    }
-
-    public async Task<bool> ContainsByEmail(string userEmail) {
-        return await dbContext.Users.AnyAsync(u => 
-            u.Email == userEmail.ToUpperInvariant()
-        );
-    }
-
     public async Task<bool> IsValidPassword(User user, string password) {
         return await userManager.CheckPasswordAsync(user, password);
     }
 
-    public async Task<(int countOfUsers, List<User> users)> 
+    public async Task<SelectionOfItems<User>> 
     GetUsersCollection<KeyOrderT>(
         QueryFilter<User, KeyOrderT> queryFilter
     ) {
@@ -81,19 +78,26 @@ public class UserRepository (
             users = users.Skip(skip).Take(take);
         }
 
-        return (countOfUsers, await users.Select(u => new User {
-            Id = u.Id,
-            UserName = u.UserName,
-            Email = u.Email
-        }).ToListAsync());
+        return new SelectionOfItems<User>(
+            TotalCount: countOfUsers,
+            Selection: await users.Select(u => new User {
+                Id = u.Id,
+                UserName = u.UserName,
+                Email = u.Email
+            }).AsNoTracking().ToArrayAsync()
+        );
     }
 
-    public async Task<IdentityResult> UpdateUser(User user) {
-        return await userManager.UpdateAsync(user);
+    public async Task<EntityResult> UpdateUser(User user) {
+        return (
+            await userManager.UpdateAsync(user)
+        ).ToEntityResult();
     }
 
-    public async Task<IdentityResult> DeleteUser(User user) {
+    public async Task<EntityResult> DeleteUser(User user) {
         // TODO: implement delete from UserDocumentRoleAssignment
-        throw new NotImplementedException();
+        return (
+            await userManager.DeleteAsync(user)
+        ).ToEntityResult();
     }
 }
