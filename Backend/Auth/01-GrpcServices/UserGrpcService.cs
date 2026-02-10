@@ -11,10 +11,10 @@ public class UserGrpcService(
     ILogger<UserGrpcService> logger
 ) : UserGrpc.UserGrpcBase {
     public override async Task<UserWithTokenGrpcResult> RegisterUser(
-        RegisterUserGrpcDto request, 
+        RegisterUserGrpcRequest request, 
         ServerCallContext context
     ) {
-        var registerDto = new RegisterUserDto(
+        var registerDto = new RegisterUserRequest(
             request.Name, request.Email, request.Password
         );
 
@@ -36,10 +36,10 @@ public class UserGrpcService(
     }
 
     public override async Task<UserWithTokenGrpcResult> LoginUser(
-        LoginUserGrpcDto request, 
+        LoginUserGrpcRequest request, 
         ServerCallContext context
     ) {
-        var loginDto = new LoginUserDto(
+        var loginDto = new LoginUserRequest(
             request.NameOrEmail, request.Password
         );
 
@@ -61,10 +61,10 @@ public class UserGrpcService(
     }
 
     public override async Task<UserWithTokenGrpcResult> UpdateUser(
-        UpdateUserGrpcDto request, 
+        UpdateUserGrpcRequest request, 
         ServerCallContext context
     ) {
-        var updateDto = new UpdateUserDto(
+        var updateDto = new UpdateUserRequest(
             request.InitialUserId, 
             request.HasNewName ? request.NewName : null, 
             request.HasNewEmail ? request.NewEmail : null
@@ -91,7 +91,7 @@ public class UserGrpcService(
         UsersGrpcPagedFilter request, 
         ServerCallContext context
     ) {
-        var usersFilter = new UsersPagedFilterDto(
+        var usersFilter = new UsersPagedFilter(
             request.HasUserName ? request.UserName : null, 
             request.PaginationPage.PageNumber, 
             request.PaginationPage.PageSize

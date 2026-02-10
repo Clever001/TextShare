@@ -6,24 +6,24 @@ option csharp_namespace = "Auth.Grpc";
 package Documents;
 
 service DocumentGrpc {
-    rpc SaveDocumentMetadata (SaveDocumentGrpcReq) returns (Shared.EmptyGrpcResult);
-    rpc UpdateDefaultRoleForDocument (UpdateDefaultRoleGrpcReq) returns (Shared.EmptyGrpcResult);
-    rpc DeleteDocumentMetadata (DeleteDocumentGrpcReq) returns (Shared.EmptyGrpcResult);
+    rpc SaveDocumentMetadata (SaveDocumentGrpcRequest) returns (Shared.EmptyGrpcResult);
+    rpc UpdateDefaultRoleForDocument (UpdateDefaultRoleGrpcRequest) returns (Shared.EmptyGrpcResult);
+    rpc DeleteDocumentMetadata (DeleteDocumentGrpcRequest) returns (Shared.EmptyGrpcResult);
     rpc GetUserRoleForDocument (UserRoleGrpcRequest) returns (UserRoleGrpcResult);
 }
 
-message SaveDocumentGrpcReq {
+message SaveDocumentGrpcRequest {
     string document_id = 1;
     string creator_id = 2;
     string default_role_name = 3;
 }
 
-message UpdateDefaultRoleGrpcReq {
+message UpdateDefaultRoleGrpcRequest {
     string document_id = 1;
     string default_role_name = 2;
 }
 
-message DeleteDocumentGrpcReq {
+message DeleteDocumentGrpcRequest {
     string document_id = 1;
 }
 

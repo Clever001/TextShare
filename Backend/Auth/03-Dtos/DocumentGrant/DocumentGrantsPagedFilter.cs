@@ -9,8 +9,16 @@ public record DocumentGrantsPagedFilter(
     string CallingUserId,
     int PageNumber,
     int PageSize
-) : PaginationPageDto(PageNumber, PageSize), ICheckable {
-    public DtoChecker.DtoCheckResult CheckValidity() {
-        throw new NotImplementedException();
+) : PaginationPageDto(PageNumber, PageSize) {
+    public override DtoChecker.DtoCheckResult CheckValidity() {
+        var dtoChecker = new DtoChecker();
+        var baseCheckResult = base.CheckValidity();
+        dtoChecker.AppendOtherDtoCheckResult(baseCheckResult);
+        
+        dtoChecker.AddErrorIfNotNullEmptyString(DocumentId, nameof(DocumentId));
+        dtoChecker.AddErrorIfNotNullEmptyString(RoleName, nameof(RoleName));
+        dtoChecker.AddErrorIfNullOrEmptyString(CallingUserId, nameof(CallingUserId));
+
+        return dtoChecker.GetCheckResult();
     }
 }

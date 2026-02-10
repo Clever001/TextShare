@@ -6,8 +6,8 @@ using Shared.Result;
 namespace Auth.Service.Interface;
 
 public interface IUserService {
-    Task<ApiResult<UserWithTokenDto>> RegisterUser(RegisterUserDto registerDto);
-    Task<ApiResult<UserWithTokenDto>> LoginUser(LoginUserDto loginDto);
-    Task<ApiResult<UserWithTokenDto>> UpdateUser(UpdateUserDto updateDto);
-    Task<ApiResult<PaginatedResponse<User>>> GetUsers (UsersPagedFilterDto usersFilter);
+    Task<ApiResult<UserWithTokenDto>> RegisterUser(RegisterUserRequest registerDto);
+    Task<ApiResult<UserWithTokenDto>> LoginUser(LoginUserRequest loginDto);
+    Task<ApiResult<UserWithTokenDto>> UpdateUser(UpdateUserRequest updateDto);
+    Task<ApiResult<PaginatedResponse<User>>> GetUsers (UsersPagedFilter usersFilter);
 }

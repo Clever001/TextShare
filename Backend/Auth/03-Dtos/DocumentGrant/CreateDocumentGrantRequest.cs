@@ -10,9 +10,9 @@ public record CreateDocumentGrantRequest(
     public DtoChecker.DtoCheckResult CheckValidity() {
         var dtoChecker = new DtoChecker();
 
-        dtoChecker.CheckForRequiredString(DocumentId, nameof(DocumentId));
-        dtoChecker.CheckForRequiredString(RoleName, nameof(RoleName));
-        dtoChecker.CheckForRequiredString(CallingUserId, nameof(CallingUserId));
+        dtoChecker.AddErrorIfNullOrEmptyString(DocumentId, nameof(DocumentId));
+        dtoChecker.AddErrorIfNullOrEmptyString(RoleName, nameof(RoleName));
+        dtoChecker.AddErrorIfNullOrEmptyString(CallingUserId, nameof(CallingUserId));
 
         return dtoChecker.GetCheckResult();
     }

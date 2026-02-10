@@ -9,8 +9,8 @@ public record UpdateDefaultRoleRequest(
     public DtoChecker.DtoCheckResult CheckValidity() {
         var dtoChecker = new DtoChecker();
 
-        dtoChecker.CheckForRequiredString(DocumentId, nameof(DocumentId));
-        dtoChecker.CheckForRequiredString(DefaultRoleName, nameof(DefaultRoleName));
+        dtoChecker.AddErrorIfNullOrEmptyString(DocumentId, nameof(DocumentId));
+        dtoChecker.AddErrorIfNullOrEmptyString(DefaultRoleName, nameof(DefaultRoleName));
 
         return dtoChecker.GetCheckResult();
     }

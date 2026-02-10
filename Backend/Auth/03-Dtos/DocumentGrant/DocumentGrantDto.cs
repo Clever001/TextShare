@@ -10,8 +10,8 @@ public record DocumentGrantDto(
     public DtoChecker.DtoCheckResult CheckValidity() {
         var dtoChecker = new DtoChecker();
 
-        dtoChecker.CheckForRequiredString(DocumentGrantId, nameof(DocumentGrantId));
-        dtoChecker.CheckForRequiredString(RoleName, nameof(RoleName));
+        dtoChecker.AddErrorIfNullOrEmptyString(DocumentGrantId, nameof(DocumentGrantId));
+        dtoChecker.AddErrorIfNullOrEmptyString(RoleName, nameof(RoleName));
 
         return dtoChecker.GetCheckResult();
     }

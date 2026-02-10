@@ -9,8 +9,8 @@ public record DeleteDocumentGrantRequest(
     public DtoChecker.DtoCheckResult CheckValidity() {
         var dtoChecker = new DtoChecker();
 
-        dtoChecker.CheckForRequiredString(DocumentGrantId, nameof(DocumentGrantId));
-        dtoChecker.CheckForRequiredString(CallingUserId, nameof(CallingUserId));
+        dtoChecker.AddErrorIfNullOrEmptyString(DocumentGrantId, nameof(DocumentGrantId));
+        dtoChecker.AddErrorIfNullOrEmptyString(CallingUserId, nameof(CallingUserId));
 
         return dtoChecker.GetCheckResult();
     }

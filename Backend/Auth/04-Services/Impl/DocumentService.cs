@@ -1,26 +1,45 @@
 using Auth.Dto.Document;
 using Auth.Repository.Interface;
 using Auth.Service.Interface;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Shared.ApiError;
 using Shared.Result;
 
 namespace Auth.Service.Impl;
 
 public class DocumentService(
     IDocumentRepository documentRepository
-) : IDocumentService {
-    public Task<ApiResult> SaveDocumentMetadata(SaveDocumentRequest req) {
-        throw new NotImplementedException();
+) : ServiceBase, IDocumentService {
+    public async Task<ApiResult> SaveDocumentMetadata(SaveDocumentRequest req) {
+        var (IsValidRequestDto, possibleError) = CheckValidity(req);
+        if (!IsValidRequestDto) {
+            return ApiResult.Failure(possibleError);
+        }
+
+        bool containsSameId = await documentRepository.ContainsById(req.DocumentId);
+        if (containsSameId) {
+            return ApiResult.Failure(new BadRequestApiError(""
+        }
     }
 
-    public Task<ApiResult> UpdateDefaultRoleForDocument(UpdateDefaultRoleRequest req) {
-        throw new NotImplementedException();
+    public async Task<ApiResult> UpdateDefaultRoleForDocument(UpdateDefaultRoleRequest req) {
+        var (IsValidRequestDto, possibleError) = CheckValidity(req);
+        if (!IsValidRequestDto) {
+            return ApiResult.Failure(possibleError);
+        }
     }
 
-    public Task<ApiResult> DeleteDocumentMetadata(DeleteDocumentRequest req) {
-        throw new NotImplementedException();
+    public async Task<ApiResult> DeleteDocumentMetadata(DeleteDocumentRequest req) {
+        var (IsValidRequestDto, possibleError) = CheckValidity(req);
+        if (!IsValidRequestDto) {
+            return ApiResult.Failure(possibleError);
+        }
     }
 
-    public Task<ApiResult<UserRoleDto>> GetUserRoleForDocument(UserRoleRequest req) {
-        throw new NotImplementedException();
+    public async Task<ApiResult<UserRoleDto>> GetUserRoleForDocument(UserRoleRequest req) {
+        var (IsValidRequestDto, possibleError) = CheckValidity(req);
+        if (!IsValidRequestDto) {
+            return ApiResult<UserRoleDto>.Failure(possibleError);
+        }
     }
 }

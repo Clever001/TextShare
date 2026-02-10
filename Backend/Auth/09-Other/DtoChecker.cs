@@ -1,13 +1,32 @@
+using System.Text.RegularExpressions;
+
 namespace Auth.Other;
 
-public class DtoChecker {
+public partial class DtoChecker {
     private readonly List<string> errors = new();
+    [GeneratedRegex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$")]
+    private static partial Regex EmailRegex();
 
     public void AppendOtherDtoCheckResult(DtoCheckResult result) {
         errors.AddRange(result.Errors);
     }
 
-    public void CheckForRequiredString(string parameter, string parameterName) {
+    public void AddErrorIfNotEmail(string parameter, string parameterName) {
+        if (string.IsNullOrWhiteSpace(parameter) || !IsValidEmail(parameter)) {
+            errors.Add(
+                $"{parameterName} is not a valid email address."
+            );
+        }
+    }
+
+    private static bool IsValidEmail(string email) {
+        if (string.IsNullOrWhiteSpace(email))
+            return false;
+
+        return EmailRegex().IsMatch(email);
+    }
+
+    public void AddErrorIfNullOrEmptyString(string parameter, string parameterName) {
         if (string.IsNullOrWhiteSpace(parameter)) {
             errors.Add(
                 $"{parameterName} is required."
@@ -15,7 +34,15 @@ public class DtoChecker {
         }
     }
 
-    public void SetInvalidIfValueIsLessThan(
+    public void AddErrorIfNotNullEmptyString(string? parameter, string parameterName) {
+        if (parameter != null && parameter == string.Empty) {
+            errors.Add(
+                $"{parameterName} can be null but cannot be empty."
+            );
+        }
+    }
+
+    public void AddErrorIfValueIsLessThan(
         int actualValue,
         int compareValue,
         string nameOfParameter
@@ -28,46 +55,46 @@ public class DtoChecker {
         }
     }
 
-    public void SetInvalidIfValueIsGreaterThan(
+    public void AddErrorIfValueIsGreaterThan(
         int actualValue,
         int compareValue,
         string nameOfParameter
     ) {
         if (actualValue > compareValue) {
             errors.Add(
-                $"{nameOfParameter} cannot be greater than {compareValue}. " + 
+                $"{nameOfParameter} cannot be greater than {compareValue}. " +
                 $"Actual value: {actualValue}."
             );
         }
     }
 
-    public void SetInvalidIfValueIsLessThanOrEqual(
+    public void AddErrorIfValueIsLessThanOrEqual(
         int actualValue,
         int compareValue,
         string nameOfParameter
     ) {
         if (actualValue <= compareValue) {
             errors.Add(
-                $"{nameOfParameter} cannot be less than or equal to {compareValue}. " + 
+                $"{nameOfParameter} cannot be less than or equal to {compareValue}. " +
                 $"Actual value: {actualValue}."
             );
         }
     }
 
-    public void SetInvalidIfValueIsGreaterThanOrEqual(
+    public void AddErrorIfValueIsGreaterThanOrEqual(
         int actualValue,
         int compareValue,
         string nameOfParameter
     ) {
         if (actualValue >= compareValue) {
             errors.Add(
-                $"{nameOfParameter} cannot be greater than or equal to {compareValue}. " + 
+                $"{nameOfParameter} cannot be greater than or equal to {compareValue}. " +
                 $"Actual value: {actualValue}."
             );
         }
     }
 
-    public void SetInvalidIfValueIsInRange(
+    public void AddErrorIfValueIsInRange(
         int actualValue,
         int minValue,
         int maxValue,
@@ -75,13 +102,13 @@ public class DtoChecker {
     ) {
         if (actualValue >= minValue && actualValue <= maxValue) {
             errors.Add(
-                $"{nameOfParameter} cannot be in range [{minValue}, {maxValue}]. " + 
+                $"{nameOfParameter} cannot be in range [{minValue}, {maxValue}]. " +
                 $"Actual value: {actualValue}."
             );
         }
     }
 
-    public void SetInvalidIfValueIsNotInRange(
+    public void AddErrorIfValueIsNotInRange(
         int actualValue,
         int minValue,
         int maxValue,
@@ -89,33 +116,33 @@ public class DtoChecker {
     ) {
         if (actualValue < minValue || actualValue > maxValue) {
             errors.Add(
-                $"{nameOfParameter} must be in range [{minValue}, {maxValue}]. " + 
+                $"{nameOfParameter} must be in range [{minValue}, {maxValue}]. " +
                 $"Actual value: {actualValue}."
             );
         }
     }
 
-    public void SetInvalidIfValueIsEqual(
+    public void AddErrorIfValueIsEqual(
         int actualValue,
         int compareValue,
         string nameOfParameter
     ) {
         if (actualValue == compareValue) {
             errors.Add(
-                $"{nameOfParameter} cannot be equal to {compareValue}. " + 
+                $"{nameOfParameter} cannot be equal to {compareValue}. " +
                 $"Actual value: {actualValue}."
             );
         }
     }
 
-    public void SetInvalidIfValueIsNotEqual(
+    public void AddErrorIfValueIsNotEqual(
         int actualValue,
         int compareValue,
         string nameOfParameter
     ) {
         if (actualValue != compareValue) {
             errors.Add(
-                $"{nameOfParameter} must be equal to {compareValue}. " + 
+                $"{nameOfParameter} must be equal to {compareValue}. " +
                 $"Actual value: {actualValue}."
             );
         }
@@ -128,7 +155,7 @@ public class DtoChecker {
         );
     }
 
-    public record DtoCheckResult (
+    public record DtoCheckResult(
         bool IsValid,
         string[] Errors
     );

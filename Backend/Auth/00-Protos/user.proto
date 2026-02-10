@@ -6,24 +6,24 @@ option csharp_namespace = "Auth.Grpc";
 package Accounts;
 
 service UserGrpc {
-  rpc RegisterUser (RegisterUserGrpcDto) returns (UserWithTokenGrpcResult);
-  rpc LoginUser (LoginUserGrpcDto) returns (UserWithTokenGrpcResult);
-  rpc UpdateUser (UpdateUserGrpcDto) returns (UserWithTokenGrpcResult);
+  rpc RegisterUser (RegisterUserGrpcRequest) returns (UserWithTokenGrpcResult);
+  rpc LoginUser (LoginUserGrpcRequest) returns (UserWithTokenGrpcResult);
+  rpc UpdateUser (UpdateUserGrpcRequest) returns (UserWithTokenGrpcResult);
   rpc GetUsers (UsersGrpcPagedFilter) returns (PagedUsersWithoutTokenGrpcResult);
 }
 
-message RegisterUserGrpcDto {
+message RegisterUserGrpcRequest {
   string name = 1;
   string email = 2;
   string password = 3;
 }
 
-message LoginUserGrpcDto {
+message LoginUserGrpcRequest {
   string name_or_email = 1;
   string password = 2;
 }
 
-message UpdateUserGrpcDto {
+message UpdateUserGrpcRequest {
   string initial_user_id = 1;
   optional string new_name = 2;
   optional string new_email = 3;

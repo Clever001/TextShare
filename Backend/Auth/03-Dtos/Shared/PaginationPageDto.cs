@@ -15,7 +15,10 @@ public record PaginationPageDto(
     public virtual DtoChecker.DtoCheckResult CheckValidity() {
         var dtoChecker = new DtoChecker();
 
-        // TODO: Insert dto check.
+        dtoChecker.AddErrorIfValueIsLessThan(PageNumber, MIN_PAGE_NUMBER, nameof(PageNumber));
+        dtoChecker.AddErrorIfValueIsGreaterThan(PageNumber, MAX_PAGE_NUMBER, nameof(PageNumber));
+        dtoChecker.AddErrorIfValueIsLessThan(PageSize, MIN_PAGE_SIZE, nameof(PageSize));
+        dtoChecker.AddErrorIfValueIsGreaterThan(PageSize, MAX_PAGE_SIZE, nameof(PageSize));
 
         return dtoChecker.GetCheckResult();
     }

@@ -3,7 +3,6 @@ using Auth.Model;
 using Auth.Other;
 using Auth.Repository.Interface;
 using Auth.Service.Interface;
-using Auth.Validator;
 using Shared.ApiError;
 using Shared.Result;
 using Auth.CustomException;
@@ -14,16 +13,21 @@ public class UserService (
     IUserRepository userRepository,
     ITokenService tokenService,
     ILogger<UserService> logger
-) : IUserService {
+) : ServiceBase, IUserService {
 
-    public async Task<ApiResult<UserWithTokenDto>> RegisterUser(RegisterUserDto registerDto) {
+    public async Task<ApiResult<UserWithTokenDto>> RegisterUser(RegisterUserRequest req) {
+        var (IsValidRequestDto, possibleError) = CheckValidity(req);
+        if (!IsValidRequestDto) {
+            return ApiResult<UserWithTokenDto>.Failure(possibleError);
+        }
+
         try {
             var user = new User {
-                UserName = registerDto.Name,
-                Email = registerDto.Email
+                UserName = req.Name,
+                Email = req.Email
             };
  
-            var createResult = await userRepository.CreateUser(user, registerDto.Password);
+            var createResult = await userRepository.CreateUser(user, req.Password);
             if (createResult.IsSuccess) {
                 var token = tokenService.CreateToken(user);
                 return ApiResult<UserWithTokenDto>.Success(new UserWithTokenDto(user, token));
@@ -41,29 +45,39 @@ public class UserService (
         }
     }
 
-    public async Task<ApiResult<UserWithTokenDto>> LoginUser(LoginUserDto loginDto) {
-        User? user = await userRepository.FindByName(loginDto.NameOrEmail);
-        user ??= await userRepository.FindByEmail(loginDto.NameOrEmail);
+    public async Task<ApiResult<UserWithTokenDto>> LoginUser(LoginUserRequest req) {
+        var (IsValidRequestDto, possibleError) = CheckValidity(req);
+        if (!IsValidRequestDto) {
+            return ApiResult<UserWithTokenDto>.Failure(possibleError);
+        }
+
+        User? user = await userRepository.FindByName(req.NameOrEmail);
+        user ??= await userRepository.FindByEmail(req.NameOrEmail);
 
         if (user == null) return ApiResult<UserWithTokenDto>.Failure(new UnauthorizedApiError());
 
-        bool passwordIsValid = await userRepository.IsValidPassword(user, loginDto.Password);
+        bool passwordIsValid = await userRepository.IsValidPassword(user, req.Password);
         if (!passwordIsValid) return ApiResult<UserWithTokenDto>.Failure(new UnauthorizedApiError());
 
         var token = tokenService.CreateToken(user);
         return ApiResult<UserWithTokenDto>.Success(new UserWithTokenDto(user, token));
     }
 
-    public async Task<ApiResult<UserWithTokenDto>> UpdateUser(UpdateUserDto updateDto) {
-        var user = await userRepository.FindById(updateDto.InitialUserId);
-        if (user == null) return ApiResult<UserWithTokenDto>.Failure(new NotFoundApiError());
-
-        if (updateDto.NewName != null && updateDto.NewName != user.UserName) {
-            user.UserName = updateDto.NewName;
+    public async Task<ApiResult<UserWithTokenDto>> UpdateUser(UpdateUserRequest req) {
+        var (IsValidRequestDto, possibleError) = CheckValidity(req);
+        if (!IsValidRequestDto) {
+            return ApiResult<UserWithTokenDto>.Failure(possibleError);
         }
 
-        if (updateDto.NewEmail != null && updateDto.NewEmail != user.Email) {
-            user.Email = updateDto.NewEmail;
+        var user = await userRepository.FindById(req.InitialUserId);
+        if (user == null) return ApiResult<UserWithTokenDto>.Failure(new NotFoundApiError());
+
+        if (req.NewName != null && req.NewName != user.UserName) {
+            user.UserName = req.NewName;
+        }
+
+        if (req.NewEmail != null && req.NewEmail != user.Email) {
+            user.Email = req.NewEmail;
         }
 
         var updateResult = await userRepository.UpdateUser(user);
@@ -80,24 +94,17 @@ public class UserService (
     }
 
     public async Task<ApiResult<PaginatedResponse<User>>> GetUsers(
-        UsersPagedFilterDto usersFilter
+        UsersPagedFilter filter
     ) {
-        string? searchName = usersFilter.UserName;
-
-        // TODO: Починить реализацию внизу.
-        // var paginationValidator = new PaginationPageValidator(usersFilter);
-        // paginationValidator.PerformValidityCheck();
-        if (!paginationValidator.IsValid) {
-            return ApiResult<PaginatedResponse<User>>.Failure(
-                new BadRequestApiError(
-                    "Validation error while getting users info",
-                    paginationValidator.ValidationErrors
-                )
-            );
+        var (IsValidRequestDto, possibleError) = CheckValidity(filter);
+        if (!IsValidRequestDto) {
+            return ApiResult<PaginatedResponse<User>>.Failure(possibleError);
         }
+
+        string? searchName = filter.UserName;
         
         var queryFilterBuilder = new QueryFilterBuilder<User, string>();
-        queryFilterBuilder.WithPagination(usersFilter);
+        queryFilterBuilder.WithPagination(filter);
         queryFilterBuilder.WithSort(
             keyOrder: user => user.UserName!, 
             isAscending: true

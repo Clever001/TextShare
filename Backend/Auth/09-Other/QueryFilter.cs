@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using Auth.Validator;
 using Auth.CustomException;
 using Microsoft.EntityFrameworkCore;
 using Auth.Dto.Shared;

@@ -8,7 +8,7 @@ public record DeleteDocumentRequest(
     public DtoChecker.DtoCheckResult CheckValidity() {
         var dtoChecker = new DtoChecker();
 
-        dtoChecker.CheckForRequiredString(DocumentId, nameof(DocumentId));
+        dtoChecker.AddErrorIfNullOrEmptyString(DocumentId, nameof(DocumentId));
 
         return dtoChecker.GetCheckResult();
     }

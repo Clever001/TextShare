@@ -1,4 +1,5 @@
 using Auth.Model;
+using Auth.Other;
 
 namespace Auth.Dto.Account;
 
