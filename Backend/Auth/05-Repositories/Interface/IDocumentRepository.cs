@@ -1,7 +1,5 @@
 using Auth.Model;
 using Auth.Other;
-using Microsoft.AspNetCore.Identity;
-using Shared.Result;
 
 namespace Auth.Repository.Interface;
 
@@ -12,6 +10,6 @@ public interface IDocumentRepository {
     Task<SelectionOfItems<DocumentMetadata>> GetDocumentsMetadata<KeyOrderT>(
         QueryFilter<DocumentMetadata, KeyOrderT> queryFilter
     );
-    Task<EntityResult> UpdateDefaultRoleForDocument(string documentId, string defaultRoleName);
-    Task<EntityResult> DeleteMetadataAboutDocument(string documentId);
+    Task UpdateDefaultRoleForDocument(DocumentMetadata document);
+    Task DeleteMetadataAboutDocument(DocumentMetadata document);
 }

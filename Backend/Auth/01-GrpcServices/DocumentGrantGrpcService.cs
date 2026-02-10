@@ -16,11 +16,11 @@ public class DocumentGrantGGrpcService : DocumentGrantGrpc.DocumentGrantGrpcBase
         return base.GetDocumentGrants(request, context);
     }
 
-    public override Task<EmptyGrpcResult> ProvideRoleByGrant(ProvideRoleByGrantReq request, ServerCallContext context) {
+    public override Task<EmptyGrpcResult> ProvideRoleByGrant(ProvideRoleByGrantGrpcReq request, ServerCallContext context) {
         return base.ProvideRoleByGrant(request, context);
     }
 
-    public override Task<EmptyGrpcResult> ProvideRoleByRoleName(ProvideRoleByRoleNameReq request, ServerCallContext context) {
+    public override Task<EmptyGrpcResult> ProvideRoleByRoleName(ProvideRoleByRoleNameGrpcReq request, ServerCallContext context) {
         return base.ProvideRoleByRoleName(request, context);
     }
 }

@@ -11,5 +11,5 @@ public interface IDocumentGrantRepository {
         QueryFilter<DocumentRoleGrant, KeyOrderT> queryFilter
     );
     Task UpdateDocumentGrant(DocumentRoleGrant grant);
-    Task DeleteDocumentGrant(string grantId);
+    Task DeleteDocumentGrant(DocumentRoleGrant grant);
 }

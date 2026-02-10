@@ -30,9 +30,10 @@ message DeleteDocumentGrantGrpcReq {
 }
 
 message DocumentGrantsGrpcPagedFilter {
-    optional string document_id = 1;
-    optional string role_name = 2;
-    string calling_user_id = 3;
+    Shared.PaginationGrpcPage pagination_page = 1;
+    optional string document_id = 2;
+    optional string role_name = 3;
+    string calling_user_id = 4;
 }
 
 message ProvideRoleByGrantGrpcReq {

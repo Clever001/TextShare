@@ -13,6 +13,7 @@ public class UserRepository (
     AppDbContext dbContext,
     UserManager<User> userManager
 ) : IUserRepository {
+    private readonly DbSet<User> dbSet = dbContext.Users;
 
     public async Task<EntityResult> CreateUser(User user, string password) {
         var creationResult = await userManager.CreateAsync(user);
@@ -45,19 +46,19 @@ public class UserRepository (
     }
 
     public async Task<bool> ContainsById(string userId) {
-        return await dbContext.Users.AnyAsync(
+        return await dbSet.AnyAsync(
             u => u.Id == userId
         );
     }
 
     public async Task<bool> ContainsByName(string userName) {
-        return await dbContext.Users.AnyAsync(
+        return await dbSet.AnyAsync(
             u => u.NormalizedUserName == userName.ToUpperInvariant()
         );
     }
 
     public async Task<bool> ContainsByEmail(string userEmail) {
-        return await dbContext.Users.AnyAsync(
+        return await dbSet.AnyAsync(
             u => u.NormalizedEmail == userEmail.ToUpperInvariant()
         );
     }
@@ -70,31 +71,8 @@ public class UserRepository (
     GetUsersCollection<KeyOrderT>(
         QueryFilter<User, KeyOrderT> queryFilter
     ) {
-        IQueryable<User> users = dbContext.Users;
-
-        if (queryFilter.ContainsWherePredicates) {
-            foreach (var predicate in queryFilter.WherePredicates) {
-                users = users.Where(predicate);
-            }
-        }
-
-        var countOfUsers = await users.CountAsync();
-
-        if (queryFilter.ContainsSortFilter) {
-            var sortingKey = queryFilter.SortingKey;
-            var shouldSortAscending = queryFilter.ShouldSortAscending;
-            if (shouldSortAscending) {
-                users = users.OrderBy(sortingKey);
-            } else {
-                users = users.OrderByDescending(sortingKey);
-            }
-        }
-
-        if (queryFilter.ContainsPaginationFilter) {
-            int skip = queryFilter.SkipItemsCount;
-            int take = queryFilter.TakeItemsCount;
-            users = users.Skip(skip).Take(take);
-        }
+        var (countOfUsers, users) =
+            await queryFilter.ApplyFilter(dbSet);
 
         return new SelectionOfItems<User>(
             TotalCount: countOfUsers,
@@ -102,7 +80,7 @@ public class UserRepository (
                 Id = u.Id,
                 UserName = u.UserName,
                 Email = u.Email
-            }).AsNoTracking().ToArrayAsync()
+            }).ToArrayAsync()
         );
     }
 

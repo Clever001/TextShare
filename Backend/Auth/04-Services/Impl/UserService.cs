@@ -84,8 +84,9 @@ public class UserService (
     ) {
         string? searchName = usersFilter.UserName;
 
-        var paginationValidator = new PaginationPageValidator(usersFilter);
-        paginationValidator.PerformValidityCheck();
+        // TODO: Починить реализацию внизу.
+        // var paginationValidator = new PaginationPageValidator(usersFilter);
+        // paginationValidator.PerformValidityCheck();
         if (!paginationValidator.IsValid) {
             return ApiResult<PaginatedResponse<User>>.Failure(
                 new BadRequestApiError(

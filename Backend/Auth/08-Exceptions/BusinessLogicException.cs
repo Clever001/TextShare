@@ -1,5 +1,3 @@
-using System.Text;
-using Microsoft.AspNetCore.Identity;
 namespace Auth.CustomException;
 
 public class BusinessLogicException : Exception {

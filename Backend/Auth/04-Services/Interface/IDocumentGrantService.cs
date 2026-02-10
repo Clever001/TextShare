@@ -1,6 +1,4 @@
 using Auth.Dto.DocumentGrant;
-using Auth.Grpc;
-using Auth.Model;
 using Auth.Other;
 using Shared.Result;
 
@@ -11,7 +9,7 @@ public interface IDocumentGrantService {
     Task<ApiResult> DeleteDocumentGrant(DeleteDocumentGrantRequest req);
 
     Task<ApiResult<PaginatedResponse<DocumentGrantDto>>> 
-    GetDocumentGrants(DocumentGrantsGrpcPagedFilter filter);
+    GetDocumentGrants(DocumentGrantsPagedFilter filter);
     Task<ApiResult> ProvideRoleByGrant(ProvideRoleByGrantRequest req);
     Task<ApiResult> ProvideRoleByRoleName(ProvideRoleByRoleNameRequest req);
 }

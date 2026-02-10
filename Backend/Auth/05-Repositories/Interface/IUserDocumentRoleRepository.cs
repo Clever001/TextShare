@@ -1,6 +1,5 @@
 using Auth.Model;
 using Auth.Other;
-using Microsoft.CodeAnalysis;
 
 namespace Auth.Repository.Interface;
 

@@ -1,6 +1,8 @@
 using System.Linq.Expressions;
 using Auth.Validator;
 using Auth.CustomException;
+using Microsoft.EntityFrameworkCore;
+using Auth.Dto.Shared;
 
 
 namespace Auth.Other;
@@ -30,22 +32,22 @@ public class QueryFilter<ItemT, KeyT>
     private void CheckPaginationInit() {
         BusinessLogicException.ThrowIfLessThan(
             pageNumber, 
-            PaginationPageValidator.MIN_PAGE_NUMBER, 
+            PaginationPageDto.MIN_PAGE_NUMBER, 
             nameof(pageNumber)
         );
         BusinessLogicException.ThrowIfGreaterThan(
             pageNumber,
-            PaginationPageValidator.MAX_PAGE_NUMBER,
+            PaginationPageDto.MAX_PAGE_NUMBER,
             nameof(pageNumber)
         );
         BusinessLogicException.ThrowIfLessThan(
             pageSize,
-            PaginationPageValidator.MIN_PAGE_SIZE,
+            PaginationPageDto.MIN_PAGE_SIZE,
             nameof(pageSize)
         );
         BusinessLogicException.ThrowIfGreaterThan(
             pageSize,
-            PaginationPageValidator.MAX_PAGE_SIZE,
+            PaginationPageDto.MAX_PAGE_SIZE,
             nameof(pageSize)
         );
     }
@@ -98,5 +100,43 @@ public class QueryFilter<ItemT, KeyT>
 
     public bool ContainsWherePredicates {
         get => predicates.Any();
+    }
+
+    public async Task<(int countOfItems, IQueryable<ItemT> items)> 
+    ApplyFilter(
+        IQueryable<ItemT> items
+    ) {
+        items = ApplyWherePredicates(items);
+        var countOfItems = await items.CountAsync();
+        items = ApplySorting(items);
+        items = ApplyPagination(items);
+
+        return (countOfItems, items);
+    }
+
+    public IQueryable<ItemT> ApplyWherePredicates(IQueryable<ItemT> items) {
+        if (ContainsWherePredicates) {
+            foreach (var predicate in WherePredicates) {
+                items = items.Where(predicate);
+            }
+        }
+        return items;
+    }
+
+    public IQueryable<ItemT> ApplySorting(IQueryable<ItemT> items) {
+        if (ContainsSortFilter) {
+            if (ShouldSortAscending) {
+                items = items.OrderBy(SortingKey);
+            } else {
+                items = items.OrderByDescending(SortingKey);
+            }
+        }
+        return items;
+    }
+
+    public IQueryable<ItemT> ApplyPagination(IQueryable<ItemT> items) {
+        items = items.Skip(SkipItemsCount);
+        items = items.Take(TakeItemsCount);
+        return items;
     }
 }
