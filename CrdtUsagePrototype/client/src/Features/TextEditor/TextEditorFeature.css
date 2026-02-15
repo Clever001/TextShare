@@ -1,0 +1,45 @@
+/* 1. Основной контейнер каретки (вертикальная линия) */
+.tiptap .collaboration-carets__caret {
+  position: relative;
+  display: inline-block; /* Важно для позиционирования метки */
+  vertical-align: middle;
+  margin-left: -1px;
+  margin-right: -1px;
+  border-left: 2px solid; /* Толщина линии курсора */
+  border-color: inherit; /* Берет цвет из inline-style, установленного JS */
+  height: 1.2em;
+  word-break: normal;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* 2. Плашка с именем пользователя (Label) */
+.tiptap .collaboration-carets__label {
+  position: absolute;
+  top: -1.4em; /* Поднимаем над текстом */
+  left: -2px;
+  
+  /* Шрифты и отступы */
+  font-size: 11px;
+  font-family: sans-serif;
+  font-weight: 700;
+  line-height: normal;
+  white-space: nowrap;
+  
+  padding: 1px 4px;
+  border-radius: 3px 3px 3px 0; /* Скругление углов */
+  color: #000; /* Цвет текста (можно сделать белым для темных фонов) */
+  
+  /* Эффект появления */
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out;
+  user-select: none;
+}
+
+/* 3. (Опционально) Скрытие имени, когда пользователь печатает, 
+   чтобы не перекрывать текст выше, если нужно: */
+/*
+.tiptap .collaboration-carets__caret:hover .collaboration-carets__label {
+  opacity: 0.2;
+}
+*/
