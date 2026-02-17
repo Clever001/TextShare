@@ -12,17 +12,19 @@ import Heading, { type Level } from '@tiptap/extension-heading'
 import { EditorContent, useEditor } from '@tiptap/react'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-caret'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { WebsocketProvider } from 'y-websocket'
 import * as Y from 'yjs'
 import './TextEditorFeature.css';
+import { EditorWidget } from '../../Widgets/EditorWidget/EditorWidget'
+import { MessagesWidget } from '../../Widgets/MessagesWidget/MessagesWidget'
 
 type User = {
   name: string,
   color: string
 };
 
-type FormattingOption = {
+export type FormattingOption = {
   formattingType: 'bold' | 'italic' | 'underlined' | 'strike' | 'header' | 'code' | 'quote' | 'image',
   headerLevel?: Level,
 }
@@ -85,44 +87,81 @@ const TextEditorFeature = () => {
           alert("Url введен неправильно");
           return;
         }
-        chain = chain.setImage({src: url});
+        chain = chain.setImage({ src: url });
         break;
       case 'header':
         if (!opt.headerLevel) {
           alert("Уровень заголовка не указан");
           return;
         }
-        chain = chain.toggleHeading({level: opt.headerLevel});
+        chain = chain.toggleHeading({ level: opt.headerLevel });
         break;
     }
     chain.run();
   }, []);
 
+  const [messages, setMessages] = useState<string[]>([]);
+  const messageInputRef = useRef<HTMLInputElement | null>(null);
+  const onSendMessage = useCallback<() => void>(() => {
+    if (!messageInputRef.current || !provider.ws) {
+      return;
+    }
+
+    const message = messageInputRef.current.value;
+    const json = JSON.stringify({
+      newMessage: message
+    });
+
+    provider.ws.send(json);
+    addMessage(message);
+  }, []);
+
+  useEffect(() => {
+    if (!provider.ws) return;
+
+    const handleNewMessage = (ev: MessageEvent) => {
+      const rawMessage = ev.data;
+
+      if (isJson(rawMessage)) {
+        const parsedMessage = JSON.parse(rawMessage);
+        if (typeof parsedMessage.newMessage === 'string') {
+          addMessage(parsedMessage.newMessage);
+          return;
+        }
+      }
+    };
+
+    provider.ws.addEventListener('message', handleNewMessage);
+
+    // Очистка при размонтировании
+    return () => {
+      provider.ws?.removeEventListener('message', handleNewMessage);
+    };
+  }, [provider.ws]);
+
+
+  function isJson(data: any): boolean {
+    if (typeof (data) === 'string') {
+      try {
+        const dto: any = JSON.parse(data);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  function addMessage(message: string) {
+    console.log(`новое сообщение: ${message}.`);
+    setMessages(prevMessages => [...prevMessages, message]);
+  }
+
 
   return <>
-    <div className='editor-buttons'>
-      <button onClick={() => changeFormatting({formattingType: 'bold'})}>Жирный</button>
-      <button onClick={() => changeFormatting({formattingType: 'underlined'})}>Подчеркнутый</button>
-      <button onClick={() => changeFormatting({formattingType: 'italic'})}>Курсив</button>
-      <button onClick={() => changeFormatting({formattingType: 'strike'})}>Зачеркнуть</button>
-      
-      <br />
+    <EditorWidget editor={editor} changeFormatting={changeFormatting}/>
 
-      <p>Сделать заголовок</p>
-      <button onClick={() => changeFormatting({formattingType: 'header', headerLevel: 1})}>Заголовок 1 уровня</button>
-      <button onClick={() => changeFormatting({formattingType: 'header', headerLevel: 2})}>Заголовок 2 уровня</button>
-      <button onClick={() => changeFormatting({formattingType: 'header', headerLevel: 3})}>Заголовок 3 уровня</button>
-      <button onClick={() => changeFormatting({formattingType: 'header', headerLevel: 4})}>Заголовок 4 уровня</button>
-      <button onClick={() => changeFormatting({formattingType: 'header', headerLevel: 5})}>Заголовок 5 уровня</button>
-      <button onClick={() => changeFormatting({formattingType: 'header', headerLevel: 6})}>Заголовок 6 уровня</button>
-
-      <br />
-
-      <button onClick={() => changeFormatting({formattingType: 'code'})}>Листинг</button>
-      <button onClick={() => changeFormatting({formattingType: 'quote'})}>Цитата</button>
-      <button onClick={() => changeFormatting({formattingType: 'image'})}>Вставить картинку</button>
-    </div>
-    <EditorContent editor={editor} />
+    <MessagesWidget messageInputRef={messageInputRef} onSendMessage={onSendMessage} messages={messages}/>
   </>
 };
 

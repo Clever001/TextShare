@@ -108,6 +108,23 @@ export class FakeDocumentKeeper implements DocumentKeeper {
         this.versionNameToMetadata.delete(versionName);
         this.versionNameToDocument.delete(versionName);
       }
+
+      var latestVersion: DocumentVersionMetadata | null = null;
+      for (const version of this.versionNameToMetadata.values()) {
+        if (latestVersion === null || version.creationTime > latestVersion.creationTime) {
+          latestVersion = version;
+        }
+      }
+
+      if (latestVersion === null) {
+        this.headVersion.htmlText = '';
+      } else {
+        const document = this.versionNameToDocument.get(latestVersion.versionName);
+        if (document === undefined) {
+          throw new Error(`Document version ${latestVersion.versionName} not found`);
+        }
+        this.headVersion.htmlText = document.htmlText;
+      }
     } finally {
       await release();
     }

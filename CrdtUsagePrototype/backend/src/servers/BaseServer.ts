@@ -49,12 +49,26 @@ export class BaseServer {
         try {
           // const decoded = Y.decode
           // this.logger.info('Получено сообщение:', decoded);
-    
-          this.clients.forEach((client) => {
-            if (client !== socket && client.readyState === WebSocket.OPEN) {
-              client.send(message);
-            }
-          });
+          
+          if (isJson(message)) {
+            this.logger.info("Новое сообщение в виде json");
+            const parsedMessage = JSON.parse(message.toString('utf-8'));
+            const strMessage = JSON.stringify(parsedMessage);
+            this.clients.forEach((client) => {
+              if (client !== socket && client.readyState === WebSocket.OPEN) {
+                client.send(strMessage);
+              }
+            })
+
+          } else {
+            this.logger.info("Новое сообщение в бинарном виде");
+            this.clients.forEach((client) => {
+              if (client !== socket && client.readyState === WebSocket.OPEN) {
+                client.send(message);
+              }
+            });
+          }
+
         } catch (error) {
           console.error('Ошибка обработки сообщения:', error);
         }
@@ -89,5 +103,17 @@ export class BaseServer {
         socket.ping();
       });
     }, 30000);
+  }
+}
+
+function isJson(data: Buffer): boolean {
+  try {
+    JSON.parse(data.toString('utf-8'));
+    return true;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return false;
+    }
+    throw error;
   }
 }
