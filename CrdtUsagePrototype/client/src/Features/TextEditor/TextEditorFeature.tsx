@@ -13,11 +13,12 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-caret'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { WebsocketProvider } from 'y-websocket'
 import * as Y from 'yjs'
 import './TextEditorFeature.css';
 import { EditorWidget } from '../../Widgets/EditorWidget/EditorWidget'
 import { MessagesWidget } from '../../Widgets/MessagesWidget/MessagesWidget'
+import { WebsocketProvider } from 'y-websocket';
+
 
 type User = {
   name: string,
@@ -30,10 +31,11 @@ export type FormattingOption = {
 }
 
 const doc = new Y.Doc()
-const provider = new WebsocketProvider('http://192.168.0.227:1234/ws', 'my-roomname', doc);
+const yjsProvider = new WebsocketProvider(import.meta.env.VITE_YJS_WS_URL as string, 'document', doc);
+const customWebSocket = new WebSocket(import.meta.env.VITE_CUSTOM_WS_URL as string);
 
 const possibleNames = ["Sasha", "Dasha", "Kostya", "Pasha", "Yulia", "Anastasia", "Dmitriy", "Igor", "Egor"];
-const possibleColors = ["ff5252", "4caf50", "2196f3", "ff9800", "9c27b0", "673ab7", "ffeb3b", "795548", "00bcd4", "e91e63"];
+const possibleColors = ["#ff5252", "#4caf50", "#2196f3", "#ff9800", "#9c27b0", "#673ab7", "#ffeb3b", "#795548", "#00bcd4", "#e91e63"];
 
 const user: User = {
   name: randomValue(possibleNames),
@@ -45,7 +47,7 @@ function randomValue<T>(arr: T[]) {
 }
 
 
-const TextEditorFeature = () => {
+export default function TextEditorFeature() {
   const editor = useEditor({
     extensions: [
       Document,
@@ -63,7 +65,7 @@ const TextEditorFeature = () => {
         document: doc,
       }),
       CollaborationCursor.configure({
-        provider: provider,
+        provider: yjsProvider,
         user: {
           name: user.name,
           color: user.color
@@ -103,41 +105,46 @@ const TextEditorFeature = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const messageInputRef = useRef<HTMLInputElement | null>(null);
   const onSendMessage = useCallback<() => void>(() => {
-    if (!messageInputRef.current || !provider.ws) {
+    if (!messageInputRef.current || !customWebSocket) {
       return;
     }
 
     const message = messageInputRef.current.value;
     const json = JSON.stringify({
-      newMessage: message
+      type: 0,
+      content: message
     });
 
-    provider.ws.send(json);
+    customWebSocket.send(json);
     addMessage(message);
   }, []);
 
   useEffect(() => {
-    if (!provider.ws) return;
+    if (!customWebSocket) return;
 
     const handleNewMessage = (ev: MessageEvent) => {
       const rawMessage = ev.data;
 
       if (isJson(rawMessage)) {
         const parsedMessage = JSON.parse(rawMessage);
-        if (typeof parsedMessage.newMessage === 'string') {
-          addMessage(parsedMessage.newMessage);
+        if (typeof parsedMessage.content === 'string') {
+          addMessage(parsedMessage.content);
           return;
+        } else {
+          console.log("Unknown message 1");
         }
+      } else {
+        console.log("Unknown message 2");
       }
     };
 
-    provider.ws.addEventListener('message', handleNewMessage);
+    customWebSocket.addEventListener('message', handleNewMessage);
 
     // Очистка при размонтировании
     return () => {
-      provider.ws?.removeEventListener('message', handleNewMessage);
+      customWebSocket?.removeEventListener('message', handleNewMessage);
     };
-  }, [provider.ws]);
+  }, [customWebSocket]);
 
 
   function isJson(data: any): boolean {
@@ -146,9 +153,11 @@ const TextEditorFeature = () => {
         const dto: any = JSON.parse(data);
         return true;
       } catch (e) {
+        console.log("Not valid json.");
         return false;
       }
     }
+    console.log("Not string: " + data);
     return false;
   }
 
@@ -159,10 +168,8 @@ const TextEditorFeature = () => {
 
 
   return <>
-    <EditorWidget editor={editor} changeFormatting={changeFormatting}/>
+    <EditorWidget editor={editor} changeFormatting={changeFormatting} />
 
-    <MessagesWidget messageInputRef={messageInputRef} onSendMessage={onSendMessage} messages={messages}/>
+    <MessagesWidget messageInputRef={messageInputRef} onSendMessage={onSendMessage} messages={messages} />
   </>
 };
-
-export default TextEditorFeature;
