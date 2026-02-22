@@ -13,7 +13,9 @@ export type MessageType =
   | 'deleteCertainVersion'
   | 'deletedCertainVersion'
   | 'renameCertainVersion'
-  | 'renamedCertainVersion';
+  | 'renamedCertainVersion'
+  | 'rollbackToVersion'
+  | 'rollbackedToVersion';
 
 export interface VersionDto extends MessageDto {
   type: "createNewVersion" | "newVersionCreated",
@@ -50,6 +52,18 @@ export interface RenameVersionRequest extends MessageDto {
 
 export interface RenamedVersionRequest extends MessageDto {
   type: 'renamedCertainVersion'
+  id: string,
+  name: string,
+  createdTime: number,
+}
+
+export interface RollbackDocRequest extends MessageDto {
+  type: 'rollbackToVersion',
+  versionIdToRollback: string,
+}
+
+export interface RollbackedDocRequest extends MessageDto {
+  type: 'rollbackedToVersion',
   id: string,
   name: string,
   createdTime: number,

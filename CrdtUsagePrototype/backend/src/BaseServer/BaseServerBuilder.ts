@@ -104,6 +104,18 @@ export class BaseServerBuilder {
         controller.renameCertainVersion(dto as DTOs.RenameVersionRequest);
       }
     );
+    messagesRouter.setOnMessage(
+      "rollbackToVersion",
+      (dto, currentClient) => {
+        const controller = new VersionController(
+          this.clients!,
+          currentClient,
+          this.documentKeeper!,
+          this.versionsKeeper!,
+        );
+        controller.rollbackToVersion(dto as DTOs.RollbackDocRequest);
+      }
+    );
 
     this.router = messagesRouter;
 

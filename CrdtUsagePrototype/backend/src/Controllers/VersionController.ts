@@ -3,7 +3,8 @@ import { ClientSocket } from "../BaseServer/BaseServer";
 import { BaseController } from "./BaseContoller";
 import { YjsDocumentKeeper } from "../Utils/YjsDocumentKeeper";
 import { VersionsKeeper } from "../Utils/VersionsKeeper";
-import { DeleteVersionRequest, MessageType, RenamedVersionRequest, RenameVersionRequest, SendVersionRequest, VersionDto, VersionsListDto, VersionState } from "../Utils/Dtos";
+import { DeleteVersionRequest, MessageType, RenamedVersionRequest, RenameVersionRequest, RollbackDocRequest, RollbackedDocRequest, SendVersionRequest, VersionDto, VersionsListDto, VersionState } from "../Utils/Dtos";
+import { Version } from "../Utils/Models";
 
 export class VersionController extends BaseController {
   private readonly logger = pino({ name: VersionController.name });
@@ -44,7 +45,7 @@ export class VersionController extends BaseController {
   }
 
   public sendCertainVersion(dto: SendVersionRequest): void {
-    const nullableVersion = this.versionsKeeper.getVersion(dto.versionId);
+    const nullableVersion = this.versionsKeeper.getVersionToDocument(dto.versionId);
     if (nullableVersion) {
       const sendDto: VersionState = {
         type: "sendedCertainVersion",
@@ -69,15 +70,15 @@ export class VersionController extends BaseController {
   }
 
   public renameCertainVersion(dto: RenameVersionRequest): void {
-    const versionToDocument = this.versionsKeeper.getVersion(dto.versionId);
-    if (!versionToDocument) return;
-    const renamed = this.versionsKeeper.updateVersionName(versionToDocument.version.id, dto.newVersionName);
+    const version = this.versionsKeeper.getVersion(dto.versionId);
+    if (!version) return;
+    const renamed = this.versionsKeeper.updateVersionName(version.id, dto.newVersionName);
     if (renamed) {
       const renamedDto: RenamedVersionRequest = {
         type: 'renamedCertainVersion',
-        id: versionToDocument.version.id,
-        name: versionToDocument.version.name,
-        createdTime: versionToDocument.version.createdTime,
+        id: version.id,
+        name: version.name,
+        createdTime: version.createdTime,
       }
       const renamedDtoStr = JSON.stringify(renamedDto);
       this.clients.forEach(client => {
@@ -86,6 +87,31 @@ export class VersionController extends BaseController {
         }
       })
     }
+  }
+
+  public rollbackToVersion(dto: RollbackDocRequest): void {
+    const versionToRollback = this.versionsKeeper.getVersionToDocument(dto.versionIdToRollback);
+    if (!versionToRollback) return;
+    const newVersion: Version = {
+      id: "",
+      name: `Возврат к версии: "${versionToRollback.version.name}"`,
+      createdTime: Math.floor(Date.now() / 1000),
+    }
+    this.documentKeeper.setDocumentState(versionToRollback.documentState);
+    this.versionsKeeper.createNewVersion(newVersion, this.documentKeeper);
+
+    const rollbackDto: RollbackedDocRequest = {
+      type: "rollbackedToVersion",
+      id: newVersion.id,
+      name: newVersion.name,
+      createdTime: newVersion.createdTime
+    }
+    const rollbackDtoStr = JSON.stringify(rollbackDto);
+    this.clients.forEach(client => {
+      if (client.isAlive) {
+        client.send(rollbackDtoStr);
+      }
+    })
   }
 
   private binaryToString(rawData: Uint8Array): string {

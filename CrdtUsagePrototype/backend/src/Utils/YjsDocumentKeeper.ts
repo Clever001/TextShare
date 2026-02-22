@@ -5,7 +5,7 @@ import * as encoding from 'lib0/encoding';
 import * as decoding from 'lib0/decoding';
 
 export class YjsDocumentKeeper {
-  private readonly doc: Y.Doc;
+  private doc: Y.Doc;
   private static readonly messageSync = 0
   private static readonly messageQueryAwareness = 3
   private static readonly messageAwareness = 1
@@ -62,15 +62,22 @@ export class YjsDocumentKeeper {
       }
     }
 
+    
     // Также обычно рассылают сообщения Awareness (курсоры)
     if (messageType === YjsDocumentKeeper.messageAwareness) {
       shouldBroadcast = true;
     }
-
+    
     return {
       response: encoding.length(encoder) > 1 ? encoding.toUint8Array(encoder) : null,
       shouldBroadcast
     };
+  }
+  
+  public setDocumentState(state: Uint8Array<ArrayBufferLike>): void {
+    const newDoc = new Y.Doc();
+    Y.applyUpdateV2(newDoc, state);
+    this.doc = newDoc;
   }
 
   public getDocumentStateUpdateMessage(): Buffer {

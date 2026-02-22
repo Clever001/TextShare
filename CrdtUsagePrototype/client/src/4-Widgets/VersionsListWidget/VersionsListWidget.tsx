@@ -7,10 +7,11 @@ type Props = {
   onSwitchVersion: (versionId: string) => void;
   onDeleteVersion: (versionId: string) => void;
   onRenameVersion: (versionId: string, newName: string) => void;
+  onSetCurrentVersion: (versionId: string) => void;
 };
 
 export default function VersionsListWidget({
-  versions, onSwitchVersion, onDeleteVersion, onRenameVersion
+  versions, onSwitchVersion, onDeleteVersion, onRenameVersion, onSetCurrentVersion
 }: Props) {
   const sortedVersions = [...versions];
   sortedVersions.sort((prev, next) => next.createdTime - prev.createdTime);
@@ -47,9 +48,9 @@ export default function VersionsListWidget({
 
   return (
     <div className="version-list-widget">
-      <button className="command-btn">
+      {/* <button className="command-btn">
         Установить версию как текущую
-      </button>
+      </button> */}
 
       <div className="versions-container">
         {sortedVersions.length === 0 ? (
@@ -99,6 +100,13 @@ export default function VersionsListWidget({
                   title="Удалить версию"
                 >
                   🗑️
+                </button>
+                <button
+                  className="set-current-btn"
+                  onClick={() => onSetCurrentVersion(version.id)}
+                  title="Установить как текущую версию"
+                >
+                  ✅
                 </button>
               </div>
             </div>

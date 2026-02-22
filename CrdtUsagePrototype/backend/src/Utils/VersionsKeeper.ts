@@ -7,25 +7,25 @@ import { YjsDocumentKeeper } from "./YjsDocumentKeeper";
 export class VersionsKeeper {
   private readonly versionsMap = new Map<string, VersionToDocument>();
 
-  public createNewVersion(dto: VersionDto, document: YjsDocumentKeeper) {
+  public createNewVersion(newVersion: Version, document: YjsDocumentKeeper) {
     let guid = randomUUID();
     while (this.versionsMap.has(guid)) {
       guid = randomUUID();
     }
-    dto.id = guid;
+    newVersion.id = guid;
     const pair: VersionToDocument = {
-      version: {
-        id: dto.id,
-        name: dto.name,
-        createdTime: dto.createdTime,
-      },
+      version: newVersion,
       documentState: document.getDocumentStateAsUpdate(),
     };
     this.versionsMap.set(guid, pair);
   }
 
-  public getVersion(id: string): VersionToDocument | null {
+  public getVersionToDocument(id: string): VersionToDocument | null {
     return this.versionsMap.get(id) ?? null;
+  }
+
+  public getVersion(id: string): Version | null {
+    return this.versionsMap.get(id)?.version ?? null;
   }
 
   public getAllVersions(): Version[] {

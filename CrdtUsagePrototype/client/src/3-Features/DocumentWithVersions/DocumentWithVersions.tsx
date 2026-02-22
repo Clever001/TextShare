@@ -26,11 +26,13 @@ type Props = {
   handleSwitchVersion: (versionId: string) => void;
   handleDeleteVersion: (versionId: string) => void;
   handleRenameVersion: (versionId: string, newName: string) => void;
+  handleSetCurrentVersion: (versionId: string) => void;
 };
 
 export default function DocumentWithVersionsFeature({ 
   toggleDocumentVersionsBlock, versions, documentState, 
-  handleSwitchVersion, handleDeleteVersion, handleRenameVersion
+  handleSwitchVersion, handleDeleteVersion, handleRenameVersion,
+  handleSetCurrentVersion
 }: Props) {
   const [yjsDoc, setYjsDoc] = useState<Y.Doc | null>(null);
 
@@ -87,10 +89,10 @@ export default function DocumentWithVersionsFeature({
       <div className="versions-right">
         <VersionsListWidget
           versions={versions}
-        // onRestoreLatest={handleRestoreLatest}
           onSwitchVersion={handleSwitchVersion}
           onDeleteVersion={handleDeleteVersion}
           onRenameVersion={handleRenameVersion}
+          onSetCurrentVersion={handleSetCurrentVersion}
         />
       </div>
     </div>

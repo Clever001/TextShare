@@ -4,7 +4,7 @@ import DocumentFeature from "../3-Features/Document/DocumentFeature";
 import { UserContext } from "../1-Processes/UserContext";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../Router/Router";
-import type { DeleteVersionRequest, MessageDto, RenamedVersionRequest, RenameVersionRequest, SendVersionRequest, Version, VersionDto, VersionsListDto, VersionState } from "../6-Shared/Dtos";
+import type { DeleteVersionRequest, MessageDto, RenamedVersionRequest, RenameVersionRequest, RollbackDocRequest, RollbackedDocRequest, SendVersionRequest, Version, VersionDto, VersionsListDto, VersionState } from "../6-Shared/Dtos";
 
 export default function DocumentPage() {
   const [showDocumentVersions, setShowDocumentVersions] = useState<boolean>(false);
@@ -15,6 +15,9 @@ export default function DocumentPage() {
     setShowDocumentVersions(!showDocumentVersions);
     setDocVersionState(null);
   }
+
+  // DocumentFeature rerender.
+  const [documentFeatureKey, setDocumentFeatureKey] = useState<number>(0);
 
   // Check for null user
   useEffect(() => {
@@ -47,6 +50,15 @@ export default function DocumentPage() {
   const consumeVersionState = (versionState: string): void => {
     const update = new Uint8Array(atob(versionState).split('').map(char => char.charCodeAt(0)));
     setDocVersionState(update);
+  }
+  const consumeRollbackedDoc = (request: RollbackedDocRequest): void =>  {
+    setDocumentFeatureKey(prev => prev + 1);
+    const newVersion: Version = {
+      id: request.id,
+      name: request.name,
+      createdTime: request.createdTime
+    };
+    consumeCreateVersion(newVersion);
   }
   const publishCreateVersion = (versionName: string): void => {
     if (versionsSocket.current) {
@@ -92,6 +104,16 @@ export default function DocumentPage() {
       versionsSocket.current.send(JSON.stringify(renameDto));
     }
   }
+  const publishRollbackVersion = (versionId: string): void => {
+    if (versionsSocket.current) {
+      const rollbackDto: RollbackDocRequest = {
+        type: "rollbackToVersion",
+        versionIdToRollback: versionId
+      }
+      
+      versionsSocket.current.send(JSON.stringify(rollbackDto));
+    }
+  }
   useEffect(() => {
     const initVersionsSocket = () => {
       const socket: WebSocket = new WebSocket(import.meta.env.VITE_CUSTOM_WS_URL as string);
@@ -128,6 +150,9 @@ export default function DocumentPage() {
             };
             consumeUpdateVersion(updateVersion);
             break;
+          case "rollbackedToVersion":
+            consumeRollbackedDoc(message as RollbackedDocRequest);
+            break;
         }
       });
       versionsSocket.current = socket;
@@ -155,9 +180,11 @@ export default function DocumentPage() {
         handleSwitchVersion={publishSendVersionRequest}
         handleDeleteVersion={publishDeleteVersionRequest}
         handleRenameVersion={publishRenameVersionRequest}
+        handleSetCurrentVersion={publishRollbackVersion}
         documentState={docVersionState} />
       :
       <DocumentFeature
+        key={documentFeatureKey}
         toggleDocumentVersionsBlock={toggleDocumentVersionsBlock}
         onCreateNewVersion={publishCreateVersion} />
     }
