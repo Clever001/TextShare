@@ -1,0 +1,34 @@
+.document-with-versions {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.document-left {
+  width:100%;
+  flex: 2;
+  min-width: 0; /* предотвращает переполнение от длинного контента */
+}
+
+.versions-right {
+  flex: 1;
+  min-width: 280px;
+  position: sticky;
+  top: 1rem;
+  align-self: flex-start;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+  .document-with-versions {
+    flex-direction: column;
+  }
+  
+  .versions-right {
+    width: 100%;
+    position: static;
+  }
+}

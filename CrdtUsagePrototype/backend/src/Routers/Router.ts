@@ -1,5 +1,6 @@
-import { ClientSocket } from "../BaseServer";
+import { ClientSocket } from "../BaseServer/BaseServer";
 
 export interface Router {
-  route(rawData: Buffer, currentClient: ClientSocket): void;
+  onConnect(currentClient: ClientSocket): void;
+  onMessage(rawData: Buffer, currentClient: ClientSocket): void;
 }

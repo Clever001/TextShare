@@ -1,4 +1,4 @@
-import { ClientSocket } from "../BaseServer";
+import { ClientSocket } from "../BaseServer/BaseServer";
 
 export class BaseController {
   protected readonly clients: Set<ClientSocket>;

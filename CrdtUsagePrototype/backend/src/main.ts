@@ -1,22 +1,21 @@
-import WebSocket, { WebSocketServer } from 'ws';
-import * as Y from 'yjs';
-import pino, { Logger } from 'pino';
-import { BaseServer, ClientSocket } from './BaseServer';
-import { MessagesRouter } from './Routers/MessagesRouter';
-import { MessageType, NewMessage } from './dtos';
-import { MessageController } from './Controllers/MessageController';
-import { BaseServerBuilder } from './BaseServerBuilder';
+import { BaseServerBuilder } from './BaseServer/BaseServerBuilder';
+import { VersionsKeeper } from './Utils/VersionsKeeper';
+import { YjsDocumentKeeper } from './Utils/YjsDocumentKeeper';
+
+const initialDocument = YjsDocumentKeeper.createEmptyDocument();
+const versionsKeeper = new VersionsKeeper();
 
 const yjsServer = new BaseServerBuilder()
   .withHostAndPort('192.168.0.227', 1234)
-  .withEmptyClientsList()
+  .withDocument(initialDocument)
   .withYjsRouter()
   .withLoggerName('yjsServer')
   .build();
 
 const massagesServer = new BaseServerBuilder()
   .withHostAndPort('192.168.0.227', 1235)
-  .withEmptyClientsList()
-  .withMessagesRouter()
+  .withDocument(initialDocument)
+  .withVersionsKeeper(versionsKeeper)
+  .withVersionsRouter()
   .withLoggerName('massagesServer')
   .build();
