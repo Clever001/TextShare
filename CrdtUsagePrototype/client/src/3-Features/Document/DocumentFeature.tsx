@@ -128,6 +128,12 @@ export default function DocumentFeature({ toggleDocumentVersionsBlock, onCreateN
 
   const addImage = useCallback((event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
     event.preventDefault();
+    const imageUrl = prompt('Введите URL изображения:');
+    if (!imageUrl || imageUrl.trim() === "") {
+      alert("Введите непустой значение!");
+      return;
+    }
+    editor.chain().setImage({src: imageUrl}).run();
   }, []);
 
   return (

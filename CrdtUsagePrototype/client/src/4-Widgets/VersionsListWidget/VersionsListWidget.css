@@ -113,7 +113,8 @@
 }
 
 .switch-btn,
-.delete-btn {
+.delete-btn,
+.set-current-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -133,6 +134,11 @@
 .delete-btn:hover {
   background-color: #fed7d7;
   color: #c53030;
+}
+
+.set-current-btn:hover {
+  background-color: #e4f0e2;
+  color: #35c530;
 }
 
 .no-versions {
