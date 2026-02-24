@@ -4,12 +4,12 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 output.txt
+.env.local
 Migrations/
 y-tiptap/
 node_modules/
 dist/
 *.log
-*.env
 *.local
 .DS_Store
 .idea/

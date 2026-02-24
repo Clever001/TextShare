@@ -9,7 +9,7 @@ export type UserContextType = {
 
 export const UserContext = createContext<UserContextType>({
   getUser: () => {throw new Error("Usage of not inited context");},
-  setUser: (userName: string) => {throw new Error("Usage of not inited context");},
+  setUser: (_userName: string) => {throw new Error("Usage of not inited context");},
   clearUser: () => {throw new Error("Usage of not inited context");},
 });
 

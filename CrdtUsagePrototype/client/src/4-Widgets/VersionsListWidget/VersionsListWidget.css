@@ -152,3 +152,9 @@
     flex-direction: row;
   }
 }
+
+@media (max-width: 375px) {
+  .version-item {
+    flex-direction: column;
+  }
+}

@@ -26,6 +26,7 @@
     "@tiptap/extension-text": "^3.19.0",
     "@tiptap/extension-underline": "^3.19.0",
     "async-mutex": "^0.5.0",
+    "dotenv": "^17.3.1",
     "jsdom": "^28.1.0",
     "pino": "^10.3.1",
     "pino-pretty": "^13.1.3",

@@ -12,7 +12,7 @@ import Heading from '@tiptap/extension-heading'
 import { useEditor } from '@tiptap/react'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-caret'
-import { useCallback, useContext, useEffect, useRef, useState, type MouseEvent } from 'react'
+import { useCallback, useContext, useEffect, useState, type MouseEvent } from 'react'
 import * as Y from 'yjs'
 import { EditorWidget, type FormattingOption } from '../../4-Widgets/EditorWidget/EditorWidget'
 import { WebsocketProvider } from 'y-websocket';

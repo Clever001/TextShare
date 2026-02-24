@@ -80,8 +80,8 @@ export default function DocumentWithVersionsFeature({
       <div className="document-left">
         <EditorWidget
           editor={editor}
-          changeFormatting={(opt) => { }}
-          addImage={(event) => { }}
+          changeFormatting={(_opt) => { }}
+          addImage={(_event) => { }}
           isEditing={false}
           toggleDocumentVersionsBlock={toggleDocumentVersionsBlock}
           onCreateNewVersion={null} />

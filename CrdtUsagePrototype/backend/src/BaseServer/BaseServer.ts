@@ -75,7 +75,7 @@ export class BaseServer {
       const address = this.wss.address();
       if (address && typeof address !== 'string') {
         const addrInfo = address as WebSocket.AddressInfo;
-        addressStr = `ws:${addrInfo.address}:${addrInfo.port}`;
+        addressStr = `ws://${addrInfo.address}:${addrInfo.port}`;
       } else if (typeof address == 'string') {
         addressStr = addressStr;
       } else {

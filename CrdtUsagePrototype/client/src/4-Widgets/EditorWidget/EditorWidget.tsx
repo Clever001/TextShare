@@ -1,7 +1,7 @@
 import { EditorContent, type Editor } from "@tiptap/react";
 import type { Level } from '@tiptap/extension-heading'
 import "./EditorWidget.css";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 type Props = {
   editor: Editor,
