@@ -129,12 +129,30 @@ export default function DocumentFeature({ toggleDocumentVersionsBlock, onCreateN
   const addImage = useCallback((event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
     event.preventDefault();
     const imageUrl = prompt('Введите URL изображения:');
-    if (!imageUrl || imageUrl.trim() === "") {
-      alert("Введите непустой значение!");
+
+    if (!imageUrl || imageUrl.trim() === '') {
+      alert('Введите непустой URL!');
       return;
     }
-    editor.chain().setImage({src: imageUrl}).run();
-  }, []);
+
+    const trimmedUrl = imageUrl.trim();
+
+    const urlPattern = new RegExp('^(https?://).+', 'i');
+    if (!urlPattern.test(trimmedUrl)) {
+      alert('URL должен начинаться с http:// или https://');
+      return;
+    }
+
+    try {
+      new URL(trimmedUrl);
+    } catch (error) {
+      alert('Некорректный формат URL');
+      return;
+    }
+
+    editor.chain().focus().setImage({ src: trimmedUrl }).run();
+  }, [editor]);
+
 
   return (
     <EditorWidget

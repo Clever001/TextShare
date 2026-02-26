@@ -14,6 +14,9 @@ export const UserContext = createContext<UserContextType>({
 });
 
 export const UserContextProvider : React.FC<{ children: React.ReactNode }> = ({children}) => {
+  const caretColors: string[] = ["#FFF0F5", "#FFE4E1", "#FFDAB9", "#FFECB3", "#FFE599", "#FFF9B0", "#F0FFC0", "#D4F1C6", 
+    "#C1E1C1", "#B2DFDB", "#B0E0E6", "#ADD8E6", "#B0C4DE", "#C6E2FF", "#E0FFFF", "#E6E6FA", "#DDA0DD", "#EEC5E5", 
+    "#FFD1DC", "#FFE8D4"];
   var user : UserDto | null = null;
 
   const getUser = (): UserDto | null => {
@@ -36,12 +39,8 @@ export const UserContextProvider : React.FC<{ children: React.ReactNode }> = ({c
     for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    let color = '#';
-    for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += ('00' + value.toString(16)).substr(-2);
-    }
-    return color;
+    const colorIndex = hash % caretColors.length;
+    return caretColors[colorIndex];
   }
 
   const clearUser = (): void => {
