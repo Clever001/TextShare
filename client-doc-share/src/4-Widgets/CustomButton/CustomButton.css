@@ -1,0 +1,10 @@
+.custom-button {
+    vertical-align:middle;
+    outline: none;
+    border: none;
+    color: var(--accent);
+}
+
+.custom-button {
+    width: 16px;
+}

@@ -1,0 +1,129 @@
+/* Общие стили приложения */
+:root {
+  --background: #FFFFFF;
+  --background-2: #F8F9FA;
+  --secondary: #BABABA;
+  --accent: #0080CE;
+  --accent-2: #FF8C00;
+  --success: #35CC3C;
+  --error: #DA2225;
+  --text: #000000;
+  --text-2: #718096;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/font/Inter-VariableFont_opsz,wght.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/font/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+  display: flex;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+}
+
+/* Main container */
+
+.main-container {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1320px;
+  gap: 24px;
+}
+
+.main-container>* {
+  margin-top: 110px;
+}
+
+.main-container>.outlet {
+  width: 990px;
+}
+
+.main-container>.side-panel {
+  width: 330px;
+}
+
+@media (width <=1400px) {
+  .main-container {
+    max-width: 1140px;
+  }
+
+  .main-container>.outlet {
+    width: 855px;
+  }
+
+  .main-container>.side-panel {
+    width: 285px;
+  }
+}
+
+@media (width <=1200px) {
+  .main-container {
+    max-width: 960px;
+  }
+
+  .main-container>.outlet {
+    width: 720px;
+  }
+
+  .main-container>.side-panel {
+    width: 240px;
+  }
+}
+
+@media (width <=990px) {
+  .main-container {
+    max-width: 720px;
+    flex-direction: column;
+  }
+
+  .main-container>.outlet {
+    width: 100%;
+  }
+
+  .main-container>.side-panel {
+    width: 100%;
+  }
+}
+
+@media (width <=770px) {
+  .main-container {
+    max-width: 540px;
+  }
+}
+
+@media (width <=575px) {
+  .main-container {
+    max-width: 100%;
+    padding: 10px;
+  }
+}

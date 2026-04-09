@@ -6,10 +6,10 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
     volumes:
-      - ../:/workspace
+      - ../:/workspace:Z
     command: sleep infinity
     ports:
-      - "7285:7285"
+      - "12321:12321"
       - "3000:3000"
 
   postgres:

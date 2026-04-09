@@ -1,0 +1,41 @@
+.side-panel-body {
+  line-height: 1.2;
+}
+
+.side-panel-body .title {
+  font-size: 18px;
+  width: 100%;
+  border-bottom: 1px solid var(--secondary);
+  padding-bottom: 6px;
+  margin-bottom: 16px;
+}
+
+.side-panel-body .text {
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.side-panel-body .text p:last-child {
+  font-size: 14px;
+}
+
+.side-panel-body a {
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.side-panel-body .text {
+  margin: 5px 0;
+}
+
+.side-panel-body p {
+  margin: 0;
+}
+
+.side-panel-body a p:last-child {
+  color: var(--secondary);
+}
