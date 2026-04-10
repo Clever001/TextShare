@@ -1,11 +1,13 @@
+import "./CustomButton.css"
+
 type Props = {
-    leftIconUrl: string | null,
-    rightIconUrl: string | null,
-    text: string | null,
-    color: "blue" | "green" | "yellow" | "red",
-    type: "submit" | "button",
+    leftIconUrl?: string | null,
+    rightIconUrl?: string | null,
+    text?: string | null,
+    color?: "blue" | "green" | "yellow" | "red",
+    type?: "submit" | "button",
     target: string,
-    onClick: () => void
+    onClick?: () => void
 }
 
 export default function CustomButton({
@@ -17,12 +19,25 @@ export default function CustomButton({
     target,
     onClick = () => {},
 }: Props) {
+
+    const colorMap = {
+        blue: "--accent",
+        green: "--success",
+        yellow: "--accent-2",
+        red: "--error"
+    };
+
+    const buttonStyle: React.CSSProperties = {
+        backgroundColor: `var(${colorMap[color] || "--accent"})`
+    };
+
     return (
-        <button type={type} className="custom-button" onClick={onClick}>
+        <button type={type} className="custom-button" onClick={onClick}
+        style={buttonStyle}>
             {leftIconUrl && 
                 <img src={leftIconUrl} alt={target} />
             }
-            {text && text}
+            {text && <p>{text}</p>}
             {rightIconUrl && 
                 <img src={rightIconUrl} alt={target} />
             }

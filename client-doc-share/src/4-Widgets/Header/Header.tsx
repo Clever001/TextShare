@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
+import CustomButton from '../CustomButton/CustomButton';
 
 type Props = {
   userName: string,
@@ -30,10 +31,16 @@ export default function Header() {
           </Link>
         </div>
         <div className="add-button">
-          <Link to="/createText">
+          {/* <Link to="/createText">
             <img src="/img/add_circle.svg" alt="add" />
             <div>Добавить документ</div>
-          </Link>
+          </Link> */}
+          <CustomButton 
+            target="add" 
+            rightIconUrl={null} 
+            text="Добавить документ"
+            color="green"
+            />
         </div>
         <div className="search-text">
           <form onSubmit={() => { }} className="search-bar">

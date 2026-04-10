@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './SidePanel.css';
 import { Link } from 'react-router-dom';
+import SectionTitle from '../Title/SectionTitle';
 
 type Doc = {
   id: string,
@@ -83,7 +84,7 @@ const SidePanel: React.FC = () => {
     <div className="side-panel-body">
       {true &&
         <div className="my-texts">
-          <div className="title">Мои документы</div>
+          <SectionTitle title="Мои документы"/>
           <div className="text">
             {myDocs.length === 0 && "Вы еще не создали ни одного документа."}
             {myDocs.map(t => {
@@ -99,7 +100,7 @@ const SidePanel: React.FC = () => {
       }
 
       <div className="society-texts">
-        <div className="title">Документы сообщества</div>
+        <SectionTitle title="Документы сообщества"/>
         <div className="text">
           {societyDocs.length === 0 && "Еще ни один документ не был создан."}
           {societyDocs.map(t => {

@@ -48,35 +48,6 @@ header .logo img {
   height: 18px;
 }
 
-/* Add button */
-
-header .add-button {
-  vertical-align: middle;
-  width: 225px;
-}
-
-header .add-button a {
-  background-color: var(--success);
-  border-radius: 86px;
-  font-size: 18px;
-  height: 28px;
-  width: 100%;
-  gap: 10px;
-  justify-content: center;
-}
-
-header .add-button a:hover {
-  background-color: #46b94b;
-}
-
-header .add-button img {
-  width: 16px;
-}
-
-header .add-button div {
-  margin: auto 0;
-}
-
 /* Search bar */
 
 header .search-bar {
@@ -193,19 +164,11 @@ header .dropout-menu>div button {
 
 @media (width <= 991px) {
 
-  header .add-button div,
+  header .custom-button p,
   header .logo div {
     display: none;
   }
-
-  header .add-button {
-    width: auto;
-  }
-
-  header .add-button img {
-    margin: 0 10px;
-  }
-
+  
   header .logo {
     max-width: 30px;
     margin-right: 0 !important;

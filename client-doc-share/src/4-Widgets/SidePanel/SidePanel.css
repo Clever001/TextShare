@@ -1,13 +1,14 @@
 .side-panel-body {
   line-height: 1.2;
+  display: flex;
+  flex-direction:column;
+  gap:16px;
 }
 
-.side-panel-body .title {
-  font-size: 18px;
-  width: 100%;
-  border-bottom: 1px solid var(--secondary);
-  padding-bottom: 6px;
-  margin-bottom: 16px;
+.side-panel-body>* {
+  display: flex;
+  flex-direction: column;
+  gap:16px;
 }
 
 .side-panel-body .text {
