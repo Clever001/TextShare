@@ -1,0 +1,21 @@
+.value-input {
+    display:flex;
+    flex-direction:row;
+    flex-wrap:nowrap;
+    gap:12px;
+    width: 100%;
+    max-width:550px;
+    justify-content: center;
+    align-items: center;
+    font-weight:16px;
+}
+
+.value-input>* {
+    flex:1;
+    width:0;
+}
+
+.value-input p {
+    text-align:center;
+    height:auto;
+}

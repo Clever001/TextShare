@@ -5,9 +5,9 @@ import ValueInput, { type SelectionInfo } from "../../4-Widgets/ValueInput/Value
 export function SearchDocPage() {
 
   const categoryOptions: SelectionInfo[] = [
-    { htmlValue: "docs", presentValue: "Документы" },
-    { htmlValue: "apps", presentValue: "Заявления" },
-    { htmlValue: "reports", presentValue: "Отчеты" },
+    { htmlValue: "private", presentValue: "Приватный" },
+    { htmlValue: "public", presentValue: "Публичный" },
+    { htmlValue: "protected", presentValue: "Защищенный" },
   ];
 
   return (
@@ -16,30 +16,30 @@ export function SearchDocPage() {
       <CustomButton text={"Добавить документ"} target="button-check" color="green" rightIconUrl={null} />
       <ValueInput
         type="textarea"
+        keyPosition="left"
         label="Описание"
-        forVal="description"
         formSearchName="description"
         hint="Опишите назначение документа"
       />
       <ValueInput
         type="select"
+        keyPosition="right"
         label="Тип доступа"
-        forVal="access-type"
         formSearchName="access-type"
         hint="Выберите тип доступа к документу"
         possibleSelections={categoryOptions}
       />
       <ValueInput
         type="input"
+        keyPosition="left"
         label="Название"
-        forVal="doc-title"
         formSearchName="doc-title"
         hint="Название документа"
       />
       <ValueInput
         type="checkbox"
+        keyPosition="right"
         label="Наличие пароля"
-        forVal="password-existance"
         formSearchName="password-existance"
         hint=""
       />

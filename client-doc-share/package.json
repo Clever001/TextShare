@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "reinstall": "rm -rf node_modules/ && npm i",
-    "dev": "vite --host 0.0.0.0",
+    "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -55,6 +55,6 @@
     "globals": "^17.4.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.0",
-    "vite": "^8.0.4"
+    "vite": "^8.0.8"
   }
 }

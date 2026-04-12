@@ -2,8 +2,8 @@ import "./ValueInput.css"
 
 type Props = {
     type: "textarea" | "select" | "input" | "checkbox",
+    keyPosition: "left" | "right",
     label: string,
-    forVal: string,
     formSearchName: string,
     hint?: string | null,
     possibleSelections?: SelectionInfo[],
@@ -16,23 +16,37 @@ export type SelectionInfo = {
 }
 
 export default function ValueInput({
-    type, label, forVal, formSearchName, hint = null, 
+    type, keyPosition, label, formSearchName, hint = null, 
     possibleSelections = [], defaultValue = null
 }: Props) {
     return (
-        <div className="value-input">
-            <p>{label}</p>
+        <div className="value-input"
+            style={(type == "textarea") ? {height: "63px"} : {}}
+            >
+            <p className="key">{label}</p>
             {type == "textarea" &&
-                <textarea name="" id=""></textarea>
+                <textarea  
+                    style={{height: "63px"}}
+                    className="value"
+                    name={formSearchName} id={formSearchName} placeholder={hint} value={defaultValue}/>
             }
             {type == "select" &&
-                "Select"
+                <select
+                name={formSearchName} id={formSearchName}>
+                    {possibleSelections.map(s => {
+                        return <option value={s.htmlValue}>{s.presentValue}</option>
+                    })}
+                </select>
             }
             {type == "input" &&
-                "Input"
+                <input className="value"
+                    type="text" name={formSearchName} id={formSearchName} placeholder={hint} value={defaultValue} />
             }
             {type == "checkbox" &&
-                "CheckBox"
+                <input 
+                    style={{width: "20px", height: "20px", alignItems: "start", display: "flex"}}
+                    className="value"
+                    type="checkbox" name={formSearchName} id={formSearchName} placeholder={hint} value={defaultValue} />
             }
         </div>
     )
