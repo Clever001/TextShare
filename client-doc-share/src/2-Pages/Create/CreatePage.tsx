@@ -1,5 +1,3 @@
 export function CreatePage() {
-  return (
-    <div>Страница создания документа</div>
-  )
+  return <div>Страница создания документа</div>;
 }

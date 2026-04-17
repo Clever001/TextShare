@@ -1,21 +1,63 @@
 .value-input {
-    display:flex;
-    flex-direction:row;
-    flex-wrap:nowrap;
-    gap:12px;
-    width: 100%;
-    max-width:550px;
-    justify-content: center;
-    align-items: center;
-    font-weight:16px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 12px;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 16px;
 }
 
-.value-input>* {
-    flex:1;
-    width:0;
+.value-input > * {
+  flex: 1;
+  width: 0;
+}
+
+.value-input .input-container > * {
+  width: 100%;
+  border: 1px solid var(--secondary);
+  border-radius: 5px;
+  padding: 0 3px;
+  font-size: 16px;
+}
+
+.value-input textarea {
+  min-height: 63px;
+  resize: vertical;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+}
+
+.value-input input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--secondary);
+  border-radius: 5px;
+  padding: 0;
 }
 
 .value-input p {
-    text-align:center;
-    height:auto;
+  height: auto;
+}
+
+.value-input .left {
+  text-align: left;
+}
+
+.value-input .right {
+  text-align: right;
+}
+
+.value-input .rollback {
+  background: none;
+  outline: none;
+  border: none;
+  width: 0;
+  flex: 0.05;
+  height: 100%;
+  cursor: pointer;
 }

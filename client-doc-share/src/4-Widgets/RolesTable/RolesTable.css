@@ -1,0 +1,41 @@
+.roles-table-container {
+  width: 100%;
+  max-width: 425px;
+  font-size: 16px;
+}
+
+.roles-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.roles-table thead td {
+  border-bottom: 1px solid var(--secondary);
+  padding-bottom: 6px;
+  font-size: 16px;
+}
+
+.roles-table tbody td {
+  padding-top: 10px;
+  font-size: 16px;
+}
+
+.roles-table tbody td:first-child a {
+  color: var(--accent);
+}
+
+.roles-table button {
+  border: none;
+  outline: none;
+  background: none;
+  cursor: pointer;
+}
+
+.roles-table img {
+  width: 24px;
+  height: 24px;
+}
+
+.roles-table select {
+  font-size: 16px;
+}

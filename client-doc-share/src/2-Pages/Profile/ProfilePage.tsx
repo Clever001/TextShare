@@ -1,5 +1,3 @@
 export function ProfilePage() {
-  return (
-    <div>Страница просмотра профиля</div>
-  )
+  return <div>Страница просмотра профиля</div>;
 }

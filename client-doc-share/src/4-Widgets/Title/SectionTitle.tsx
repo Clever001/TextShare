@@ -1,11 +1,9 @@
-import "./SectionTitle.css"
+import "./SectionTitle.css";
 
 type Props = {
-    title: string
-}
+  title: string;
+};
 
-export default function SectionTitle({title}: Props) {
-    return (
-        <p className="section-title">{title}</p>
-    )
+export default function SectionTitle({ title }: Props) {
+  return <p className="section-title">{title}</p>;
 }

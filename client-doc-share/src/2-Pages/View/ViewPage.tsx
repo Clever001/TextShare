@@ -1,5 +1,3 @@
 export function ViewPage() {
-  return (
-    <div>Страница Просмотра документа</div>
-  )
+  return <div>Страница Просмотра документа</div>;
 }

@@ -1,53 +1,91 @@
-import "./ValueInput.css"
+import "./ValueInput.css";
 
 type Props = {
-    type: "textarea" | "select" | "input" | "checkbox",
-    keyPosition: "left" | "right",
-    label: string,
-    formSearchName: string,
-    hint?: string | null,
-    possibleSelections?: SelectionInfo[],
-    defaultValue?: string | null,
-}
+  type: "textarea" | "select" | "input" | "checkbox";
+  keyPosition: "left" | "right";
+  label: string;
+  formSearchName: string;
+  hint?: string | undefined;
+  possibleSelections?: SelectionInfo[];
+  defaultValue?: string | undefined;
+  hasRollbackButton: boolean;
+  onRollback?: () => void | undefined;
+};
 
 export type SelectionInfo = {
-    htmlValue: string,
-    presentValue: string,
-}
+  htmlValue: string;
+  presentValue: string;
+};
 
 export default function ValueInput({
-    type, keyPosition, label, formSearchName, hint = null, 
-    possibleSelections = [], defaultValue = null
+  type,
+  keyPosition,
+  label,
+  formSearchName,
+  hint = undefined,
+  possibleSelections = [],
+  defaultValue = undefined,
+  hasRollbackButton,
+  onRollback = undefined,
 }: Props) {
-    return (
-        <div className="value-input"
-            style={(type == "textarea") ? {height: "63px"} : {}}
-            >
-            <p className="key">{label}</p>
-            {type == "textarea" &&
-                <textarea  
-                    style={{height: "63px"}}
-                    className="value"
-                    name={formSearchName} id={formSearchName} placeholder={hint} value={defaultValue}/>
-            }
-            {type == "select" &&
-                <select
-                name={formSearchName} id={formSearchName}>
-                    {possibleSelections.map(s => {
-                        return <option value={s.htmlValue}>{s.presentValue}</option>
-                    })}
-                </select>
-            }
-            {type == "input" &&
-                <input className="value"
-                    type="text" name={formSearchName} id={formSearchName} placeholder={hint} value={defaultValue} />
-            }
-            {type == "checkbox" &&
-                <input 
-                    style={{width: "20px", height: "20px", alignItems: "start", display: "flex"}}
-                    className="value"
-                    type="checkbox" name={formSearchName} id={formSearchName} placeholder={hint} value={defaultValue} />
-            }
+  return (
+    <div className="value-input">
+      <p className={`key ${keyPosition}`}>{label}</p>
+      {type == "textarea" && (
+        <div className="input-container">
+          <textarea
+            className="value"
+            name={formSearchName}
+            id={formSearchName}
+            placeholder={hint}
+            value={defaultValue}
+          />
         </div>
-    )
+      )}
+      {type == "select" && (
+        <div className="input-container">
+          <select name={formSearchName} id={formSearchName}>
+            {possibleSelections.map((s) => {
+              return <option value={s.htmlValue}>{s.presentValue}</option>;
+            })}
+          </select>
+        </div>
+      )}
+      {type == "input" && (
+        <div className="input-container">
+          <input
+            className="value"
+            type="text"
+            name={formSearchName}
+            id={formSearchName}
+            placeholder={hint}
+            value={defaultValue}
+          />
+        </div>
+      )}
+      {type == "checkbox" && (
+        <div className="input-container">
+          <input
+            className="value"
+            type="checkbox"
+            name={formSearchName}
+            id={formSearchName}
+            placeholder={hint}
+            value={defaultValue}
+          />
+        </div>
+      )}
+      {hasRollbackButton && (
+        <button
+          type="button"
+          className="rollback"
+          onClick={() => {
+            onRollback && onRollback();
+          }}
+        >
+          <img src="/img/undo.svg" alt="rollback" />
+        </button>
+      )}
+    </div>
+  );
 }

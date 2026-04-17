@@ -1,0 +1,56 @@
+.pagination {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  width: fit-content;
+  min-width: 280px;
+  height: 35px;
+}
+
+.pagination button {
+  outline: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+  height: 35px;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination img {
+  width: 35px;
+  height: 35px;
+  padding: 6px;
+}
+
+.pagination .page-list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  width: auto;
+  height: 35px;
+  list-style: none;
+  margin: 0 10px;
+}
+
+.pagination .page-list li,
+.pagination .page-list li > button {
+  font-size: 18px;
+  height: auto;
+}
+
+.pagination .page-list .dots {
+  cursor: default;
+}
+
+@media (width <= 320px) {
+  .pagination .page-list {
+    gap: 3px;
+  }
+}

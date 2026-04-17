@@ -1,23 +1,23 @@
 .custom-button {
-    vertical-align:middle;
-    outline: none;
-    border: none;
-    color: var(--accent);
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 10px;
-    padding: 3px 12px;
-    border-radius: 86px;
-    color: var(--background);
-    font-size: 18px;
-    transition: filter 0.2s ease;
+  vertical-align: middle;
+  outline: none;
+  border: none;
+  color: var(--accent);
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  padding: 3px 12px;
+  border-radius: 86px;
+  color: var(--background);
+  font-size: 18px;
+  transition: filter 0.2s ease;
 }
 
 .custom-button:hover {
-    cursor: pointer;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+  cursor: pointer;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
 }
 
 .custom-button img {
-    width: 16px;
+  width: 16px;
 }

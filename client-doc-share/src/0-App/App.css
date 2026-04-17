@@ -1,27 +1,29 @@
 /* Общие стили приложения */
 :root {
-  --background: #FFFFFF;
-  --background-2: #F8F9FA;
-  --secondary: #BABABA;
-  --accent: #0080CE;
-  --accent-2: #FF8C00;
-  --success: #35CC3C;
-  --error: #DA2225;
+  --background: #ffffff;
+  --background-2: #f8f9fa;
+  --secondary: #bababa;
+  --accent: #0080ce;
+  --accent-2: #ff8c00;
+  --success: #35cc3c;
+  --error: #da2225;
   --text: #000000;
   --text-2: #718096;
 }
 
 @font-face {
-  font-family: 'Inter';
-  src: url('/font/Inter-VariableFont_opsz,wght.ttf') format('truetype-variations');
+  font-family: "Inter";
+  src: url("/font/Inter-VariableFont_opsz,wght.ttf")
+    format("truetype-variations");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Inter';
-  src: url('/font/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype-variations');
+  font-family: "Inter";
+  src: url("/font/Inter-Italic-VariableFont_opsz,wght.ttf")
+    format("truetype-variations");
   font-weight: 100 900;
   font-style: italic;
   font-display: swap;
@@ -35,14 +37,18 @@
 
 a {
   text-decoration: none;
-  color: white;
+  color: var(--text);
   display: flex;
 }
 
 html,
 body {
   height: 100%;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   font-feature-settings: "cv02", "cv03", "cv04";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -60,15 +66,15 @@ body {
   gap: 24px;
 }
 
-.main-container>* {
+.main-container > * {
   margin-top: 110px;
 }
 
-.main-container>.outlet {
+.main-container > .outlet {
   width: 990px;
 }
 
-.main-container>.side-panel {
+.main-container > .side-panel {
   width: 330px;
 }
 
@@ -77,11 +83,11 @@ body {
     max-width: 1140px;
   }
 
-  .main-container>.outlet {
+  .main-container > .outlet {
     width: 855px;
   }
 
-  .main-container>.side-panel {
+  .main-container > .side-panel {
     width: 285px;
   }
 }
@@ -91,11 +97,11 @@ body {
     max-width: 960px;
   }
 
-  .main-container>.outlet {
+  .main-container > .outlet {
     width: 720px;
   }
 
-  .main-container>.side-panel {
+  .main-container > .side-panel {
     width: 240px;
   }
 }
@@ -106,11 +112,11 @@ body {
     flex-direction: column;
   }
 
-  .main-container>.outlet {
+  .main-container > .outlet {
     width: 100%;
   }
 
-  .main-container>.side-panel {
+  .main-container > .side-panel {
     width: 100%;
   }
 }

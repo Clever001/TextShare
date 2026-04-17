@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
-import Header from '../4-Widgets/Header/Header';
-import SidePanel from '../4-Widgets/SidePanel/SidePanel';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import { Outlet } from "react-router-dom";
+import Header from "../4-Widgets/Header/Header";
+import SidePanel from "../4-Widgets/SidePanel/SidePanel";
+import "./App.css";
 
 const App: React.FC = () => {
   return (

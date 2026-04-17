@@ -1,5 +1,3 @@
 export function EditPage() {
-  return (
-    <div>Страница редактирования документа</div>
-  )
+  return <div>Страница редактирования документа</div>;
 }
