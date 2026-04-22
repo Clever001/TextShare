@@ -1,0 +1,36 @@
+.doc-title {
+  width: 100%;
+  border-bottom: 1px solid var(--secondary);
+  padding-bottom: 6px;
+  display: flex;
+  flex-direction:row;
+  align-items: end;
+  gap: 16px;
+}
+
+.doc-title img {
+  width: 36px;
+  height: 36px;
+}
+
+.doc-title .text-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: end;
+}
+
+.doc-title .text-content {
+  font-size: 18px;
+}
+
+.doc-title .subtitle {
+  font-size: 14px;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.doc-title .creator-name {
+  color: var(--error);
+}

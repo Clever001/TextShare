@@ -1,0 +1,25 @@
+.user-table {
+  width: 100%;
+  display: flex;
+  flex-direction:column;
+  flex-wrap:nowrap;
+  gap: 12px;
+}
+
+.user-table img {
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+  border: 2px solid var(--text);
+  border-radius: 5px;
+}
+
+.user-table .user-row {
+  display: flex;
+  flex-direction:row;
+  gap:12px;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 18px;
+  color: var(--accent);
+}

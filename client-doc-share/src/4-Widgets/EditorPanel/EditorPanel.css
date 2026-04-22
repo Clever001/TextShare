@@ -1,0 +1,29 @@
+.editor-panel {
+  width: 100%;
+  height:fit-content;
+  padding: 12px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items:center;
+  gap: 8px;
+  border: 1px solid var(--secondary);
+  border-radius: 8px;
+  background-color: #F8F9FA;
+}
+
+.editor-panel .edit-btns {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.editor-panel .edit-btns>* {
+  height: 40px;
+}
+
+.editor-panel .edit-btns>button {
+  width: 40px;
+}

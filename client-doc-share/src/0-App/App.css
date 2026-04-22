@@ -42,7 +42,9 @@ a {
 }
 
 html,
-body {
+body,
+textarea,
+button {
   height: 100%;
   font-family:
     "Inter",

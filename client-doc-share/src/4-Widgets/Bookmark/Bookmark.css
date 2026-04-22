@@ -1,0 +1,31 @@
+.bookmark {
+  outline: none;
+  background: none;
+  width:fit-content;
+  height: 38px;
+  font-size: 18px;
+  border: 1px solid var(--secondary);
+  border-radius: 25px;
+  display: flex;
+  flex-direction:row;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 12px;
+  color: var(--text)
+}
+
+.bookmark:hover {
+  cursor: pointer;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+}
+
+.bookmark.active {
+  border: none;
+  background-color: var(--accent);
+  color: var(--background);
+}
+
+.bookmark.active:hover {
+  cursor: default;
+  background-image:none;
+}

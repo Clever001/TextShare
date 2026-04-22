@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./SidePanel.css";
 import { Link } from "react-router-dom";
-import SectionTitle from "../Title/SectionTitle";
+import SectionTitle from "../SectionTitle/SectionTitle";
 
 type Doc = {
   id: string;

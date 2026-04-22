@@ -1,0 +1,32 @@
+.doc-search-feature .doc-search-form {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  align-items: left;
+  gap:16px;
+}
+
+.doc-search-feature .doc-search-form .form-search,
+.doc-search-feature .doc-search-form .search-params {
+  width: 100%;
+  max-width: 634px;
+}
+
+.doc-search-feature .doc-search-form .search-params {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction:column;
+  padding: 8px;
+  border: 1px solid var(--secondary);
+  border-radius: 5px;
+  gap:4px;
+}
+
+.doc-search-feature .pagination-container {
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+}

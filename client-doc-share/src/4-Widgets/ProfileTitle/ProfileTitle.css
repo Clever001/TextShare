@@ -1,0 +1,37 @@
+.profile-title {
+  width: 100%;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--secondary);
+  border-radius: 5px;
+  display:flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-title .title {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-title .title img {
+  width: 36px;
+  height: 36px;
+}
+
+.profile-title .title .title-content .created-on {
+  color: var(--text-2);
+}
+
+.profile-title .username {
+  font-size: 18px;
+}
+
+.profile-title .created-on {
+  font-size: 14px;
+}

@@ -1,0 +1,131 @@
+.editor-container {
+  border: 1px solid var(--secondary);
+  border-radius: 5px;
+  padding: 1rem;
+  min-height: 400px;
+  background-color: var(--background);
+}
+
+.tiptap {
+  min-height: 300px;
+  padding: 0.5rem;
+}
+
+.tiptap:focus {
+  outline: none;
+}
+
+.tiptap h1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0.67em 0;
+}
+
+.tiptap h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0.75em 0;
+}
+
+.tiptap h3 {
+  font-size: 1.17em;
+  font-weight: bold;
+  margin: 0.83em 0;
+}
+
+.tiptap h4 {
+  font-size: 1em;
+  font-weight: bold;
+  margin: 1.12em 0;
+}
+
+.tiptap h5 {
+  font-size: 0.83em;
+  font-weight: bold;
+  margin: 1.5em 0;
+}
+
+.tiptap h6 {
+  font-size: 0.67em;
+  font-weight: bold;
+  margin: 1.67em 0;
+}
+
+.tiptap p {
+  margin: 1em 0;
+}
+
+.tiptap blockquote {
+  border-left: 4px solid #cbd5e0;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #4a5568;
+}
+
+.tiptap code {
+  background-color: #f7fafc;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+  font-size: 0.9em;
+}
+
+.tiptap pre {
+  background-color: #2d3748;
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+}
+
+.tiptap pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.tiptap img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.tiptap .collaboration-carets__caret {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: -1px;
+  margin-right: -1px;
+  border-left: 2px solid;
+  border-color: inherit;
+  height: 1.2em;
+  word-break: normal;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.tiptap .collaboration-carets__label {
+  position: absolute;
+  top: -1.4em;
+  left: -2px;
+
+  font-size: 11px;
+  font-family: sans-serif;
+  font-weight: 700;
+  line-height: normal;
+  white-space: nowrap;
+
+  padding: 1px 4px;
+  border-radius: 3px 3px 3px 0;
+  color: #000;
+
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out;
+  user-select: none;
+}
+
+.tiptap .collaboration-carets__label[style*="background-color: rgb(0, 0, 0)"] {
+  color: #fff;
+}

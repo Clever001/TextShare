@@ -1,0 +1,27 @@
+.create-doc-feature {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  align-items: left;
+  gap: 16px;
+}
+
+.create-doc-feature .settings-container {
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid var(--secondary);
+  border-radius: 5px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.create-doc-feature .form-search {
+  width: 100%;
+  max-width: 600px;
+}
+
+.create-doc-feature>.custom-button {
+  width: fit-content;
+}

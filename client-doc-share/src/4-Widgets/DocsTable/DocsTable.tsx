@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import "./DocsTable.css";
 
 type Props = {
-  docinfos: DocumentInfo[];
+  docinfos: DocumentInfo[],
+  showCreators: boolean,
 };
 
 export type DocumentInfo = {
@@ -13,7 +14,9 @@ export type DocumentInfo = {
   discription: string;
 };
 
-export default function DocsTable({ docinfos }: Props) {
+export default function DocsTable({ 
+  docinfos, showCreators,
+}: Props) {
   const dateToString = (d: Date): string => {
     var day: string = d.getDate().toString();
     if (day.length == 1) {
@@ -54,9 +57,11 @@ export default function DocsTable({ docinfos }: Props) {
             <td>
               <p>Дата создания</p>
             </td>
-            <td>
-              <p>Создатель</p>
-            </td>
+            {showCreators && 
+              <td>
+                <p>Создатель</p>
+              </td>
+            }
             <td>
               <p>Теги</p>
             </td>
@@ -76,11 +81,13 @@ export default function DocsTable({ docinfos }: Props) {
                     {dateToString(di.createdOn)}
                   </Link>
                 </td>
-                <td>
-                  <Link to="/" title={di.creator}>
-                    {di.creator}
-                  </Link>
-                </td>
+                {showCreators &&
+                  <td>
+                    <Link to="/" title={di.creator}>
+                      {di.creator}
+                    </Link>
+                  </td>
+                }
                 <td>
                   <Link to="/" title={di.tags.join(" ")}>
                     {tagsToShortTags(di.tags)}

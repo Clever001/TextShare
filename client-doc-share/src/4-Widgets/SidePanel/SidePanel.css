@@ -38,5 +38,5 @@
 }
 
 .side-panel-body a p:last-child {
-  color: var(--secondary);
+  color: var(--text-2);
 }

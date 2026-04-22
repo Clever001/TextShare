@@ -1,0 +1,50 @@
+.comment {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comment textarea {
+  padding: 8px 5px;
+  border: 1px solid var(--secondary);
+  border-radius: 5px;
+  font-size:14px;
+  resize:none;
+  font-size:16px;
+}
+
+.comment textarea:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.comment .subcontent {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 15px;
+  flex-wrap: wrap;
+}
+
+.comment .info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.comment .info img {
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--text);
+  border-radius: 5px;
+  padding: 3px;
+}
+
+.comment .elapsed {
+  color: var(--text-2);
+}
+
+

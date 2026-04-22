@@ -38,7 +38,7 @@ export default function ValueInput({
             name={formSearchName}
             id={formSearchName}
             placeholder={hint}
-            value={defaultValue}
+            defaultValue={defaultValue}
           />
         </div>
       )}
@@ -46,7 +46,7 @@ export default function ValueInput({
         <div className="input-container">
           <select name={formSearchName} id={formSearchName}>
             {possibleSelections.map((s) => {
-              return <option value={s.htmlValue}>{s.presentValue}</option>;
+              return <option defaultValue={s.htmlValue}>{s.presentValue}</option>;
             })}
           </select>
         </div>
@@ -59,7 +59,7 @@ export default function ValueInput({
             name={formSearchName}
             id={formSearchName}
             placeholder={hint}
-            value={defaultValue}
+            defaultValue={defaultValue}
           />
         </div>
       )}
@@ -71,7 +71,7 @@ export default function ValueInput({
             name={formSearchName}
             id={formSearchName}
             placeholder={hint}
-            value={defaultValue}
+            defaultValue={defaultValue}
           />
         </div>
       )}

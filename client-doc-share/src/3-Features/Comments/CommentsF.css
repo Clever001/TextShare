@@ -1,0 +1,24 @@
+.comments-feature>button {
+  margin: 16px 0;
+}
+
+.comments-feature .comments-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comments-feature .comments-container .nested-comments {
+  margin-left: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comments-feature .pagination-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+}

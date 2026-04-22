@@ -1,0 +1,24 @@
+.profile-settings-feature {
+    width: 100%;
+    max-width: 634px;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction:column;
+    gap: 16px;
+    align-items: center;
+}
+
+.profile-settings-feature>button {
+    width:fit-content;
+}
+
+.profile-settings-feature .settings-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 4px;
+    padding: 8px;
+    border: 1px solid var(--secondary);
+    border-radius: 5px;
+}
