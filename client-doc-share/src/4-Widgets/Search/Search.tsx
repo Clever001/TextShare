@@ -26,7 +26,7 @@ export default function Search({
         text={buttonText ? buttonText : "Искать"}
         type="submit"
         target="search"
-        onClick={() => { }}
+        onClick={() => {}}
       />
     </div>
   );

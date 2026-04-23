@@ -1,29 +1,109 @@
 .editor-panel {
   width: 100%;
-  height:fit-content;
+  height: fit-content;
   padding: 12px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-between;
-  align-items:center;
+  align-items: center;
   gap: 8px;
   border: 1px solid var(--secondary);
   border-radius: 8px;
-  background-color: #F8F9FA;
+  background-color: var(--background-2);
 }
 
-.editor-panel .edit-btns {
+.editor-panel > *,
+.editor-panel .dropdown-button {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 8px;
+  align-items: center;
+  font-size: 16px;
 }
 
-.editor-panel .edit-btns>* {
+.editor-panel .act-btn,
+.editor-panel .dropdown-menu button {
+  transition: all 0.2s;
+}
+
+.editor-panel .act-btn:hover {
+  cursor: pointer;
+  background-color: #edf2f7;
+  border-color: #a0aec0;
+}
+
+.editor-panel .dropdown-menu button:hover {
+  cursor: pointer;
+  background-color: #edf2f7;
+}
+
+.editor-panel .act-btn > * {
+  font-size: 16px;
+}
+
+.editor-panel .dropdown-button img {
+  width: 12px;
+  height: 9px;
+}
+
+.editor-panel .act-btn,
+.editor-panel input {
+  height: 40px;
+  width: 40px;
+  border: 1px solid var(--secondary);
+  border-radius: 8px;
+  background: none;
+  background-color: var(--background);
+}
+
+.editor-panel .dropdown-container .act-btn,
+.editor-panel input {
+  padding: 0 10px;
+  width: fit-content;
+  font-size: 16px;
+}
+
+.editor-panel .dropdown-container {
+  position: relative;
+}
+
+.editor-panel .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  border: 1px solid var(--secondary);
+  background-color: var(--background);
+  box-shadow: 0 0 5px rgba(186, 186, 186, 0.9);
+  border-radius: 8px;
+}
+
+.editor-panel .dropdown-menu > * {
+  width: 132px !important;
+  background: none;
+  outline: none;
+  border: none;
+  font-size: 16px;
+  text-align: left;
+  padding-left: 10px;
   height: 40px;
 }
 
-.editor-panel .edit-btns>button {
-  width: 40px;
+.editor-panel .version-create input {
+  width: auto;
+  field-sizing: content;
+  min-width: 220px;
+  max-width: 400px;
+}
+
+@media (width <= 306px) {
+  .editor-panel .version-create input {
+    width: 100%;
+    min-width: auto;
+    field-sizing: inherit;
+  }
 }

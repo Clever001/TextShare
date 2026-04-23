@@ -46,7 +46,9 @@ export default function ValueInput({
         <div className="input-container">
           <select name={formSearchName} id={formSearchName}>
             {possibleSelections.map((s) => {
-              return <option defaultValue={s.htmlValue}>{s.presentValue}</option>;
+              return (
+                <option defaultValue={s.htmlValue}>{s.presentValue}</option>
+              );
             })}
           </select>
         </div>

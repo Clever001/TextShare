@@ -2,7 +2,6 @@
   vertical-align: middle;
   outline: none;
   border: none;
-  color: var(--accent);
   display: flex;
   flex-wrap: nowrap;
   gap: 10px;

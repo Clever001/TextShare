@@ -7,13 +7,23 @@ export default function AuthPage() {
 
   const switchFeature = () => {
     setIsAuth((prev) => !prev);
-  }
+  };
 
-  return <div>
-    {isAuth ? 
-      <AuthF onRegisterClick={() => {switchFeature()}}/>
-    :
-      <RegisterF onLoginClick={() => {switchFeature()}}/>
-    }
-  </div>;
+  return (
+    <div>
+      {isAuth ? (
+        <AuthF
+          onRegisterClick={() => {
+            switchFeature();
+          }}
+        />
+      ) : (
+        <RegisterF
+          onLoginClick={() => {
+            switchFeature();
+          }}
+        />
+      )}
+    </div>
+  );
 }

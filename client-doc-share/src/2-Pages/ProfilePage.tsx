@@ -9,22 +9,34 @@ export default function ProfilePage() {
 
   const switchShowProfile = () => {
     setShowProfile((sp) => !sp);
-  }
+  };
 
-  return <div>
-    <ProfileTitle userName="NicknName001" createdOn={new Date("2026-04-01T12:00:00")}
-      showSwitchButton={true} onSwitch={() => { switchShowProfile(); }}
-      switchBtnColor={showProfile ? "blue" : "yellow"}
-      switchBtnIconUrl={showProfile ? "/img/settings_white.svg" : "/img/undo_white.svg"}
-      switchBtnText={showProfile ? "Изменение профиля" : "Отменить"} />
-    {showProfile ?
-      <SearchDocF isProfilePage={true} />
-    :
-      <div>
-        <SectionTitle title="Изменение данных профиля" />
-        <ProfileSettingsF defaultName={"some random name"} 
-          defaultEmail={"random@email.com"} />
-      </div>
-    }
-  </div>;
+  return (
+    <div>
+      <ProfileTitle
+        userName="NicknName001"
+        createdOn={new Date("2026-04-01T12:00:00")}
+        showSwitchButton={true}
+        onSwitch={() => {
+          switchShowProfile();
+        }}
+        switchBtnColor={showProfile ? "blue" : "yellow"}
+        switchBtnIconUrl={
+          showProfile ? "/img/settings_white.svg" : "/img/undo_white.svg"
+        }
+        switchBtnText={showProfile ? "Изменение профиля" : "Отменить"}
+      />
+      {showProfile ? (
+        <SearchDocF isProfilePage={true} />
+      ) : (
+        <div>
+          <SectionTitle title="Изменение данных профиля" />
+          <ProfileSettingsF
+            defaultName={"some random name"}
+            defaultEmail={"random@email.com"}
+          />
+        </div>
+      )}
+    </div>
+  );
 }

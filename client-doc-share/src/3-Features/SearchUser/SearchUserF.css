@@ -1,8 +1,8 @@
 .search-user-feature .pagination-container {
   width: 100%;
   max-width: 600px;
-  display:flex;
-  flex-direction:column;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   margin-top: 16px;
 }
