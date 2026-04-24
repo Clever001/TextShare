@@ -38,7 +38,7 @@ export default function CommentsF(props: Props) {
         </div>
       </div>
       <div className="pagination-container">
-        <Pagination totalPages={10} initialPage={0} onChangePage={() => {}} />
+        <Pagination totalPages={10} initialPage={1} onChangePage={() => {}} />
       </div>
     </div>
   );

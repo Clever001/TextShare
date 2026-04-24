@@ -23,6 +23,10 @@ type Props = {
 export default function Header() {
   const [dropoutHidden, setDropoutHidden] = useState<boolean>(true);
 
+  const switchDropout = () => {
+    setDropoutHidden((pr) => !pr);
+  };
+
   return (
     <header className="header">
       <div className="my-container">
@@ -72,13 +76,18 @@ export default function Header() {
           <button
             type="button"
             className="menu-button"
-            onClick={() => setDropoutHidden(!dropoutHidden)}
+            onClick={() => switchDropout()}
           >
             <img src="/img/arrow_down.svg" alt="menu" />
           </button>
         </div>
         {!dropoutHidden && (
-          <div className="dropout-menu">
+          <div
+            className="dropout-menu"
+            onMouseLeave={() => {
+              switchDropout();
+            }}
+          >
             {true && (
               <div>
                 <button type="button" onClick={() => {}}>

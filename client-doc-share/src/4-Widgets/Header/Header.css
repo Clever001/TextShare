@@ -120,7 +120,7 @@ header .user-info a img {
 header .user-info .menu-button img {
   width: 24px;
   height: 12px;
-  margin: auto;
+  margin-top: 30%;
 }
 
 header .user-info .menu-button:hover {

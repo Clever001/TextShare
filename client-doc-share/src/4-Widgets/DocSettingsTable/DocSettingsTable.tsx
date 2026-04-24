@@ -11,21 +11,21 @@ export default function DocSettingsTable(props: Props) {
         keyPosition="left"
         label="Название документа"
         formSearchName="title"
-        hasRollbackButton={false}
+        hasRollbackButton={true}
       />
       <ValueInput
         type="input"
         keyPosition="left"
         label="Теги"
         formSearchName="tags"
-        hasRollbackButton={false}
+        hasRollbackButton={true}
       />
       <ValueInput
         type="input"
         keyPosition="left"
         label="Описание"
         formSearchName="discription"
-        hasRollbackButton={false}
+        hasRollbackButton={true}
       />
     </form>
   );

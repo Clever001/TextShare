@@ -1,0 +1,13 @@
+.doc-settings-feature {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.doc-settings-feature .button-container {
+  width: 100%;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
