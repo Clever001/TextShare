@@ -1,0 +1,64 @@
+.doc-version {
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  padding: 16px;
+  background-color: var(--background-2);
+  border: 1px solid var(--secondary);
+  border-radius: 8px;
+}
+
+.doc-version .version-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.doc-version .version-title {
+  font-size: 16px;
+}
+
+.doc-version .version-date {
+  font-size: 16px;
+  color: var(--text-2);
+}
+
+.doc-version .version-title-wrapper,
+.doc-version .version-action {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.doc-version button {
+  outline: none;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+}
+
+.doc-version button img {
+  width: 20px;
+  height: 20px;
+}
+
+.doc-version #edit,
+.doc-version #look {
+  background-color: var(--accent);
+}
+
+.doc-version #delete {
+  background-color: var(--accent-2);
+}
+
+.doc-version #accept {
+  background-color: var(--success);
+}

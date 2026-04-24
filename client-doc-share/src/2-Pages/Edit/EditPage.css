@@ -1,0 +1,10 @@
+.edit-page .editor-tabs {
+  width: 100%;
+  border-bottom: 1px solid var(--secondary);
+  padding-bottom: 16px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}

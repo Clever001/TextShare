@@ -10,7 +10,7 @@ import Code from "@tiptap/extension-code";
 import Blockquote from "@tiptap/extension-blockquote";
 import Image from "@tiptap/extension-image";
 import Heading from "@tiptap/extension-heading";
-import "./Editor.css";
+import "./EditorWidget.css";
 
 type Props = {};
 

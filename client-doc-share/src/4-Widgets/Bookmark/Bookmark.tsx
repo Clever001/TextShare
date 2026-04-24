@@ -11,7 +11,9 @@ export default function Bookmark({ text, isActive, onClick }: Props) {
     <button
       className={`bookmark ${isActive && "active"}`}
       onClick={() => {
-        isActive && onClick();
+        if (!isActive) {
+          onClick();
+        }
       }}
     >
       {text}

@@ -1,6 +1,6 @@
 import "./DocViewF.css";
 import DocTitle from "../../4-Widgets/DocTitle/DocTitle";
-import EditorWidget from "../../4-Widgets/Editor/Editor";
+import EditorWidget from "../../4-Widgets/Editor/EditorWidget";
 
 type Props = {};
 
