@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/backend-main-service/">
+    <Project Path="backend-main-service/DocShareApi.csproj" />
+  </Folder>
+</Solution>

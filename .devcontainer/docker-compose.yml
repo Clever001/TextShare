@@ -6,31 +6,36 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
     volumes:
-      - ../:/workspace:Z
+      - ../:/workspace:cached,Z
     command: sleep infinity
     ports:
-      - "12321:12321"
+      # Backend .NET
+      - "5000:5000" 
+      # Frontend Vite
+      - "5173:5173"
+      # Node Microservice
       - "3000:3000"
+      # gRPC ports (если используете Kestrel для gRPC отдельно от HTTP)
+      - "5001:5001"
+    networks:
+      - dev-network
 
   postgres:
     image: postgres:18.1-alpine3.23
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: textshare_db
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    
-  rabbit:
-    image: rabbitmq:4.2.2-management-alpine
-    restart: unless-stopped
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: adminpassword
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+    driver: bridge
 
 volumes:
   postgres_data:
