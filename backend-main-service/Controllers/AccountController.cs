@@ -1,16 +1,16 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TextShareApi.Attributes;
-using TextShareApi.Dtos.Accounts;
-using TextShareApi.Dtos.Exception;
-using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Exceptions;
-using TextShareApi.Extensions;
-using TextShareApi.Interfaces.Services;
-using TextShareApi.Mappers;
+using DocShareApi.Attributes;
+using DocShareApi.Dtos.Accounts;
+using DocShareApi.Dtos.Exception;
+using DocShareApi.Dtos.QueryOptions;
+using DocShareApi.Exceptions;
+using DocShareApi.Extensions;
+using DocShareApi.Interfaces.Services;
+using DocShareApi.Mappers;
 
-namespace TextShareApi.Controllers;
+namespace DocShareApi.Controllers;
 
 [ValidateModelState]
 [Route("api/accounts")]
@@ -76,7 +76,8 @@ public class AccountController : ControllerBase {
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PaginationDto pagination,
-        [FromQuery] string? userName) {
+        [FromQuery] string? userName
+    ) {
         var result = await _accountService.GetUsers(pagination, userName);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 

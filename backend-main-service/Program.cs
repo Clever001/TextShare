@@ -1,19 +1,18 @@
 using System.Text;
 using System.Text.Json.Serialization;
-using System.Transactions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
-using TextShareApi.Attributes;
-using TextShareApi.Data;
-using TextShareApi.Extensions;
-using TextShareApi.Interfaces.Repositories;
-using TextShareApi.Interfaces.Services;
-using TextShareApi.Models;
-using TextShareApi.Repositories;
-using TextShareApi.Services;
+using DocShareApi.Attributes;
+using DocShareApi.Data;
+using DocShareApi.Extensions;
+using DocShareApi.Interfaces.Repositories;
+using DocShareApi.Interfaces.Services;
+using DocShareApi.Models;
+using DocShareApi.Repositories;
+using DocShareApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options => {
@@ -106,7 +105,8 @@ app.UseCors("AllowAll");
 if (app.Environment.IsDevelopment()) {
     app.MapOpenApi();
     app.MapScalarApiReference(options => {
-        options.WithTitle("TextShare API");
+        options.WithTitle("DocShare API");
+        options.WithTheme(ScalarTheme.Moon);
     });
     app.Use(async (context, next) => {
         if (context.Request.Path == "/") {

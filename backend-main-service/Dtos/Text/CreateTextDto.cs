@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using TextShareApi.Attributes;
-using TextShareApi.Dtos.Enums;
-namespace TextShareApi.Dtos.Text;
+using DocShareApi.Attributes;
+using DocShareApi.Dtos.Enums;
+namespace DocShareApi.Dtos.Text;
 
 public class CreateTextDto {
     [Required] [MaxLength(70)] public string Title { get; set; } = string.Empty;

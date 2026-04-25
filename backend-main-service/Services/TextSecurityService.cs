@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Identity;
-using TextShareApi.ClassesLib;
-using TextShareApi.Dtos.Enums;
-using TextShareApi.Exceptions;
-using TextShareApi.Interfaces.Services;
-using TextShareApi.Models;
+using DocShareApi.ClassesLib;
+using DocShareApi.Dtos.Enums;
+using DocShareApi.Exceptions;
+using DocShareApi.Interfaces.Services;
+using DocShareApi.Models;
 
-namespace TextShareApi.Services;
+namespace DocShareApi.Services;
 
 public class TextSecurityService : ITextSecurityService {
     private readonly IFriendService _friendService;

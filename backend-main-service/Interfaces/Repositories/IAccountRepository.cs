@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using TextShareApi.Models;
+using DocShareApi.Models;
 
-namespace TextShareApi.Interfaces.Repositories;
+namespace DocShareApi.Interfaces.Repositories;
 
 public interface IAccountRepository {
     Task<string?> GetAccountId(string userName);

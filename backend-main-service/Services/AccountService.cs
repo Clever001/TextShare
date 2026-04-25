@@ -1,15 +1,15 @@
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity;
-using TextShareApi.ClassesLib;
-using TextShareApi.Dtos.Accounts;
-using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Exceptions;
-using TextShareApi.Interfaces.Repositories;
-using TextShareApi.Interfaces.Services;
-using TextShareApi.Mappers;
-using TextShareApi.Models;
+using DocShareApi.ClassesLib;
+using DocShareApi.Dtos.Accounts;
+using DocShareApi.Dtos.QueryOptions;
+using DocShareApi.Exceptions;
+using DocShareApi.Interfaces.Repositories;
+using DocShareApi.Interfaces.Services;
+using DocShareApi.Mappers;
+using DocShareApi.Models;
 
-namespace TextShareApi.Services;
+namespace DocShareApi.Services;
 
 public class AccountService : IAccountService {
     private readonly IAccountRepository _accountRepository;

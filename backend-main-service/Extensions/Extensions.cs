@@ -1,9 +1,9 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using TextShareApi.Dtos.Exception;
-using TextShareApi.Exceptions;
+using DocShareApi.Dtos.Exception;
+using DocShareApi.Exceptions;
 
-namespace TextShareApi.Extensions;
+namespace DocShareApi.Extensions;
 
 public static class Extensions {
     public static IActionResult ToActionResult(this ControllerBase controller, IApiException exception) {

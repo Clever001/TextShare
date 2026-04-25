@@ -1,4 +1,4 @@
-namespace TextShareApi.Exceptions;
+namespace DocShareApi.Exceptions;
 
 public sealed class ServerException : IApiException {
     public ServerException() { }

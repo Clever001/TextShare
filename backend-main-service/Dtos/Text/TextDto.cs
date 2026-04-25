@@ -1,4 +1,4 @@
-namespace TextShareApi.Dtos.Text;
+namespace DocShareApi.Dtos.Text;
 
 public class TextDto {
     public string Id { get; set; } = string.Empty;

@@ -1,4 +1,4 @@
-namespace TextShareApi.Dtos.QueryOptions;
+namespace DocShareApi.Dtos.QueryOptions;
 
 public sealed class PaginatedResponseDto<T> {
     public List<T> Items { get; init; } = new();

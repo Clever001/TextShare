@@ -1,4 +1,4 @@
-namespace TextShareApi.Models;
+namespace DocShareApi.Models;
 
 public class HashSeed {
     public int Id { get; set; }

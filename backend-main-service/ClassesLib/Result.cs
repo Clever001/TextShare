@@ -1,6 +1,6 @@
-using TextShareApi.Exceptions;
+using DocShareApi.Exceptions;
 
-namespace TextShareApi.ClassesLib;
+namespace DocShareApi.ClassesLib;
 
 public class Result<T> {
     private Result(bool isSuccess, T value, IApiException exception) {

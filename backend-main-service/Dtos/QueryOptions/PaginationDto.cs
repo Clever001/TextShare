@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TextShareApi.Dtos.QueryOptions;
+namespace DocShareApi.Dtos.QueryOptions;
 
 public sealed class PaginationDto {
     [Range(1, int.MaxValue)] public int PageNumber { get; init; }

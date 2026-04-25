@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TextShareApi.Models;
+namespace DocShareApi.Models;
 
 public class Tag : IEquatable<Tag> {
     [Length(1, 20)] public string Name { get; init; } = string.Empty;

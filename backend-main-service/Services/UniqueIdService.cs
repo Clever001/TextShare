@@ -1,9 +1,9 @@
 using System.Buffers.Binary;
 using System.Buffers.Text;
-using TextShareApi.Interfaces.Repositories;
-using TextShareApi.Interfaces.Services;
+using DocShareApi.Interfaces.Repositories;
+using DocShareApi.Interfaces.Services;
 
-namespace TextShareApi.Services;
+namespace DocShareApi.Services;
 
 public class UniqueIdService : IUniqueIdService {
     private readonly IHashSeedRepository _repo;

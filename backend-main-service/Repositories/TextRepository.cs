@@ -1,10 +1,10 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using TextShareApi.Data;
-using TextShareApi.Interfaces.Repositories;
-using TextShareApi.Models;
+using DocShareApi.Data;
+using DocShareApi.Interfaces.Repositories;
+using DocShareApi.Models;
 
-namespace TextShareApi.Repositories;
+namespace DocShareApi.Repositories;
 
 public class TextRepository : ITextRepository {
     private readonly AppDbContext _context;

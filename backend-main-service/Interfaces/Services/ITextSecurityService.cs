@@ -1,7 +1,7 @@
-using TextShareApi.ClassesLib;
-using TextShareApi.Models;
+using DocShareApi.ClassesLib;
+using DocShareApi.Models;
 
-namespace TextShareApi.Interfaces.Services;
+namespace DocShareApi.Interfaces.Services;
 
 public interface ITextSecurityService {
     Task<Result> PassReadSecurityChecks(Text text, string? requestSenderId, string? password);

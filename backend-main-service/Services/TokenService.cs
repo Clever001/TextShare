@@ -2,10 +2,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using TextShareApi.Interfaces.Services;
-using TextShareApi.Models;
+using DocShareApi.Interfaces.Services;
+using DocShareApi.Models;
 
-namespace TextShareApi.Services;
+namespace DocShareApi.Services;
 
 public class TokenService : ITokenService {
     private readonly IConfiguration _config;

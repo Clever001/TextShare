@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TextShareApi.Models;
+using DocShareApi.Models;
 
-namespace TextShareApi.Data;
+namespace DocShareApi.Data;
 
 public class AppDbContext : IdentityDbContext<AppUser> {
     public AppDbContext(DbContextOptions options) : base(options) { }

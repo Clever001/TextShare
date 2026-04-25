@@ -1,11 +1,11 @@
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using TextShareApi.Data;
-using TextShareApi.Interfaces.Repositories;
-using TextShareApi.Models;
+using DocShareApi.Data;
+using DocShareApi.Interfaces.Repositories;
+using DocShareApi.Models;
 
-namespace TextShareApi.Repositories;
+namespace DocShareApi.Repositories;
 
 public class AccountRepository : IAccountRepository {
     private readonly AppDbContext _context;

@@ -1,4 +1,4 @@
-namespace TextShareApi.Dtos.QueryOptions;
+namespace DocShareApi.Dtos.QueryOptions;
 
 public sealed class SortDto {
     public string SortBy { get; init; } = string.Empty;

@@ -1,7 +1,7 @@
-using TextShareApi.Dtos.Text;
-using TextShareApi.Models;
+using DocShareApi.Dtos.Text;
+using DocShareApi.Models;
 
-namespace TextShareApi.Mappers;
+namespace DocShareApi.Mappers;
 
 public static class TextMapper {
     public static TextDto ToTextDto(this Text text) {

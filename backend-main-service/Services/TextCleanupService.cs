@@ -1,4 +1,4 @@
-using TextShareApi.Interfaces.Repositories;
+using DocShareApi.Interfaces.Repositories;
 
 public sealed class TextCleanupService : BackgroundService {
     private readonly ILogger<TextCleanupService> _logger;

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TextShareApi.Models;
+namespace DocShareApi.Models;
 
 [Table("FriendPairs")]
 public class FriendPair {

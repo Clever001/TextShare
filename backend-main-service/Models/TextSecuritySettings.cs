@@ -1,6 +1,6 @@
-using TextShareApi.Dtos.Enums;
+using DocShareApi.Dtos.Enums;
 
-namespace TextShareApi.Models;
+namespace DocShareApi.Models;
 
 public class TextSecuritySettings {
     public string TextId { get; set; } = null!;

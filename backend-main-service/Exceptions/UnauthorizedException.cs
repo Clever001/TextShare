@@ -1,4 +1,4 @@
-namespace TextShareApi.Exceptions;
+namespace DocShareApi.Exceptions;
 
 public sealed class UnauthorizedException : IApiException {
     public string Code { get; init; } = "Unauthorized";

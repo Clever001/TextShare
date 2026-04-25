@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TextShareApi.Dtos.Accounts;
+namespace DocShareApi.Dtos.Accounts;
 
 public class RegisterDto {
     [Required] [Length(5, 25)] public string UserName { get; set; } = string.Empty;

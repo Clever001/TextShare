@@ -1,6 +1,6 @@
-using TextShareApi.Models;
+using DocShareApi.Models;
 
-namespace TextShareApi.Interfaces.Repositories;
+namespace DocShareApi.Interfaces.Repositories;
 
 public interface ITextSecuritySettingsRepository {
     Task<TextSecuritySettings?> GetByTextId(string textId);

@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Extensions;
-using TextShareApi.Interfaces.Services;
-using TextShareApi.Mappers;
+using DocShareApi.Dtos.QueryOptions;
+using DocShareApi.Extensions;
+using DocShareApi.Interfaces.Services;
+using DocShareApi.Mappers;
 
-namespace TextShareApi.Controllers;
+namespace DocShareApi.Controllers;
 
 [Route("api/friends")]
 [ApiController]

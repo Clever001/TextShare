@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Dtos.QueryOptions.Filters;
-using TextShareApi.Dtos.Text;
-using TextShareApi.Exceptions;
-using TextShareApi.Extensions;
-using TextShareApi.Interfaces.Services;
-using TextShareApi.Mappers;
-using TextShareApi.Models;
+using DocShareApi.Dtos.QueryOptions;
+using DocShareApi.Dtos.QueryOptions.Filters;
+using DocShareApi.Dtos.Text;
+using DocShareApi.Exceptions;
+using DocShareApi.Extensions;
+using DocShareApi.Interfaces.Services;
+using DocShareApi.Mappers;
+using DocShareApi.Models;
 
-namespace TextShareApi.Controllers;
+namespace DocShareApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

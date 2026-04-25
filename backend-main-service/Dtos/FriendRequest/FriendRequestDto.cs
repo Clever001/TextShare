@@ -1,4 +1,4 @@
-namespace TextShareApi.Dtos.FriendRequest;
+namespace DocShareApi.Dtos.FriendRequest;
 
 public class FriendRequestDto {
     public string SenderName { get; set; } = string.Empty;

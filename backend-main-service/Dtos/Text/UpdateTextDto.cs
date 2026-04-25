@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using TextShareApi.Attributes;
-using TextShareApi.Dtos.Enums;
+using DocShareApi.Attributes;
+using DocShareApi.Dtos.Enums;
 
-namespace TextShareApi.Dtos.Text;
+namespace DocShareApi.Dtos.Text;
 
 public class UpdateTextDto {
     public string? Content { get; set; }

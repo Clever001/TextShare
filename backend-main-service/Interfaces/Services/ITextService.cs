@@ -1,10 +1,10 @@
-using TextShareApi.ClassesLib;
-using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Dtos.QueryOptions.Filters;
-using TextShareApi.Dtos.Text;
-using TextShareApi.Models;
+using DocShareApi.ClassesLib;
+using DocShareApi.Dtos.QueryOptions;
+using DocShareApi.Dtos.QueryOptions.Filters;
+using DocShareApi.Dtos.Text;
+using DocShareApi.Models;
 
-namespace TextShareApi.Interfaces.Services;
+namespace DocShareApi.Interfaces.Services;
 
 public interface ITextService {
     Task<Result<Text>> Create(string curUserName, CreateTextDto dto);

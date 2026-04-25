@@ -1,7 +1,7 @@
-using TextShareApi.Dtos.FriendRequest;
-using TextShareApi.Models;
+using DocShareApi.Dtos.FriendRequest;
+using DocShareApi.Models;
 
-namespace TextShareApi.Mappers;
+namespace DocShareApi.Mappers;
 
 public static class FriendRequestMapper {
     public static FriendRequestDto ToDto(this FriendRequest fr) {

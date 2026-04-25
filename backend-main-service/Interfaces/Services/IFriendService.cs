@@ -1,8 +1,8 @@
-using TextShareApi.ClassesLib;
-using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Models;
+using DocShareApi.ClassesLib;
+using DocShareApi.Dtos.QueryOptions;
+using DocShareApi.Models;
 
-namespace TextShareApi.Interfaces.Services;
+namespace DocShareApi.Interfaces.Services;
 
 public interface IFriendService {
     Task<Result> AddFriend(string firstUserName, string secondUserName);

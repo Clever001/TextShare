@@ -1,9 +1,9 @@
-using TextShareApi.ClassesLib;
-using TextShareApi.Dtos.Accounts;
-using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Models;
+using DocShareApi.ClassesLib;
+using DocShareApi.Dtos.Accounts;
+using DocShareApi.Dtos.QueryOptions;
+using DocShareApi.Models;
 
-namespace TextShareApi.Interfaces.Services;
+namespace DocShareApi.Interfaces.Services;
 
 public interface IAccountService {
     Task<Result<(AppUser, string)>> Register(string userName, string email, string password);

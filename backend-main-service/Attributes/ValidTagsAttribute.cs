@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TextShareApi.Attributes;
+namespace DocShareApi.Attributes;
 
 public class ValidTagsAttribute : ValidationAttribute
 {

@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace TextShareApi.Mappers;
+namespace DocShareApi.Mappers;
 
 public static class SortExpressionBuilder {
     public static Expression<Func<T1, T2>> BuildSortExpression<T1, T2>(string propertyName) {

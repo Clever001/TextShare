@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TextShareApi.Attributes;
+namespace DocShareApi.Attributes;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class OnlyOneTrueAttribute : ValidationAttribute {

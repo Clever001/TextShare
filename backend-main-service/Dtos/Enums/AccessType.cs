@@ -1,4 +1,4 @@
-namespace TextShareApi.Dtos.Enums;
+namespace DocShareApi.Dtos.Enums;
 
 public enum AccessType {
     Personal,

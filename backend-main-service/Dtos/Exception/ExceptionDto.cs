@@ -1,4 +1,4 @@
-namespace TextShareApi.Dtos.Exception;
+namespace DocShareApi.Dtos.Exception;
 
 public sealed class ExceptionDto {
     public string Code { get; init; } = "";

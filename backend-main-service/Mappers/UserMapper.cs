@@ -1,7 +1,7 @@
-using TextShareApi.Dtos.Accounts;
-using TextShareApi.Models;
+using DocShareApi.Dtos.Accounts;
+using DocShareApi.Models;
 
-namespace TextShareApi.Mappers;
+namespace DocShareApi.Mappers;
 
 public static class UserMapper {
     public static UserWithTokenDto ToUserWithTokenDto(this AppUser user, string token) {

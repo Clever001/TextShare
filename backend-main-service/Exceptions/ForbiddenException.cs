@@ -1,4 +1,4 @@
-namespace TextShareApi.Exceptions;
+namespace DocShareApi.Exceptions;
 
 public sealed class ForbiddenException : IApiException {
     public string Code { get; init; } = "Forbidden";

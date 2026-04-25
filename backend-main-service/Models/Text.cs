@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TextShareApi.Models;
+namespace DocShareApi.Models;
 
 [Table("Texts")]
 public class Text {

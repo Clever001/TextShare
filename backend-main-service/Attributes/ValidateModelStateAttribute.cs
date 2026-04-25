@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using TextShareApi.Dtos.Exception;
+using DocShareApi.Dtos.Exception;
 
-namespace TextShareApi.Attributes;
+namespace DocShareApi.Attributes;
 
 public class ValidateModelStateAttribute : ActionFilterAttribute {
     public override void OnActionExecuting(ActionExecutingContext context) {

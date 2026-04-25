@@ -1,6 +1,6 @@
-using TextShareApi.Models;
+using DocShareApi.Models;
 
-namespace TextShareApi.Interfaces.Services;
+namespace DocShareApi.Interfaces.Services;
 
 public interface ITokenService {
     string CreateToken(AppUser user);

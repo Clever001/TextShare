@@ -1,7 +1,7 @@
 using System.Reflection;
-using TextShareApi.Dtos.QueryOptions;
+using DocShareApi.Dtos.QueryOptions;
 
-namespace TextShareApi.Mappers;
+namespace DocShareApi.Mappers;
 
 public static class QueryOptionsMapper {
     public static bool IsValid(this SortDto dto, Type type) {

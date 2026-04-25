@@ -1,4 +1,4 @@
-namespace TextShareApi.Exceptions;
+namespace DocShareApi.Exceptions;
 
 public interface IApiException {
     public string Code { get; init; }

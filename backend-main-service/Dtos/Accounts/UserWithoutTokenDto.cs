@@ -1,4 +1,4 @@
-namespace TextShareApi.Dtos.Accounts;
+namespace DocShareApi.Dtos.Accounts;
 
 public sealed class UserWithoutTokenDto {
     public string Id { get; init; } = string.Empty;

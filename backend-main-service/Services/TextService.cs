@@ -1,16 +1,16 @@
 using System.Linq.Expressions;
-using TextShareApi.ClassesLib;
-using TextShareApi.Dtos.Enums;
-using TextShareApi.Dtos.QueryOptions;
-using TextShareApi.Dtos.QueryOptions.Filters;
-using TextShareApi.Dtos.Text;
-using TextShareApi.Exceptions;
-using TextShareApi.Interfaces.Repositories;
-using TextShareApi.Interfaces.Services;
-using TextShareApi.Mappers;
-using TextShareApi.Models;
+using DocShareApi.ClassesLib;
+using DocShareApi.Dtos.Enums;
+using DocShareApi.Dtos.QueryOptions;
+using DocShareApi.Dtos.QueryOptions.Filters;
+using DocShareApi.Dtos.Text;
+using DocShareApi.Exceptions;
+using DocShareApi.Interfaces.Repositories;
+using DocShareApi.Interfaces.Services;
+using DocShareApi.Mappers;
+using DocShareApi.Models;
 
-namespace TextShareApi.Services;
+namespace DocShareApi.Services;
 
 public class TextService : ITextService {
     private readonly IAccountRepository _accountRepository;

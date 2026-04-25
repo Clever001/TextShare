@@ -1,6 +1,6 @@
-using TextShareApi.Dtos.Enums;
+using DocShareApi.Dtos.Enums;
 
-namespace TextShareApi.Dtos.QueryOptions.Filters;
+namespace DocShareApi.Dtos.QueryOptions.Filters;
 
 public sealed class TextFilterWithoutOwnerDto {
     public string? Title { get; init; }
