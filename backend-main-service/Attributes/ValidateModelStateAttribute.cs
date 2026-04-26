@@ -10,8 +10,8 @@ public class ValidateModelStateAttribute : ActionFilterAttribute {
             List<string> errors = new();
 
             foreach (var (_, value) in context.ModelState)
-            foreach (var error in value.Errors)
-                errors.Add(error.ErrorMessage);
+                foreach (var error in value.Errors)
+                    errors.Add(error.ErrorMessage);
 
             var exceptionDto = new ExceptionDto {
                 Code = "ValidationFailed",

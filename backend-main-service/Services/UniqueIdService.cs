@@ -1,7 +1,6 @@
 using System.Buffers.Binary;
 using System.Buffers.Text;
-using DocShareApi.Interfaces.Repositories;
-using DocShareApi.Interfaces.Services;
+using DocShareApi.Repositories;
 
 namespace DocShareApi.Services;
 
@@ -12,7 +11,7 @@ public class UniqueIdService : IUniqueIdService {
         _repo = repo;
     }
 
-    public async Task<string> GenerateNewHash() {
+    public async Task<string> GenerateNewId() {
         var seed = await _repo.GetAndAppendHashSeed();
 
         Span<byte> byteArray = stackalloc byte[8];

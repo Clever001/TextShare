@@ -1,5 +1,6 @@
 using System.Reflection;
 using DocShareApi.Dtos.QueryOptions;
+using DocShareApi.Dtos.QueryOptions.Filters;
 
 namespace DocShareApi.Mappers;
 
@@ -23,13 +24,13 @@ public static class QueryOptionsMapper {
     }
 
     public static PaginatedResponseDto<T>
-        ToPaginatedResponse<T>(this List<T> list, PaginationDto pagination, int count) {
+        ToPaginatedResponse<T>(this FilterResult<T> filterRes, PaginationDto pagination) {
         return new PaginatedResponseDto<T> {
-            Items = list,
+            Items = filterRes.Selection,
             CurrentPage = pagination.PageNumber,
             PageSize = pagination.PageSize,
-            TotalItems = count,
-            TotalPages = (int)Math.Ceiling(count / (double)pagination.PageSize)
+            TotalItems = filterRes.TotalCount,
+            TotalPages = (int)Math.Ceiling(filterRes.TotalCount / (double)pagination.PageSize)
         };
     }
 }

@@ -4,10 +4,10 @@ using DocShareApi.ClassesLib;
 using DocShareApi.Dtos.Accounts;
 using DocShareApi.Dtos.QueryOptions;
 using DocShareApi.Exceptions;
-using DocShareApi.Interfaces.Repositories;
-using DocShareApi.Interfaces.Services;
+using DocShareApi.Repositories;
 using DocShareApi.Mappers;
 using DocShareApi.Models;
+using DocShareApi.Dtos.QueryOptions.Filters;
 
 namespace DocShareApi.Services;
 
@@ -45,8 +45,7 @@ public class AccountService : IAccountService {
             return Result<(AppUser, string)>.Failure(new BadRequestException(
                 "Cannot create user with provided information.",
                 createResult.Errors.Select(e => e.Description).ToList()));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return Result<(AppUser, string)>.Failure(new ServerException());
         }
     }
@@ -100,14 +99,21 @@ public class AccountService : IAccountService {
         if (userName != null && userName.Trim() != "")
             nameFilter = u => u.UserName!.ToLower().Contains(userName.ToLower());
 
-        var (count, users) = await _accountRepository.GetAllAccounts(
-            skip,
-            take,
-            orderBy,
-            true,
-            nameFilter == null ? null : [nameFilter]
+        var filterResult = await _accountRepository.GetAllAccounts(
+            new QueryFilter<AppUser, string?>(
+                skip,
+                take,
+                orderBy,
+                true,
+                nameFilter == null ? null : [nameFilter]
+            )
         );
 
-        return Result<PaginatedResponseDto<AppUser>>.Success(users.ToPaginatedResponse(pagination, count));
+        return Result<PaginatedResponseDto<AppUser>>.Success(
+            filterResult.Selection.ToPaginatedResponse(
+                pagination, 
+                filterResult.TotalCount
+            )
+        );
     }
 }

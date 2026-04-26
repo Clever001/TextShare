@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using DocShareApi.Data;
-using DocShareApi.Interfaces.Repositories;
 using DocShareApi.Models;
 
 namespace DocShareApi.Repositories;

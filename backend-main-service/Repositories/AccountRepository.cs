@@ -1,9 +1,8 @@
-using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using DocShareApi.Data;
-using DocShareApi.Interfaces.Repositories;
 using DocShareApi.Models;
+using DocShareApi.Dtos.QueryOptions.Filters;
 
 namespace DocShareApi.Repositories;
 
@@ -33,26 +32,25 @@ public class AccountRepository : IAccountRepository {
         return await _userManager.FindByNameAsync(userName);
     }
 
-    public async Task<(int, List<AppUser>)> GetAllAccounts<T>(int skip,
-        int take,
-        Expression<Func<AppUser, T>> keyOrder,
-        bool isAscending,
-        List<Expression<Func<AppUser, bool>>>? predicates) {
+    public async Task<FilterResult<AppUser>> GetAllAccounts<OrderT>(QueryFilter<AppUser, OrderT> filter) {
         IQueryable<AppUser> users = _context.Users;
 
         // Filtering
-        if (predicates != null)
-            foreach (var predicate in predicates)
+        if (filter.Predicates != null)
+            foreach (var predicate in filter.Predicates)
                 users = users.Where(predicate);
 
         var count = await users.CountAsync();
 
         // Ordering
-        users = isAscending ? users.OrderBy(keyOrder) : users.OrderByDescending(keyOrder);
+        users = filter.IsAscending ? 
+            users.OrderBy(filter.KeyOrder) : 
+            users.OrderByDescending(filter.KeyOrder);
 
         // Pagination
-        users = users.Skip(skip).Take(take);
-        return (count, await users.Select(u => new AppUser {
+        users = users.Skip(filter.Skip).Take(filter.Take);
+
+        return new FilterResult<AppUser>(count, await users.Select(u => new AppUser {
             Id = u.Id,
             UserName = u.UserName
         }).ToListAsync());
@@ -66,5 +64,9 @@ public class AccountRepository : IAccountRepository {
     public async Task<bool> ContainsAccountByEmail(string email) {
         var upperEmail = email.ToUpper();
         return await _context.Users.AnyAsync(u => u.NormalizedEmail == upperEmail);
+    }
+
+    public async Task<bool> ContainsAccountById(string id) {
+        return await _context.Users.AnyAsync(u => u.Id == id);
     }
 }

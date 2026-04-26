@@ -8,12 +8,14 @@ namespace DocShareApi.Data;
 public class AppDbContext : IdentityDbContext<AppUser> {
     public AppDbContext(DbContextOptions options) : base(options) { }
 
-    public DbSet<Text> Texts { get; set; }
+    public DbSet<Comment> Comments { get; set; }
+    public DbSet<Document> Documents { get; set; }
+    public DbSet<DocVersion> DocVerions { get; set; }
     public DbSet<HashSeed> HashSeeds { get; set; }
-    public DbSet<FriendRequest> FriendRequests { get; set; }
-    public DbSet<FriendPair> FriendPairs { get; set; }
-    public DbSet<TextSecuritySettings> TextSecuritySettings { get; set; }
+    public DbSet<PublishedVersion> PublishedVersion { get; set; }
     public DbSet<Tag> Tags { get; set; }
+    public DbSet<UserToDocRole> UserToDocRoles { get; set; }
+
 
     private static readonly IdentityRole[] SeedRoles = {
         new() { Id = "4d1a8b3b-5d7d-4b5a-b7b3-3e4f3cbf54a8", Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = "8d6f4527-714e-4ed7-89fc-13cae731b39b" },
@@ -24,59 +26,59 @@ public class AppDbContext : IdentityDbContext<AppUser> {
         base.OnModelCreating(builder);
 
         builder.Entity<IdentityRole>().HasData(SeedRoles);
-
-        builder.Entity<Text>().HasKey(t => t.Id);
-        builder.Entity<Text>()
-            .HasOne(t => t.Owner)
-            .WithMany(u => u.Texts)
-            .HasForeignKey(t => t.OwnerId)
-            .OnDelete(DeleteBehavior.Restrict);
-        builder.Entity<Text>().HasIndex(t => t.OwnerId);
-        builder.Entity<Text>()
-            .HasIndex(t => new { t.Title, AppUserId = t.OwnerId })
-            .IsUnique();
-
-        builder.Entity<Tag>().HasKey(t => t.Name);
-        builder.Entity<Tag>()
-            .HasMany<Text>(t => t.Texts)
-            .WithMany(t => t.Tags);
-
-        builder.Entity<FriendRequest>().HasKey(r => new { r.SenderId, r.RecipientId });
-        builder.Entity<FriendRequest>()
-            .HasOne(r => r.Sender)
-            .WithMany(u => u.FriendRequests)
-            .HasForeignKey(r => r.SenderId)
-            .OnDelete(DeleteBehavior.Restrict);
-        builder.Entity<FriendRequest>()
-            .HasOne(r => r.Recipient)
-            .WithMany()
-            .HasForeignKey(r => r.RecipientId)
-            .OnDelete(DeleteBehavior.Restrict);
-        builder.Entity<FriendRequest>()
-            .HasIndex(r => r.SenderId);
-        builder.Entity<FriendRequest>()
-            .HasIndex(r => r.RecipientId);
-
-        builder.Entity<FriendPair>().HasKey(f => new { f.FirstUserId, f.SecondUserId });
-        builder.Entity<FriendPair>()
-            .HasOne(p => p.FirstUser)
-            .WithMany(u => u.FriendPairs)
-            .HasForeignKey(p => p.FirstUserId)
-            .OnDelete(DeleteBehavior.Restrict);
-        builder.Entity<FriendPair>()
-            .HasOne(p => p.SecondUser)
-            .WithMany()
-            .HasForeignKey(p => p.SecondUserId)
-            .OnDelete(DeleteBehavior.Restrict);
-        builder.Entity<FriendPair>()
-            .HasIndex(p => p.FirstUserId);
-        builder.Entity<FriendPair>()
-            .HasIndex(p => p.SecondUserId);
-
-        builder.Entity<TextSecuritySettings>().HasKey(s => s.TextId);
-        builder.Entity<TextSecuritySettings>()
-            .HasOne(s => s.Text)
-            .WithOne(t => t.TextSecuritySettings)
-            .HasForeignKey<TextSecuritySettings>(t => t.TextId);
+        builder.Entity<Document>(e => {
+            e.HasKey(d => d.Id);
+            e.HasOne(d => d.Owner)
+                .WithMany(u => u.Documents)
+                .HasForeignKey(d => d.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasIndex(d => new { d.Title, d.OwnerId }).IsUnique();
+        });
+        builder.Entity<Tag>(e => {
+            e.HasKey(t => t.Name);
+            e.HasMany(t => t.Documents)
+                .WithMany(d => d.Tags)
+                .UsingEntity("DocToTag");
+        });
+        builder.Entity<UserToDocRole>(e => {
+            e.HasKey(r => new { r.UserId, r.DocumentId });
+            e.HasOne(r => r.User)
+                .WithMany(u => u.Roles)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(r => r.Document)
+                .WithMany(d => d.UserRoles)
+                .HasForeignKey(r => r.DocumentId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+        builder.Entity<DocVersion>(e => {
+            e.HasKey(v => v.Id);
+            e.HasOne(v => v.Document)
+                .WithMany(d => d.Versions)
+                .HasForeignKey(v => v.DocumentId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+        builder.Entity<PublishedVersion>(e => {
+            e.HasKey(v => v.DocumentId);
+            e.HasOne(v => v.Document)
+                .WithOne(d => d.PublishedVersion)
+                .HasForeignKey<PublishedVersion>(v => v.DocumentId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+        builder.Entity<Comment>(e => {
+            e.HasKey(c => c.Id);
+            e.HasOne(c => c.Parent)
+                .WithMany()
+                .HasForeignKey(c => c.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(c => c.Document)
+                .WithMany(d => d.Comments)
+                .HasForeignKey(c => c.DocumentId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(c => c.Author)
+                .WithMany()
+                .HasForeignKey(c => c.AuthorId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
     }
 }

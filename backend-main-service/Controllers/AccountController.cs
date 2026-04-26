@@ -7,7 +7,7 @@ using DocShareApi.Dtos.Exception;
 using DocShareApi.Dtos.QueryOptions;
 using DocShareApi.Exceptions;
 using DocShareApi.Extensions;
-using DocShareApi.Interfaces.Services;
+using DocShareApi.Services;
 using DocShareApi.Mappers;
 
 namespace DocShareApi.Controllers;

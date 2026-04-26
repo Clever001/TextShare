@@ -1,0 +1,16 @@
+services:
+  doc-share-db:
+    image: postgres:18.1-alpine3.23
+    container_name: doc-share-db
+    shm_size: 256mb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: doc_share
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

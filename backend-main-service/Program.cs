@@ -8,20 +8,19 @@ using Scalar.AspNetCore;
 using DocShareApi.Attributes;
 using DocShareApi.Data;
 using DocShareApi.Extensions;
-using DocShareApi.Interfaces.Repositories;
-using DocShareApi.Interfaces.Services;
-using DocShareApi.Models;
 using DocShareApi.Repositories;
 using DocShareApi.Services;
+using DocShareApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options => {
-        options.Filters.Add<ValidateModelStateAttribute>();
-        if (bool.Parse(builder.Configuration["LogExecutionTime"] ?? ""))
-            options.Filters.Add<LogExecutionTimeFilter>();
-    }).ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = true; })
-    .AddJsonOptions(options => { 
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+    options.Filters.Add<ValidateModelStateAttribute>();
+    if (bool.Parse(builder.Configuration["LogExecutionTime"] ?? ""))
+        options.Filters.Add<LogExecutionTimeFilter>();
+}).ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = true; })
+    .AddJsonOptions(options => {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 builder.Services.AddDbContext<AppDbContext>(options => {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
     // options.LogTo(Console.WriteLine, LogLevel.Information);
@@ -56,24 +55,14 @@ builder.Services.AddAuthentication(options => {
 });
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<IFriendPairRepository, FriendPairRepository>();
-builder.Services.AddScoped<IFriendRequestRepository, FriendRequestRepository>();
 builder.Services.AddScoped<IHashSeedRepository, HashSeedRepository>();
-builder.Services.AddScoped<ITagRepository, TagRepository>();
-builder.Services.AddScoped<ITextRepository, TextRepository>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IFriendRequestService, FriendRequestService>();
-builder.Services.AddScoped<IFriendService, FriendService>();
-builder.Services.AddScoped<ITextSecurityService, TextSecurityService>();
-builder.Services.AddScoped<ITextService, TextService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUniqueIdService, UniqueIdService>();
 builder.Services.AddScoped<PasswordHasher<AppUser>>();
 
 builder.Logging.AddConsole();
-
-builder.Services.AddHostedService<TextCleanupService>();
 
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll", policy => {
