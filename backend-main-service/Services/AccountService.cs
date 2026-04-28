@@ -110,9 +110,8 @@ public class AccountService : IAccountService {
         );
 
         return Result<PaginatedResponseDto<AppUser>>.Success(
-            filterResult.Selection.ToPaginatedResponse(
-                pagination, 
-                filterResult.TotalCount
+            filterResult.ToPaginatedResponse(
+                pagination
             )
         );
     }

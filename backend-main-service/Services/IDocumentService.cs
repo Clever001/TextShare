@@ -12,6 +12,6 @@ public interface IDocumentService {
     Task<Result<PaginatedResponseDto<Document>>> SearchDocuments(
         SortDto sort, PaginationDto pagination, DocumentFilterDto filter
     );
-    Task<Result<Document>> UpdateDocumentInfo(CreateUpdateDocDto dto);
+    Task<Result<Document>> UpdateDocumentInfo(string callerId, string documentId, CreateUpdateDocDto dto);
     Task<Result> DeleteDocument(string callerId, string docId);
 }

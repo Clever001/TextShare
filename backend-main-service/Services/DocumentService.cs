@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using DocShareApi.ClassesLib;
 using DocShareApi.Dtos.Documents;
+using DocShareApi.Dtos.Enums;
 using DocShareApi.Dtos.QueryOptions;
 using DocShareApi.Dtos.QueryOptions.Filters;
 using DocShareApi.Exceptions;
@@ -18,6 +19,7 @@ using RPD = Result<PaginatedResponseDto<Document>>;
 public class DocumentService(
     IDocumentRepo docRepo,
     IAccountRepository accRepo,
+    IDevRolesRepo rolesRepo,
     ITagRepo tagRepo,
     IUniqueIdService idServ
 ) : IDocumentService {
@@ -52,7 +54,7 @@ public class DocumentService(
                 (await tagRepo.GetTags(t => dto.Tags.Contains(t.Name))).Select(t =>
                     new KeyValuePair<string, Tag>(t.Name, t)));
 
-            foreach (var tag in dto.Tags.Distinct().Select(t => t)) {
+            foreach (var tag in dto.Tags.Distinct().Select(t => t.ToLower())) {
                 newDoc.Tags.Add(existingTags.TryGetValue(tag, out var existingTag)
                     ? existingTag
                     : new Tag { Name = tag });
@@ -138,11 +140,70 @@ public class DocumentService(
         );
     }
 
-    public Task<RD> UpdateDocumentInfo(CreateUpdateDocDto dto) {
-        throw new NotImplementedException();
+    public async Task<RD> UpdateDocumentInfo(
+        string callerId, string documentId, CreateUpdateDocDto dto
+    ) {
+        if (!await accRepo.ContainsAccountById(callerId)) {
+            return RD.Failure(
+                new BadRequestException("User with such id does not exist")
+            );
+        }
+        var doc = await docRepo.GetById(documentId);
+        if (doc == null) {
+            return RD.Failure(new NotFoundException());
+        }
+        var callerRole = await rolesRepo.GetUserToDocRole(callerId, documentId);
+        if (callerRole != UserDevRole.Administrator) {
+            return RD.Failure(new ForbiddenException());
+        }
+
+        doc.Title = dto.Title;
+        doc.Description = dto.Description;
+        // UpdateTags
+        {
+            var existingTags = new Dictionary<string, Tag>(
+                (await tagRepo.GetTags(t => dto.Tags.Contains(t.Name))).Select(t =>
+                    new KeyValuePair<string, Tag>(t.Name, t)));
+            doc.Tags.Clear();
+            foreach (var tag in dto.Tags.Distinct().Select(t => t.ToLower())) {
+                doc.Tags.Add(existingTags.TryGetValue(tag, out var existingTag)
+                    ? existingTag
+                    : new Tag { Name = tag });
+            }
+        }
+        // TODO: Update Roles
+        {
+            await rolesRepo.DeleteAllForDocument(documentId);
+            doc.UserRoles.Clear();
+            doc.UserRoles.AddRange(
+                dto.Roles.Select(r => new UserToDocRole() {
+                    UserId = r.Key,
+                    DocumentId = documentId,
+                    Role = r.Value
+                })
+            );
+        }
+
+        await docRepo.Update(documentId, doc);
+        return RD.Success(doc);
     }
 
-    public Task<R> DeleteDocument(string callerId, string docId) {
-        throw new NotImplementedException();
+    public async Task<R> DeleteDocument(string callerId, string documentId) {
+        if (!await accRepo.ContainsAccountById(callerId)) {
+            return R.Failure(
+                new BadRequestException("User with such id does not exist")
+            );
+        }
+        var doc = await docRepo.GetById(documentId);
+        if (doc == null) {
+            return R.Failure(new NotFoundException());
+        }
+        if (doc.OwnerId != callerId) {
+            return R.Failure(
+                new ForbiddenException()
+            );
+        }
+
+        
     }
 }
