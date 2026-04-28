@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using DocShareApi.Dtos.Exception;
 using DocShareApi.Exceptions;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace DocShareApi.Extensions;
 
@@ -14,7 +15,15 @@ public static class Extensions {
         });
     }
 
-    public static string? GetUserName(this ClaimsPrincipal principal) {
-        return principal.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.GivenName))?.Value;
+    public static string? GetId(this ClaimsPrincipal principal) {
+        return principal.FindFirstValue(ClaimTypes.NameIdentifier);
+    }
+
+    public static string? GetEmail(this ClaimsPrincipal principal) {
+        return principal.FindFirstValue(JwtRegisteredClaimNames.Email);
+    }
+
+    public static string? GetName(this ClaimsPrincipal principal) {
+        return principal.FindFirstValue(ClaimTypes.Name);
     }
 }

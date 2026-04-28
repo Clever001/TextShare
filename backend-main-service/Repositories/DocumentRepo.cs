@@ -1,4 +1,6 @@
 using DocShareApi.Data;
+using DocShareApi.Dtos.Documents;
+using DocShareApi.Dtos.Enums;
 using DocShareApi.Dtos.QueryOptions.Filters;
 using DocShareApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -8,9 +10,27 @@ namespace DocShareApi.Repositories;
 public class DocumentRepo(
     AppDbContext context
 ) : IDocumentRepo {
-    public async Task Create(Document doc) {
-        await context.Documents.AddAsync(doc);
-        await context.SaveChangesAsync();
+    public async Task Create(CreateDocCommand command, CreateUpdateDocDto dto) {
+        using var transaction = await context.Database.BeginTransactionAsync();
+        try {
+            var newDoc = new Document() {
+                Id = command.DocumentId,
+                Title = dto.Title,
+                Description = dto.Description,
+                CreatedOn = command.CreatedOn,
+                OwnerId = command.OwnerId,
+            };
+            await context.Documents.AddAsync(newDoc);
+
+            await AddDocToTags(command.DocumentId, dto.Tags);
+            await AddUserRoles(command.DocumentId, dto.Roles);
+
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+        } catch {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task<Document?> GetById(string docId) {
@@ -24,7 +44,9 @@ public class DocumentRepo(
         return doc;
     }
 
-    public async Task<FilterResult<Document>> GetAllDocuments<OrderT>(QueryFilter<Document, OrderT> filter) {
+    public async Task<FilterResult<Document>> GetAllDocuments<OrderT>(
+        QueryFilter<Document, OrderT> filter
+    ) {
         IQueryable<Document> docs = context.Documents;
 
         foreach (var predicate in filter.Predicates ?? []) {
@@ -47,25 +69,90 @@ public class DocumentRepo(
         );
     }
 
-    public async Task Update(string docId, Document doc) {
+    public async Task Update(string docId, CreateUpdateDocDto dto) {
         Document? foundDoc = await context.Documents.FindAsync(docId);
-        if (foundDoc == null) 
+        if (foundDoc == null)
             throw new NullReferenceException("Object does not exist");
 
-        foundDoc.Title = doc.Title;
-        foundDoc.Description = doc.Description;
-        foundDoc.Tags = doc.Tags;
-        foundDoc.UserRoles = doc.UserRoles;
-        context.Update(foundDoc);
-        await context.SaveChangesAsync();
+        using var transaction = await context.Database.BeginTransactionAsync();
+        try {
+            // Updating Tags
+            {
+                await context.DocToTags.Where(dt => dt.DocumentId == docId)
+                    .ExecuteDeleteAsync();
+                await AddDocToTags(docId, dto.Tags);
+            }
+
+            // Updating UserRoles
+            {
+                await context.UserToDocRoles.Where(r => r.DocumentId == docId)
+                    .ExecuteDeleteAsync();
+                await AddUserRoles(docId, dto.Roles);
+            }
+
+            // Versions, PublishedVersions, Comments tables does not
+            // update here
+
+            foundDoc.Title = dto.Title;
+            foundDoc.Description = dto.Description;
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+        } catch {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task Delete(string docId) {
         Document? foundDoc = await context.Documents.FindAsync(docId);
-        if (foundDoc == null) 
+        if (foundDoc == null)
             throw new NullReferenceException("Object does not exist");
 
-        context.Remove(foundDoc);
-        await context.SaveChangesAsync();
+        using var transaction = await context.Database.BeginTransactionAsync();
+        try {
+            await context.DocToTags.Where(dt => dt.DocumentId == docId)
+                .ExecuteDeleteAsync();
+            await context.UserToDocRoles.Where(r => r.DocumentId == docId)
+                .ExecuteDeleteAsync();
+            await context.DocVerions.Where(v => v.DocumentId == docId)
+                .ExecuteDeleteAsync();
+            await context.PublishedVersion.Where(v => v.DocumentId == docId)
+                .ExecuteDeleteAsync();
+            await context.Comments.Where(c => c.DocumentId == docId)
+                .ExecuteDeleteAsync();
+
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+        } catch {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    private async Task AddDocToTags(string docId, List<string> TagNames) {
+        var existingTagNames = await context.Tags
+            .Where(t => TagNames.Contains(t.Name))
+            .Select(t => t.Name)
+            .ToHashSetAsync();
+        var nonExistingTags = TagNames
+            .Where(t => !existingTagNames.Contains(t))
+            .Select(tn => new Tag() { Name = tn });
+        await context.Tags.AddRangeAsync(nonExistingTags);
+        var newDocToTags = TagNames
+            .Select(tn => new DocToTag() {
+                DocumentId = docId,
+                TagName = tn
+            });
+        await context.DocToTags.AddRangeAsync(newDocToTags);
+    }
+
+    private async Task AddUserRoles(string docId, Dictionary<string, UserDevRole> roles) {
+        var newUserToDocRoles = roles
+            .Select(ur => new UserToDocRole() {
+                UserId = ur.Key,
+                DocumentId = docId,
+                Role = ur.Value
+            });
+        await context.UserToDocRoles.AddRangeAsync(newUserToDocRoles);
     }
 }

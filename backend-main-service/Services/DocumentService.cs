@@ -8,7 +8,6 @@ using DocShareApi.Exceptions;
 using DocShareApi.Mappers;
 using DocShareApi.Models;
 using DocShareApi.Repositories;
-using Microsoft.IdentityModel.Abstractions;
 
 namespace DocShareApi.Services;
 
@@ -20,8 +19,8 @@ public class DocumentService(
     IDocumentRepo docRepo,
     IAccountRepository accRepo,
     IDevRolesRepo rolesRepo,
-    ITagRepo tagRepo,
-    IUniqueIdService idServ
+    IUniqueIdService idServ,
+    ILogger<DocumentRepo> logger
 ) : IDocumentService {
     public async Task<RD> CreateDocument(string callerId, CreateUpdateDocDto dto) {
         if (!await accRepo.ContainsAccountById(callerId)) {
@@ -29,51 +28,23 @@ public class DocumentService(
                 new BadRequestException("User with such id does not exist")
             );
         }
-        var newDocId = await idServ.GenerateNewId();
+        
+        var createCommand = new CreateDocCommand(
+            DocumentId: await idServ.GenerateNewId(),
+            CreatedOn: DateTime.UtcNow,
+            OwnerId: callerId
+        );
 
-        var newDoc = new Document() {
-            Id = newDocId,
-            Title = dto.Title,
-            Description = dto.Description,
-            CreatedOn = DateTime.UtcNow,
-            OwnerId = callerId,
-            Tags = [],
-            UserRoles = [],
-            Versions = [],
-            PublishedVersion = null,
-            Comments = [],
-        };
-
-        // Adding Tags
-        for (int i = 0; i < dto.Tags.Count; i++) {
-            dto.Tags[i] = dto.Tags[i].ToLower();
+        try {
+            await docRepo.Create(createCommand, dto);
+            var newDoc = await docRepo.GetById(createCommand.DocumentId);
+            if (newDoc == null)
+                throw new NullReferenceException("Created document not found");
+            return RD.Success(newDoc);
+        } catch (Exception ex) {
+            logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
+            return RD.Failure(new ServerException());
         }
-
-        if (dto.Tags.Count > 0) {
-            var existingTags = new Dictionary<string, Tag>(
-                (await tagRepo.GetTags(t => dto.Tags.Contains(t.Name))).Select(t =>
-                    new KeyValuePair<string, Tag>(t.Name, t)));
-
-            foreach (var tag in dto.Tags.Distinct().Select(t => t.ToLower())) {
-                newDoc.Tags.Add(existingTags.TryGetValue(tag, out var existingTag)
-                    ? existingTag
-                    : new Tag { Name = tag });
-            }
-        }
-
-        // Adding UserRoles
-        if (dto.Roles.Count > 0) {
-            foreach (var userIdToRole in dto.Roles) {
-                newDoc.UserRoles.Add(new UserToDocRole() {
-                    UserId = userIdToRole.Key,
-                    DocumentId = newDocId,
-                    Role = userIdToRole.Value
-                });
-            }
-        }
-
-        await docRepo.Create(newDoc);
-        return RD.Success(newDoc);
     }
 
     public async Task<RD> GetDocumentInfo(string docId) {
@@ -157,35 +128,13 @@ public class DocumentService(
             return RD.Failure(new ForbiddenException());
         }
 
-        doc.Title = dto.Title;
-        doc.Description = dto.Description;
-        // UpdateTags
-        {
-            var existingTags = new Dictionary<string, Tag>(
-                (await tagRepo.GetTags(t => dto.Tags.Contains(t.Name))).Select(t =>
-                    new KeyValuePair<string, Tag>(t.Name, t)));
-            doc.Tags.Clear();
-            foreach (var tag in dto.Tags.Distinct().Select(t => t.ToLower())) {
-                doc.Tags.Add(existingTags.TryGetValue(tag, out var existingTag)
-                    ? existingTag
-                    : new Tag { Name = tag });
-            }
+        try {
+            await docRepo.Update(documentId, dto);
+            return RD.Success(doc);
+        } catch (Exception ex) {
+            logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
+            return RD.Failure(new ServerException());
         }
-        // TODO: Update Roles
-        {
-            await rolesRepo.DeleteAllForDocument(documentId);
-            doc.UserRoles.Clear();
-            doc.UserRoles.AddRange(
-                dto.Roles.Select(r => new UserToDocRole() {
-                    UserId = r.Key,
-                    DocumentId = documentId,
-                    Role = r.Value
-                })
-            );
-        }
-
-        await docRepo.Update(documentId, doc);
-        return RD.Success(doc);
     }
 
     public async Task<R> DeleteDocument(string callerId, string documentId) {
@@ -204,6 +153,14 @@ public class DocumentService(
             );
         }
 
-        
+        try {
+            await docRepo.Delete(documentId);
+            return R.Success();
+        } catch (Exception ex) {
+            logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
+            return R.Failure(
+                new ServerException()
+            );
+        }
     }
 }

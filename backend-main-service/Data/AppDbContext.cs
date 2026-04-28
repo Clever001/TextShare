@@ -15,6 +15,7 @@ public class AppDbContext : IdentityDbContext<AppUser> {
     public DbSet<PublishedVersion> PublishedVersion { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<UserToDocRole> UserToDocRoles { get; set; }
+    public DbSet<DocToTag> DocToTags {get;set;}
 
 
     private static readonly IdentityRole[] SeedRoles = {
@@ -38,7 +39,20 @@ public class AppDbContext : IdentityDbContext<AppUser> {
             e.HasKey(t => t.Name);
             e.HasMany(t => t.Documents)
                 .WithMany(d => d.Tags)
-                .UsingEntity("DocToTag");
+                .UsingEntity<DocToTag>(
+                    l => l.HasOne(dt => dt.Document)
+                        .WithMany()
+                        .HasForeignKey(dt => dt.DocumentId)
+                        .OnDelete(DeleteBehavior.Restrict),
+                    r => r.HasOne(dt => dt.Tag)
+                        .WithMany()
+                        .HasForeignKey(dt => dt.TagName)
+                        .OnDelete(DeleteBehavior.Restrict),
+                    j => {
+                        j.ToTable("DocToTag");
+                        j.HasKey(dt => new {dt.DocumentId, dt.TagName});
+                    }
+                );
         });
         builder.Entity<UserToDocRole>(e => {
             e.HasKey(r => new { r.UserId, r.DocumentId });

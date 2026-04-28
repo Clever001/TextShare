@@ -62,7 +62,7 @@ public class AccountController : ControllerBase {
             return this.ToActionResult(new BadRequestException("One or more validation errors occurred.",
                 [$"The Field {nameof(updateDto.UserName)} cannot represent an email."]));
 
-        var userName = User.GetUserName();
+        var userName = User.GetName();
         if (userName == null) // Never executed.
             throw new ArgumentNullException(nameof(userName));
 

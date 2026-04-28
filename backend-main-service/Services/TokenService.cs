@@ -16,24 +16,21 @@ public class TokenService : ITokenService {
     }
 
     public string CreateToken(AppUser user) {
-        List<Claim> claims = [ // Информация о пользователе
-            new(JwtRegisteredClaimNames.GivenName, user.UserName),
-            new(JwtRegisteredClaimNames.Email, user.Email)
+        List<Claim> claims = [
+            new(ClaimTypes.NameIdentifier, user.Id),
+            new(ClaimTypes.Name, user.UserName!),
+            new(JwtRegisteredClaimNames.Email, user.Email!)
         ];
 
-        // Секретный ключ для создания токена и алгоритм хеширования.
         var signingCredentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256Signature);
-        // Информация о токене.
         var tokenDescriptor = new SecurityTokenDescriptor {
-            Subject = new ClaimsIdentity(claims), // Информация, нужная для определения пользователя.
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddHours(2),
             SigningCredentials = signingCredentials,
             Issuer = _config["Jwt:Issuer"],
             Audience = _config["Jwt:Audience"]
         };
-        // Создание объекта, управляющего токенами
         var tokenHandler = new JwtSecurityTokenHandler();
-        // Создание токена при помощи информации о токене
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
         return tokenHandler.WriteToken(token);
