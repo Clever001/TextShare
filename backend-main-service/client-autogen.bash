@@ -1,0 +1,1 @@
+openapi-generator generate -g typescript-axios -o TSClientAutoGen -i http://127.0.0.1:7285/openapi/v1.json

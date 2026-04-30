@@ -15,6 +15,8 @@ namespace DocShareApi.Controllers;
 [ValidateModelState]
 [Route("api/accounts")]
 [ApiController]
+[Produces("application/json")]
+[ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status400BadRequest)]
 public class AccountController : ControllerBase {
     private readonly IAccountService _accountService;
     private readonly ILogger<AccountController> _logger;
@@ -25,7 +27,9 @@ public class AccountController : ControllerBase {
         _logger = logger;
     }
 
-    [HttpPost("register")]
+    [HttpPost("register", Name = "Register")]
+    [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(UserWithTokenDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto) {
         if (IsEmail(registerDto.UserName))
             return BadRequest(new ExceptionDto {
@@ -44,7 +48,9 @@ public class AccountController : ControllerBase {
         return Ok(user.ToUserWithTokenDto(token));
     }
 
-    [HttpPost("login")]
+    [HttpPost("login", Name = "Login")]
+    [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(UserWithTokenDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto) {
         var result = await _accountService.Login(loginDto.UserNameOrEmail, loginDto.Password);
 
@@ -55,8 +61,10 @@ public class AccountController : ControllerBase {
         return Ok(user.ToUserWithTokenDto(token));
     }
 
-    [HttpPut]
+    [HttpPut(Name = "UpdateAccountInfo")]
     [Authorize]
+    [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(UserWithTokenDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateAccount([FromBody] UpdateUserDto updateDto) {
         if (updateDto.UserName != null && IsEmail(updateDto.UserName))
             return this.ToActionResult(new BadRequestException("One or more validation errors occurred.",
@@ -74,7 +82,8 @@ public class AccountController : ControllerBase {
         return Ok(user.ToUserWithTokenDto(token));
     }
 
-    [HttpGet]
+    [HttpGet(Name = "SearchAccounts")]
+    [ProducesResponseType(typeof(PaginatedResponseDto<UserWithoutTokenDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromQuery] PaginationDto pagination,
         [FromQuery] string? userName
     ) {

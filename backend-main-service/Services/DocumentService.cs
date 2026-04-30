@@ -130,7 +130,10 @@ public class DocumentService(
 
         try {
             await docRepo.Update(documentId, dto);
-            return RD.Success(doc);
+            var updatedDoc = await docRepo.GetById(documentId);
+            if (updatedDoc == null)
+                throw new NullReferenceException("Updated document not found");
+            return RD.Success(updatedDoc);
         } catch (Exception ex) {
             logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
             return RD.Failure(new ServerException());
