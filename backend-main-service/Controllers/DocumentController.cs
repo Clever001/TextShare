@@ -31,8 +31,8 @@ public class DocumentController(
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
         Document newDoc = result.Value;
-        return CreatedAtAction("GetDocumentById",
-            new {id = result.Value.Id},
+        return CreatedAtAction(nameof(GetById),
+            new {docId = result.Value.Id},
             result.Value.ToDto());
     }
 
@@ -47,14 +47,12 @@ public class DocumentController(
         return Ok(doc.ToDto());
     }
 
-    [Authorize]
     [HttpGet(Name = "SearchDocument")]
     [ProducesResponseType(typeof(PaginatedResponseDto<DocumentDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Search(
         [FromQuery] SortDto sortDto, [FromQuery] PaginationDto paginationDto,
         [FromQuery] DocumentFilterDto filterDto
     ) {
-        var callerId = GetUserId();
         var result = await docServ.SearchDocuments(sortDto, paginationDto, filterDto);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 

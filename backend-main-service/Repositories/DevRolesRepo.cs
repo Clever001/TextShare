@@ -9,7 +9,10 @@ public class DevRolesRepo(
     AppDbContext context
 ) : IDevRolesRepo {
     public async Task<UserDevRole?> GetUserToDocRole(string userId, string documentId) {
-        return (await context.UserToDocRoles.FindAsync(userId, documentId))?.Role;
+        return (await context.UserToDocRoles
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.UserId == userId && r.DocumentId == documentId)
+        )?.Role;
     }
 
     public async Task AssignRoleToUser(string userId, string documentId, UserDevRole role) {

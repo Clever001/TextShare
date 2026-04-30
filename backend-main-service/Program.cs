@@ -11,6 +11,8 @@ using DocShareApi.Extensions;
 using DocShareApi.Repositories;
 using DocShareApi.Services;
 using DocShareApi.Models;
+using Microsoft.OpenApi;
+using System.Text.Json.Nodes;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options => {
@@ -55,12 +57,17 @@ builder.Services.AddAuthentication(options => {
 });
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IDevRolesRepo, DevRolesRepo>();
+builder.Services.AddScoped<IDocumentRepo, DocumentRepo>();
 builder.Services.AddScoped<IHashSeedRepository, HashSeedRepository>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUniqueIdService, UniqueIdService>();
 builder.Services.AddScoped<PasswordHasher<AppUser>>();
+
+
 
 builder.Logging.AddConsole();
 
@@ -78,7 +85,20 @@ builder.Services.AddCors(options => {
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
+builder.Services.AddOpenApi("v1", options => {
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    options.AddSchemaTransformer((schema, context, cancellationToken) => {
+        if (context.JsonTypeInfo.Type.IsEnum) {
+            schema.Type = JsonSchemaType.String;
+            schema.Enum = context.JsonTypeInfo.Type
+                .GetEnumNames()
+                .Select(name => (JsonNode)JsonValue.Create(name))
+                .Where(n => n != null)
+                .ToList();
+        }
+        return Task.CompletedTask;
+    });
+});
 var app = builder.Build();
 
 // using (var scope = app.Services.CreateScope()) {

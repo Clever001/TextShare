@@ -7,6 +7,7 @@ namespace DocShareApi.Repositories;
 public interface IDocumentRepo {
     public Task Create(CreateDocCommand command, CreateUpdateDocDto dto);
     public Task<Document?> GetById(string docId);
+    public Task<bool> ContainsByTitleAndOwner(string title, string ownerId);
     public Task<FilterResult<Document>> GetAllDocuments<OrderT>(
         QueryFilter<Document, OrderT> filter
     );

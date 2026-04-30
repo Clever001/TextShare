@@ -28,7 +28,16 @@ public class DocumentService(
                 new BadRequestException("User with such id does not exist")
             );
         }
-        
+
+        if (await docRepo.ContainsByTitleAndOwner(dto.Title, callerId)) {
+            return RD.Failure(
+                new BadRequestException(
+                    "One or more validation errors occurred.",
+                    ["The field Title must be unique with other owner's documents."]
+                )
+            );
+        }
+
         var createCommand = new CreateDocCommand(
             DocumentId: await idServ.GenerateNewId(),
             CreatedOn: DateTime.UtcNow,
@@ -55,7 +64,6 @@ public class DocumentService(
             );
         }
 
-        doc.UserRoles = [];
         return RD.Success(doc);
     }
 
@@ -67,7 +75,7 @@ public class DocumentService(
         var take = pagination.PageSize;
 
         // Filtering
-        var predicates = new List<Expression<Func<Document, bool>>> ();
+        var predicates = new List<Expression<Func<Document, bool>>>();
         if (filter.Title != null) {
             predicates.Add(d => d.Title.ToLower().Contains(filter.Title.ToLower()));
         }
@@ -87,19 +95,24 @@ public class DocumentService(
         // Sorting
         FilterResult<Document> filterResult;
         switch (sort.SortBy) {
+            case null:
+                filterResult = await docRepo.GetAllDocuments(new QueryFilter<Document, string>(
+                    skip, take, d => d.Title, sort.SortAscending ?? true, predicates
+                ));
+                break;
             case "title":
                 filterResult = await docRepo.GetAllDocuments(new QueryFilter<Document, string>(
-                    skip, take, d => d.Title, sort.SortAscending, predicates
+                    skip, take, d => d.Title, sort.SortAscending ?? true, predicates
                 ));
                 break;
             case "created_on":
                 filterResult = await docRepo.GetAllDocuments(new QueryFilter<Document, DateTime>(
-                    skip, take, d => d.CreatedOn, sort.SortAscending, predicates
+                    skip, take, d => d.CreatedOn, sort.SortAscending ?? true, predicates
                 ));
                 break;
-            case "OwnerName":
+            case "owner_name":
                 filterResult = await docRepo.GetAllDocuments(new QueryFilter<Document, string>(
-                    skip, take, d => d.Owner.UserName!, sort.SortAscending, predicates
+                    skip, take, d => d.Owner.UserName!, sort.SortAscending ?? true, predicates
                 ));
                 break;
             default:
@@ -123,9 +136,17 @@ public class DocumentService(
         if (doc == null) {
             return RD.Failure(new NotFoundException());
         }
-        var callerRole = await rolesRepo.GetUserToDocRole(callerId, documentId);
-        if (callerRole != UserDevRole.Administrator) {
-            return RD.Failure(new ForbiddenException());
+        if (callerId != doc.OwnerId) {
+            var callerRole = await rolesRepo.GetUserToDocRole(callerId, documentId);
+            if (callerRole != UserDevRole.Administrator) {
+                return RD.Failure(new ForbiddenException());
+            }
+        }
+        if (await docRepo.ContainsByTitleAndOwner(dto.Title, doc.OwnerId)) {
+            return RD.Failure(new BadRequestException(
+                "One or more validation errors occurred.",
+                ["The field Title must be unique with other owner's documents."]
+            ));
         }
 
         try {
