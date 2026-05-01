@@ -7,13 +7,11 @@ using DocShareApi.Exceptions;
 using DocShareApi.Mappers;
 using DocShareApi.Models;
 using DocShareApi.Repositories;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using Perfolizer.Mathematics.Cpd;
 
 namespace DocShareApi.Services;
 
-using RC = Result<Comment>;
-using RPC = Result<PaginatedResponseDto<Comment>>;
+using RC = Result<CommentDto>;
+using RPC = Result<PaginatedResponseDto<CommentDto>>;
 using R = Result;
 
 public class CommentService(
@@ -34,7 +32,7 @@ public class CommentService(
             );
         }
         if (dto.ParentId != null) {
-            Comment? parent = await commentsRepo.GetById(dto.ParentId.Value);
+            var parent = await commentsRepo.GetById(dto.ParentId.Value);
             if (parent == null) {
                 return RC.Failure(
                     new BadRequestException("Comment with such ParentId does not exist")
@@ -53,7 +51,7 @@ public class CommentService(
 
         try {
             long commentId = await commentsRepo.Create(createCommand, dto);
-            Comment? newComment = await commentsRepo.GetById(commentId)
+            CommentDto? newComment = await commentsRepo.GetById(commentId)
                 ?? throw new NullReferenceException("Couldn't find created comment.");
             return RC.Success(newComment);
         } catch (Exception ex) {
@@ -63,7 +61,7 @@ public class CommentService(
     }
 
     public async Task<RC> GetComment(long commentId) {
-        Comment? comment = await commentsRepo.GetById(commentId);
+        var comment = await commentsRepo.GetById(commentId);
         if (comment == null ||
             comment.IsDevelopmentComment == true) {
             return RC.Failure(
@@ -101,7 +99,7 @@ public class CommentService(
             );
         }
 
-        Comment? comment = await commentsRepo.GetById(commentId);
+        var comment = await commentsRepo.GetById(commentId);
         if (comment == null) {
             return RC.Failure(new NotFoundException());
         }
@@ -113,7 +111,7 @@ public class CommentService(
 
         try {
             await commentsRepo.Update(commentId, dto);
-            Comment? newComment = await commentsRepo.GetById(commentId)
+            var newComment = await commentsRepo.GetById(commentId)
                 ?? throw new NullReferenceException("Couldn't find created comment.");
             return RC.Success(newComment);
         } catch (Exception ex) {
@@ -129,7 +127,7 @@ public class CommentService(
             );
         }
 
-        Comment? comment = await commentsRepo.GetById(commentId);
+        var comment = await commentsRepo.GetById(commentId);
         if (comment == null) {
             return R.Failure(new NotFoundException());
         }

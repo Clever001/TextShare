@@ -1,5 +1,7 @@
+using System.Linq.Expressions;
 using DocShareApi.Data;
 using DocShareApi.Dtos.Comments;
+using DocShareApi.Dtos.Documents;
 using DocShareApi.Dtos.QueryOptions.Filters;
 using DocShareApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -9,12 +11,15 @@ namespace DocShareApi.Repositories;
 public class CommentRepo(
     AppDbContext context
 ) : ICommentsRepo {
-    public async Task<long> Create(CreateCommentCommand command, CreateCommentDto dto) {
+    public async Task<long> Create(
+        CreateCommentCommand command, CreateCommentDto dto
+    ) {
         var newComment = new Comment() {
             Content = dto.Content,
             ParentId = dto.ParentId,
             DocumentId = dto.DocumentId,
             AuthorId = command.AuthorId,
+            CreatedOn = command.CreatedOn,
             IsDevelopmentComment = command.IsDevelopmentComment
         };
         await context.Comments.AddAsync(newComment);
@@ -22,11 +27,13 @@ public class CommentRepo(
         return newComment.Id;
     }
 
-    public async Task<Comment?> GetById(long commentId) {
+    public async Task<CommentDto?> GetById(long commentId) {
         return await context.Comments
             .Include(c => c.Author)
             .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == commentId);
+            .Where(c => c.Id == commentId)
+            .Select(ToCommentDto)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<bool> ContainsById(long commentId) {
@@ -35,7 +42,7 @@ public class CommentRepo(
             .AnyAsync();
     }
 
-    public async Task<FilterResult<Comment>> GetAll<OrderT>(
+    public async Task<FilterResult<CommentDto>> GetAll<OrderT>(
         QueryFilter<Comment, OrderT> filter
     ) {
         IQueryable<Comment> comments = context.Comments;
@@ -51,9 +58,10 @@ public class CommentRepo(
         var selection = await comments
             .Include(c => c.Author)
             .AsNoTracking()
+            .Select(ToCommentDto)
             .ToListAsync();
 
-        return new FilterResult<Comment>(count, selection);
+        return new FilterResult<CommentDto>(count, selection);
     }
 
     public async Task Update(long commentId, UpdateCommentDto dto) {
@@ -81,4 +89,16 @@ public class CommentRepo(
         context.Comments.Update(foundComment);
         await context.SaveChangesAsync();
     }
+
+    private Expression<Func<Comment, CommentDto>> ToCommentDto = c => new CommentDto(
+        Id: c.Id,
+        Content: c.Content,
+        ParentId: c.ParentId,
+        DocumentId: c.DocumentId,
+        AuthorId: c.AuthorId,
+        AuthorName: c.Author == null ? null : c.Author.UserName,
+        HasChildren: c.Children.Any(),
+        IsDevelopmentComment: c.IsDevelopmentComment,
+        CreatedOn: c.CreatedOn
+    );
 }

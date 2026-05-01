@@ -7,12 +7,12 @@ using DocShareApi.Models;
 namespace DocShareApi.Services;
 
 public interface ICommentService {
-    Task<Result<Comment>> CreateComment(string callerId, CreateCommentDto dto);
-    Task<Result<Comment>> GetComment(long commentId);
-    Task<Result<PaginatedResponseDto<Comment>>> SearchComments(
+    Task<Result<CommentDto>> CreateComment(string callerId, CreateCommentDto dto);
+    Task<Result<CommentDto>> GetComment(long commentId);
+    Task<Result<PaginatedResponseDto<CommentDto>>> SearchComments(
         PaginationDto pagination, CommentFilterDto commentFilter
     );
-    Task<Result<Comment>> UpdateComment(
+    Task<Result<CommentDto>> UpdateComment(
         string callerId, long commentId, UpdateCommentDto dto
     );
     Task<Result> ClearComment(string callerId, long commentId);

@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using DocShareApi.Dtos.Enums;
-using DocShareApi.Models;
 
 namespace DocShareApi.Dtos.Documents;
 

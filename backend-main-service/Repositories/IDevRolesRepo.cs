@@ -1,5 +1,4 @@
 using DocShareApi.Dtos.Enums;
-using DocShareApi.Models;
 
 namespace DocShareApi.Repositories;
 

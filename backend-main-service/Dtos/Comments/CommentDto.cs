@@ -7,5 +7,7 @@ public record CommentDto(
     string DocumentId,
     string? AuthorId,
     string? AuthorName,
+    bool HasChildren,
+    bool IsDevelopmentComment,
     DateTime CreatedOn
 );

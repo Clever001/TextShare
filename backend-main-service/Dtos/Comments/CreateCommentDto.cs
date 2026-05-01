@@ -3,8 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace DocShareApi.Dtos.Comments;
 
 public record CreateCommentDto(
-    [property: Required]
-    [property: Length(1, 1000)]
+    [Required, Length(1, 1000)]
     string Content,
     long? ParentId,
     string DocumentId

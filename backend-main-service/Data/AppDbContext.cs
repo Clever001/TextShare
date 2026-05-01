@@ -82,7 +82,7 @@ public class AppDbContext : IdentityDbContext<AppUser> {
         builder.Entity<Comment>(e => {
             e.HasKey(c => c.Id);
             e.HasOne(c => c.Parent)
-                .WithMany()
+                .WithMany(c => c.Children)
                 .HasForeignKey(c => c.ParentId)
                 .OnDelete(DeleteBehavior.Restrict);
             e.HasOne(c => c.Document)

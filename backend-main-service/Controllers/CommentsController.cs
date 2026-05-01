@@ -6,7 +6,6 @@ using DocShareApi.Dtos.QueryOptions.Filters;
 using DocShareApi.Extensions;
 using DocShareApi.Mappers;
 using DocShareApi.Models;
-using DocShareApi.Repositories;
 using DocShareApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,10 +30,10 @@ public class CommentsController(
         var result = await commentsServ.CreateComment(callerId, dto);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
-        Comment newComment = result.Value;
+        CommentDto newComment = result.Value;
         return CreatedAtAction(nameof(GetById),
             new { commentId = result.Value.Id },
-            result.Value.ToDto());
+            result.Value);
     }
 
     [HttpGet("{commentId}", Name = "GetCommentById")]
@@ -44,8 +43,8 @@ public class CommentsController(
         var result = await commentsServ.GetComment(commentId);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
-        Comment comment = result.Value;
-        return Ok(comment.ToDto());
+        CommentDto comment = result.Value;
+        return Ok(comment);
     }
 
     [HttpGet(Name = "SearchComments")]
@@ -59,8 +58,8 @@ public class CommentsController(
         );
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
-        PaginatedResponseDto<Comment> comments = result.Value;
-        return Ok(comments.Convert(c => c.ToDto()));
+        PaginatedResponseDto<CommentDto> comments = result.Value;
+        return Ok(comments);
     }
 
     [Authorize]
@@ -78,8 +77,8 @@ public class CommentsController(
         );
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
-        Comment updatedComment = result.Value;
-        return Ok(updatedComment.ToDto());
+        CommentDto updatedComment = result.Value;
+        return Ok(updatedComment);
     }
 
     [Authorize]

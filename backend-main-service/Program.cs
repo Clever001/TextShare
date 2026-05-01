@@ -63,7 +63,7 @@ builder.Services.AddScoped<IDocumentRepo, DocumentRepo>();
 builder.Services.AddScoped<IHashSeedRepository, HashSeedRepository>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<ICommentsRepo, CommentRepo>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUniqueIdService, UniqueIdService>();
