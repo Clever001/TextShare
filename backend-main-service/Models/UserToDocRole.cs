@@ -9,5 +9,5 @@ public class UserToDocRole {
     public AppUser User { get; set; }
     public string DocumentId { get; set; }
     public Document Document { get; set; }
-    public UserDevRole Role {get; set;}
+    public UserDevRole Role { get; set; }
 }

@@ -44,6 +44,12 @@ public class DocumentRepo(
         return doc;
     }
 
+    public async Task<bool> ContainsById(string docId) {
+        return await context.Documents
+            .Where(d => d.Id == docId)
+            .AnyAsync();
+    }
+
     public async Task<bool> ContainsByTitleAndOwner(
         string title, string ownerId
     ) {
@@ -52,7 +58,7 @@ public class DocumentRepo(
             .AnyAsync();
     }
 
-    public async Task<FilterResult<Document>> GetAllDocuments<OrderT>(
+    public async Task<FilterResult<Document>> GetAll<OrderT>(
         QueryFilter<Document, OrderT> filter
     ) {
         IQueryable<Document> docs = context.Documents;
@@ -79,7 +85,7 @@ public class DocumentRepo(
 
     public async Task Update(string docId, CreateUpdateDocDto dto) {
         Document? foundDoc = await context.Documents
-            .FirstOrDefaultAsync(d => d.Id == docId);
+            .FindAsync(docId);
         if (foundDoc == null)
             throw new NullReferenceException("Object does not exist");
 
@@ -128,7 +134,7 @@ public class DocumentRepo(
                 .ExecuteDeleteAsync();
             await context.Comments.Where(c => c.DocumentId == docId)
                 .ExecuteDeleteAsync();
-            
+
             context.Documents.Remove(foundDoc);
 
             await context.SaveChangesAsync();

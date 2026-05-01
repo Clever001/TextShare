@@ -43,8 +43,8 @@ public class AccountRepository : IAccountRepository {
         var count = await users.CountAsync();
 
         // Ordering
-        users = filter.IsAscending ? 
-            users.OrderBy(filter.KeyOrder) : 
+        users = filter.IsAscending ?
+            users.OrderBy(filter.KeyOrder) :
             users.OrderByDescending(filter.KeyOrder);
 
         // Pagination

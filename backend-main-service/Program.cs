@@ -57,11 +57,13 @@ builder.Services.AddAuthentication(options => {
 });
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<ICommentsRepo, CommentRepo>();
 builder.Services.AddScoped<IDevRolesRepo, DevRolesRepo>();
 builder.Services.AddScoped<IDocumentRepo, DocumentRepo>();
 builder.Services.AddScoped<IHashSeedRepository, HashSeedRepository>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ICommentsRepo, CommentRepo>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUniqueIdService, UniqueIdService>();

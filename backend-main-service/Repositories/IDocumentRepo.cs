@@ -5,12 +5,13 @@ using DocShareApi.Models;
 namespace DocShareApi.Repositories;
 
 public interface IDocumentRepo {
-    public Task Create(CreateDocCommand command, CreateUpdateDocDto dto);
-    public Task<Document?> GetById(string docId);
-    public Task<bool> ContainsByTitleAndOwner(string title, string ownerId);
-    public Task<FilterResult<Document>> GetAllDocuments<OrderT>(
+    Task Create(CreateDocCommand command, CreateUpdateDocDto dto);
+    Task<Document?> GetById(string docId);
+    Task<bool> ContainsById(string docId);
+    Task<bool> ContainsByTitleAndOwner(string title, string ownerId);
+    Task<FilterResult<Document>> GetAll<OrderT>(
         QueryFilter<Document, OrderT> filter
     );
-    public Task Update(string docId, CreateUpdateDocDto dto);
-    public Task Delete(string docId);
+    Task Update(string docId, CreateUpdateDocDto dto);
+    Task Delete(string docId);
 }

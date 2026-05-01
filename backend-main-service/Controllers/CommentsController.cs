@@ -1,11 +1,12 @@
 using DocShareApi.Attributes;
-using DocShareApi.Dtos.Documents;
+using DocShareApi.Dtos.Comments;
 using DocShareApi.Dtos.Exception;
 using DocShareApi.Dtos.QueryOptions;
 using DocShareApi.Dtos.QueryOptions.Filters;
 using DocShareApi.Extensions;
 using DocShareApi.Mappers;
 using DocShareApi.Models;
+using DocShareApi.Repositories;
 using DocShareApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,79 +14,83 @@ using Microsoft.AspNetCore.Mvc;
 namespace DocShareApi.Controllers;
 
 [ValidateModelState]
-[Route("api/documents")]
+[Route("api/comments")]
 [ApiController]
 [Produces("application/json")]
 [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status400BadRequest)]
-public class DocumentController(
-    IDocumentService docServ
+public class CommentsController(
+    ICommentService commentsServ
 ) : ControllerBase {
 
     [Authorize]
-    [HttpPost(Name = "CreateDocument")]
+    [HttpPost(Name = "CreateComment")]
     [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(typeof(DocumentDto), StatusCodes.Status201Created)]
-    public async Task<IActionResult> Create([FromBody] CreateUpdateDocDto dto) {
+    [ProducesResponseType(typeof(CommentDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Create([FromBody] CreateCommentDto dto) {
         var callerId = this.GetUserId();
-        var result = await docServ.CreateDocument(callerId, dto);
+        var result = await commentsServ.CreateComment(callerId, dto);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
-        Document newDoc = result.Value;
+        Comment newComment = result.Value;
         return CreatedAtAction(nameof(GetById),
-            new { docId = result.Value.Id },
+            new { commentId = result.Value.Id },
             result.Value.ToDto());
     }
 
-    [HttpGet("{docId}", Name = "GetDocumentById")]
+    [HttpGet("{commentId}", Name = "GetCommentById")]
     [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(DocumentDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetById([FromRoute] string docId) {
-        var result = await docServ.GetDocumentInfo(docId);
+    [ProducesResponseType(typeof(CommentDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetById([FromRoute] long commentId) {
+        var result = await commentsServ.GetComment(commentId);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
-        Document doc = result.Value;
-        return Ok(doc.ToDto());
+        Comment comment = result.Value;
+        return Ok(comment.ToDto());
     }
 
-    [HttpGet(Name = "SearchDocuments")]
-    [ProducesResponseType(typeof(PaginatedResponseDto<DocumentDto>), StatusCodes.Status200OK)]
+    [HttpGet(Name = "SearchComments")]
+    [ProducesResponseType(typeof(PaginatedResponseDto<CommentDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Search(
-        [FromQuery] SortDto sortDto, [FromQuery] PaginationDto paginationDto,
-        [FromQuery] DocumentFilterDto filterDto
+        [FromQuery] PaginationDto paginationDto,
+        [FromQuery] CommentFilterDto filterDto
     ) {
-        var result = await docServ.SearchDocuments(sortDto, paginationDto, filterDto);
+        var result = await commentsServ.SearchComments(
+            paginationDto, filterDto
+        );
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
-        PaginatedResponseDto<Document> documents = result.Value;
-        return Ok(documents.Convert(d => d.ToDto()));
+        PaginatedResponseDto<Comment> comments = result.Value;
+        return Ok(comments.Convert(c => c.ToDto()));
     }
 
     [Authorize]
-    [HttpPut("{docId}", Name = "UpdateDocument")]
+    [HttpPut("{commentId}", Name = "UpdateComment")]
     [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(typeof(DocumentDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CommentDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> Update(
-        [FromRoute] string docId, [FromBody] CreateUpdateDocDto dto
+        [FromRoute] long commentId, [FromBody] UpdateCommentDto dto
     ) {
         var callerId = this.GetUserId();
-        var result = await docServ.UpdateDocumentInfo(callerId, docId, dto);
+        var result = await commentsServ.UpdateComment(
+            callerId, commentId, dto
+        );
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
-        Document updatedDoc = result.Value;
-        return Ok(updatedDoc.ToDto());
+        Comment updatedComment = result.Value;
+        return Ok(updatedComment.ToDto());
     }
 
     [Authorize]
-    [HttpDelete("{docId}", Name = "DeleteDocumentById")]
+    [HttpDelete("{commentId}", Name = "ClearComment")]
     [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> DeleteById([FromRoute] string docId) {
+    public async Task<IActionResult> ClearById([FromRoute] long commentId) {
         var callerId = this.GetUserId();
-        var result = await docServ.DeleteDocument(callerId, docId);
+        var result = await commentsServ.ClearComment(callerId, commentId);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 
         return NoContent();

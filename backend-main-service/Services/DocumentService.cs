@@ -71,8 +71,7 @@ public class DocumentService(
         SortDto sort, PaginationDto pagination, DocumentFilterDto filter
     ) {
         // Pagination
-        var skip = (pagination.PageNumber - 1) * pagination.PageSize;
-        var take = pagination.PageSize;
+        var (skip, take) = pagination.ToSkipAndTake();
 
         // Filtering
         var predicates = new List<Expression<Func<Document, bool>>>();
@@ -96,22 +95,22 @@ public class DocumentService(
         FilterResult<Document> filterResult;
         switch (sort.SortBy) {
             case null:
-                filterResult = await docRepo.GetAllDocuments(new QueryFilter<Document, string>(
+                filterResult = await docRepo.GetAll(new QueryFilter<Document, string>(
                     skip, take, d => d.Title, sort.SortAscending ?? true, predicates
                 ));
                 break;
             case "title":
-                filterResult = await docRepo.GetAllDocuments(new QueryFilter<Document, string>(
+                filterResult = await docRepo.GetAll(new QueryFilter<Document, string>(
                     skip, take, d => d.Title, sort.SortAscending ?? true, predicates
                 ));
                 break;
             case "created_on":
-                filterResult = await docRepo.GetAllDocuments(new QueryFilter<Document, DateTime>(
+                filterResult = await docRepo.GetAll(new QueryFilter<Document, DateTime>(
                     skip, take, d => d.CreatedOn, sort.SortAscending ?? true, predicates
                 ));
                 break;
             case "owner_name":
-                filterResult = await docRepo.GetAllDocuments(new QueryFilter<Document, string>(
+                filterResult = await docRepo.GetAll(new QueryFilter<Document, string>(
                     skip, take, d => d.Owner.UserName!, sort.SortAscending ?? true, predicates
                 ));
                 break;

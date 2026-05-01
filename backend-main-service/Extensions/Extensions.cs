@@ -15,6 +15,11 @@ public static class Extensions {
         });
     }
 
+    public static string GetUserId(this ControllerBase controller) {
+        return controller.User.GetId() ??
+            throw new ArgumentNullException("UserId");
+    }
+
     public static string? GetId(this ClaimsPrincipal principal) {
         return principal.FindFirstValue(ClaimTypes.NameIdentifier);
     }

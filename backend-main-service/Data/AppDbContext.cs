@@ -15,7 +15,7 @@ public class AppDbContext : IdentityDbContext<AppUser> {
     public DbSet<PublishedVersion> PublishedVersion { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<UserToDocRole> UserToDocRoles { get; set; }
-    public DbSet<DocToTag> DocToTags {get;set;}
+    public DbSet<DocToTag> DocToTags { get; set; }
 
 
     private static readonly IdentityRole[] SeedRoles = {
@@ -50,7 +50,7 @@ public class AppDbContext : IdentityDbContext<AppUser> {
                         .OnDelete(DeleteBehavior.Restrict),
                     j => {
                         j.ToTable("DocToTag");
-                        j.HasKey(dt => new {dt.DocumentId, dt.TagName});
+                        j.HasKey(dt => new { dt.DocumentId, dt.TagName });
                     }
                 );
         });
