@@ -1,3 +1,5 @@
+import { AccountApi, Configuration } from "./ApiClient";
+
 function toStringWithPad(num: number): string {
   return num.toString().padStart(2, "0");
 }
@@ -16,3 +18,10 @@ export function dateToStringWithTime(d: Date): string {
 
   return `${dateToString(d)} ${hours}:${minutes}:${seconds}`;
 }
+
+export function generateAccountApi() : AccountApi {
+  const conf = new Configuration({
+    basePath: import.meta.env.VITE_API_URL
+  });
+  return new AccountApi(conf);
+} 

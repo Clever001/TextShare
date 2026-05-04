@@ -16,3 +16,8 @@
   align-items: center;
   gap: 25px;
 }
+
+.register-feature .auth-form .error {
+  color: var(--error);
+  text-align: center;
+}

@@ -1,15 +1,18 @@
-import { useContext } from "react";
+import { useContext, useMemo, useState } from "react";
 import { AuthContext } from "../../1-Processes/AuthContext";
 import CustomButton from "../../4-Widgets/CustomButton/CustomButton";
 import SectionTitle from "../../4-Widgets/SectionTitle/SectionTitle";
 import ValueInput from "../../4-Widgets/ValueInput/ValueInput";
 import "./AuthF.css";
+import { generateAccountApi } from "../../6-Shared/utils";
 
 type Props = {
   onRegisterClick: () => void;
 };
 
 export default function AuthF({ onRegisterClick }: Props) {
+  const authApi = useMemo(generateAccountApi, []);
+
   const [errors, setErrors] = useState<string[]>([])
   const authContext = useContext(AuthContext)
   if (!authContext) {
@@ -17,9 +20,6 @@ export default function AuthF({ onRegisterClick }: Props) {
   }
 
   const setUserInfo = authContext.setUserInfo
-  const showAuth = authContext.showAuth
-  const setShowAuth = authContext.setShowAuth
-
   
 
   return (
@@ -34,7 +34,7 @@ export default function AuthF({ onRegisterClick }: Props) {
           hasRollbackButton={false}
         />
         <ValueInput
-          type="input"
+          type="password"
           keyPosition="right"
           label="Пароль"
           formSearchName="password"

@@ -1,7 +1,7 @@
 import "./ValueInput.css";
 
 type Props = {
-  type: "textarea" | "select" | "input" | "checkbox";
+  type: "textarea" | "select" | "input" | "password" | "checkbox";
   keyPosition: "left" | "right";
   label: string;
   formSearchName: string;
@@ -53,11 +53,11 @@ export default function ValueInput({
           </select>
         </div>
       )}
-      {type == "input" && (
+      {(type == "input" || type == "password") && (
         <div className="input-container">
           <input
             className="value"
-            type="text"
+            type={(type == "input") ? "text" : "password"}
             name={formSearchName}
             id={formSearchName}
             placeholder={hint}

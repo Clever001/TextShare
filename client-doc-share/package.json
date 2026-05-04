@@ -28,6 +28,7 @@
     "@tiptap/react": "^3.22.2",
     "@tiptap/starter-kit": "^3.22.2",
     "@tiptap/y-tiptap": "^3.0.2",
+    "axios": "^1.16.0",
     "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.5",
     "jspdf": "^4.2.1",
