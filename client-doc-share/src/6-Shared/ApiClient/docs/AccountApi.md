@@ -4,10 +4,66 @@ All URIs are relative to *http://127.0.0.1:7285*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
+|[**getAccountsThatStartsWith**](#getaccountsthatstartswith) | **GET** /api/accounts/startsWith | |
 |[**login**](#login) | **POST** /api/accounts/login | |
 |[**register**](#register) | **POST** /api/accounts/register | |
 |[**searchAccounts**](#searchaccounts) | **GET** /api/accounts | |
 |[**updateAccountInfo**](#updateaccountinfo) | **PUT** /api/accounts | |
+
+# **getAccountsThatStartsWith**
+> Array<UserWithoutTokenDto> getAccountsThatStartsWith()
+
+
+### Example
+
+```typescript
+import {
+    AccountApi,
+    Configuration,
+    GetAccountsThatStartsWithTakeParameter
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AccountApi(configuration);
+
+let take: GetAccountsThatStartsWithTakeParameter; // (optional) (default to undefined)
+let userName: string; // (optional) (default to undefined)
+
+const { status, data } = await apiInstance.getAccountsThatStartsWith(
+    take,
+    userName
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **take** | [**GetAccountsThatStartsWithTakeParameter**] |  | (optional) defaults to undefined|
+| **userName** | [**string**] |  | (optional) defaults to undefined|
+
+
+### Return type
+
+**Array<UserWithoutTokenDto>**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**400** | Bad Request |  -  |
+|**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **login**
 > UserWithTokenDto login(loginDto)
@@ -45,7 +101,7 @@ const { status, data } = await apiInstance.login(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -98,7 +154,7 @@ const { status, data } = await apiInstance.register(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -158,7 +214,7 @@ const { status, data } = await apiInstance.searchAccounts(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -210,7 +266,7 @@ const { status, data } = await apiInstance.updateAccountInfo(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 

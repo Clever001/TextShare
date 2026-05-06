@@ -17,5 +17,5 @@ export const router = createBrowserRouter([
 
 export const ROUTES = {
   MAIN: "/",
-  DOCUMENT: "document/"
+  DOCUMENT: "/document/"
 };

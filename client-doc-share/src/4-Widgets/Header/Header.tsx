@@ -50,7 +50,7 @@ export default function Header() {
 
   const redirectToUserProfile = useCallback(() => {
     if (userName !== "") {
-      navigate("profile/" + encodeURIComponent(userName))
+      navigate("/profile/" + encodeURIComponent(userName))
     }
   }, [userName])
 
@@ -77,6 +77,7 @@ export default function Header() {
             rightIconUrl={null}
             text="Добавить документ"
             color="green"
+            onClick={() => {navigate("create")}}
           />
         </div>
         <div className="search-text">

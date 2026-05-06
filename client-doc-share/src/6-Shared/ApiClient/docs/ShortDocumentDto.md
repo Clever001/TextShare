@@ -1,25 +1,29 @@
-# CreateUpdateDocDto
+# ShortDocumentDto
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**id** | **string** |  | [default to undefined]
 **title** | **string** |  | [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
+**description** | **string** |  | [default to undefined]
+**createdOn** | **string** |  | [default to undefined]
+**ownerName** | **string** |  | [default to undefined]
 **tags** | **Array&lt;string&gt;** |  | [default to undefined]
-**roles** | [**{ [key: string]: UserDevRole; }**](UserDevRole.md) |  | [default to undefined]
 
 ## Example
 
 ```typescript
-import { CreateUpdateDocDto } from './api';
+import { ShortDocumentDto } from './api';
 
-const instance: CreateUpdateDocDto = {
+const instance: ShortDocumentDto = {
+    id,
     title,
     description,
+    createdOn,
+    ownerName,
     tags,
-    roles,
 };
 ```
 

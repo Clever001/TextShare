@@ -115,4 +115,22 @@ public class AccountService : IAccountService {
             )
         );
     }
+
+    public async Task<Result<AppUser[]>> GetUsersThatStartsWith(string userName, int take) {
+        string uppercaseName = userName.ToUpperInvariant();
+
+        Expression<Func<AppUser, bool>> nameStartsWithPredicate = u => u.NormalizedUserName!.StartsWith(uppercaseName);
+
+        var users = await _accountRepository.GetAccounts(
+            new QueryFilter<AppUser, string?>(
+                Skip: 0,
+                Take: take,
+                KeyOrder: u => u.UserName,
+                IsAscending: true,
+                Predicates: [nameStartsWithPredicate]
+            )
+        );
+
+        return Result<AppUser[]>.Success(users);
+    }
 }

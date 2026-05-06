@@ -1,4 +1,4 @@
-# PaginatedResponseDtoOfCommentDtoTotalItems
+# GetAccountsThatStartsWithTakeParameter
 
 
 ## Properties
@@ -9,9 +9,9 @@ Name | Type | Description | Notes
 ## Example
 
 ```typescript
-import { PaginatedResponseDtoOfCommentDtoTotalItems } from './api';
+import { GetAccountsThatStartsWithTakeParameter } from './api';
 
-const instance: PaginatedResponseDtoOfCommentDtoTotalItems = {
+const instance: GetAccountsThatStartsWithTakeParameter = {
 };
 ```
 

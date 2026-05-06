@@ -56,6 +56,28 @@ public class AccountRepository : IAccountRepository {
         }).ToListAsync());
     }
 
+    public async Task<AppUser[]> GetAccounts<OrderT>(QueryFilter<AppUser, OrderT> filter) {
+        IQueryable<AppUser> users = _context.Users;
+
+        // Filtering
+        if (filter.Predicates != null)
+            foreach (var predicate in filter.Predicates)
+                users = users.Where(predicate);
+
+        // Ordering
+        users = filter.IsAscending ?
+            users.OrderBy(filter.KeyOrder) :
+            users.OrderByDescending(filter.KeyOrder);
+
+        // Pagination
+        users = users.Skip(filter.Skip).Take(filter.Take);
+
+        return await users.Select(u => new AppUser {
+            Id = u.Id,
+            UserName = u.UserName
+        }).ToArrayAsync();
+    }
+
     public async Task<bool> ContainsAccountByName(string userName) {
         var upperName = userName.ToUpper();
         return await _context.Users.AnyAsync(u => u.NormalizedUserName == upperName);

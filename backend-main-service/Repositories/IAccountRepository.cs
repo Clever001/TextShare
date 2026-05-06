@@ -11,6 +11,9 @@ public interface IAccountRepository {
     Task<FilterResult<AppUser>> GetAllAccounts<OrderT>(
         QueryFilter<AppUser, OrderT> filter
     );
+    Task<AppUser[]> GetAccounts<OrderT> (
+        QueryFilter<AppUser, OrderT> filter
+    );
 
     Task<bool> ContainsAccountByName(string userName);
     Task<bool> ContainsAccountByEmail(string email);

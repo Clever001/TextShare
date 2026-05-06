@@ -22,10 +22,13 @@ internal sealed class BearerSecuritySchemeTransformer(
                 ["Bearer"] = bearerScheme
             };
 
-            foreach (var operation in document.Paths.Values.SelectMany(path => path.Operations))
-                operation.Value.Security?.Add(new OpenApiSecurityRequirement {
+            foreach (var operation in document.Paths.Values.SelectMany(path => path.Operations)) {
+                operation.Value.Security ??= new List<OpenApiSecurityRequirement>();
+
+                operation.Value.Security.Add(new OpenApiSecurityRequirement {
                     [new OpenApiSecuritySchemeReference("Bearer", document, null)] = []
                 });
+            }
         }
     }
 }

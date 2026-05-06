@@ -1,51 +1,51 @@
 import "./ValueInput.css";
 
-type Props = {
-  type: "textarea" | "select" | "input" | "password" | "checkbox";
-  keyPosition: "left" | "right";
-  label: string;
-  formSearchName: string;
-  hint?: string | undefined;
-  possibleSelections?: SelectionInfo[];
-  defaultValue?: string | undefined;
-  hasRollbackButton: boolean;
-  onRollback?: () => void | undefined;
-};
+type BaseProps = {
+  keyPosition: "left" | "right",
+  label: string,
+  formSearchName: string,
+  hasRollbackButton: boolean,
+  onRollback?: () => void | undefined
+}
+
+type Props = BaseProps & (
+  | {
+    widgetType: "textarea" | "input" | "password",
+    hint?: string | undefined,
+    defaultValue?: string | undefined,
+  } | {
+    widgetType: "select",
+    possibleSelections: SelectionInfo[],
+  } | {
+    widgetType: "checkbox",
+    defaultValue: string,
+  }
+)
 
 export type SelectionInfo = {
   htmlValue: string;
   presentValue: string;
 };
 
-export default function ValueInput({
-  type,
-  keyPosition,
-  label,
-  formSearchName,
-  hint = undefined,
-  possibleSelections = [],
-  defaultValue = undefined,
-  hasRollbackButton,
-  onRollback = undefined,
-}: Props) {
+export default function ValueInput(props: Props) {
   return (
     <div className="value-input">
-      <p className={`key ${keyPosition}`}>{label}</p>
-      {type == "textarea" && (
+      <p className={`key ${props.keyPosition}`}>{props.label}</p>
+      {props.widgetType === "textarea" && (
         <div className="input-container">
           <textarea
             className="value"
-            name={formSearchName}
-            id={formSearchName}
-            placeholder={hint}
-            defaultValue={defaultValue}
+            name={props.formSearchName}
+            id={props.formSearchName}
+            placeholder={props.hint}
+            defaultValue={props.defaultValue}
           />
         </div>
       )}
-      {type == "select" && (
+      {props.widgetType === "select" && (
         <div className="input-container">
-          <select name={formSearchName} id={formSearchName}>
-            {possibleSelections.map((s) => {
+          <select name={props.formSearchName} id={props.formSearchName}>
+            {props.possibleSelections.map((s) => {
               return (
                 <option defaultValue={s.htmlValue}>{s.presentValue}</option>
               );
@@ -53,36 +53,35 @@ export default function ValueInput({
           </select>
         </div>
       )}
-      {(type == "input" || type == "password") && (
+      {(props.widgetType === "input" || props.widgetType == "password") && (
         <div className="input-container">
           <input
             className="value"
-            type={(type == "input") ? "text" : "password"}
-            name={formSearchName}
-            id={formSearchName}
-            placeholder={hint}
-            defaultValue={defaultValue}
+            type={(props.widgetType == "input") ? "text" : "password"}
+            name={props.formSearchName}
+            id={props.formSearchName}
+            placeholder={props.hint}
+            defaultValue={props.defaultValue}
           />
         </div>
       )}
-      {type == "checkbox" && (
+      {props.widgetType === "checkbox" && (
         <div className="input-container">
           <input
             className="value"
             type="checkbox"
-            name={formSearchName}
-            id={formSearchName}
-            placeholder={hint}
-            defaultValue={defaultValue}
+            name={props.formSearchName}
+            id={props.formSearchName}
+            defaultValue={props.defaultValue}
           />
         </div>
       )}
-      {hasRollbackButton && (
+      {props.hasRollbackButton && (
         <button
           type="button"
           className="rollback"
           onClick={() => {
-            onRollback && onRollback();
+            props.onRollback && props.onRollback();
           }}
         >
           <img src="/img/undo.svg" alt="rollback" />

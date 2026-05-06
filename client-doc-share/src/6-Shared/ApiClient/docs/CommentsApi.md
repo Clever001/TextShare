@@ -46,7 +46,7 @@ void (empty response body)
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -101,7 +101,7 @@ const { status, data } = await apiInstance.createComment(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -154,7 +154,7 @@ const { status, data } = await apiInstance.getCommentById(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -218,7 +218,7 @@ const { status, data } = await apiInstance.searchComments(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -274,7 +274,7 @@ const { status, data } = await apiInstance.updateComment(
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 

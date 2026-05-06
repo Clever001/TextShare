@@ -5,5 +5,6 @@ public record DocumentFilterDto(
     List<string>? Tags,
     DateTime? FromDate,
     DateTime? ToDate,
-    string? OwnerName
+    string? OwnerName,
+    string? OwnerId
 );

@@ -2,7 +2,7 @@ using DocShareApi.Dtos.Enums;
 
 namespace DocShareApi.Dtos.Documents;
 
-public record DocumentDto(
+public record FullDocumentDto(
     string Id,
     string Title,
     string Description,

@@ -1,25 +1,32 @@
-import React, { useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import "./SidePanel.css";
 import { Link } from "react-router-dom";
 import SectionTitle from "../SectionTitle/SectionTitle";
-
-type Doc = {
-  id: string;
-  title: string;
-  createdOn: Date;
-};
+import type { ShortDocumentDto } from "../../6-Shared/ApiClient";
+import { AuthContext } from "../../1-Processes/AuthContext";
+import { generateDocumentApi, generateDocumentApiAuth } from "../../6-Shared/utils";
 
 const SidePanel: React.FC = () => {
-  const russianPluralWords: { [Key: string]: string[] } = {
-    year: ["лет", "года", "год"],
-    month: ["месяцев", "месяца", "месяц"],
-    day: ["дней", "дня", "день"],
-    hour: ["часов", "часа", "час"],
-    minute: ["минут", "минуты", "минута"],
-    second: ["секунд", "секунды", "секунда"],
-  };
+  const russianPluralWords = useMemo<{ [Key: string]: string[] }>(() => {
+    return {
+      year: ["лет", "года", "год"],
+      month: ["месяцев", "месяца", "месяц"],
+      day: ["дней", "дня", "день"],
+      hour: ["часов", "часа", "час"],
+      minute: ["минут", "минуты", "минута"],
+      second: ["секунд", "секунды", "секунда"],
+    }
+  }, [])
 
-  const getTimeAgo = (d: Date): string => {
+  const getRussianPlural = useCallback((num: number, period: string): string => {
+    const pluralWords = russianPluralWords[period];
+    if (Math.floor(num / 10) % 10 == 1) return pluralWords[0];
+    if ([2, 3, 4].includes(Math.floor(num) % 10)) return pluralWords[1];
+    if (Math.floor(num) % 10 == 1) return pluralWords[2];
+    return pluralWords[0];
+  }, [russianPluralWords])
+
+  const getTimeAgo = useCallback((d: Date): string => {
     const now = new Date();
     const ellapsed = now.getTime() - d.getTime();
 
@@ -48,89 +55,87 @@ const SidePanel: React.FC = () => {
 
     result += " назад";
     return result;
-  };
+  }, [getRussianPlural])
 
-  const getRussianPlural = (num: number, period: string): string => {
-    const pluralWords = russianPluralWords[period];
-    if (Math.floor(num / 10) % 10 == 1) return pluralWords[0];
-    if ([2, 3, 4].includes(Math.floor(num) % 10)) return pluralWords[1];
-    if (Math.floor(num) % 10 == 1) return pluralWords[2];
-    return pluralWords[0];
-  };
+  const [myDocs, setMyDocs] = useState<ShortDocumentDto[]>([]);
+  const [societyDocs, setSocietyDocs] = useState<ShortDocumentDto[]>([]);
 
-  const now: Date = new Date();
-  const [myDocs, setMyDocs] = useState<Doc[]>([
-    {
-      id: "001",
-      title: "Мой блог о ООП",
-      createdOn: new Date(now.getTime() - 19 ** 1000),
-    },
-    {
-      id: "002",
-      title: "Мой блок о Socket",
-      createdOn: new Date(now.getTime() - 12 * 60 * 1000),
-    },
-    {
-      id: "001",
-      title: "Мой блог о ООП",
-      createdOn: new Date(now.getTime() - 19 ** 1000),
-    },
-    {
-      id: "002",
-      title: "Мой блок о Socket",
-      createdOn: new Date(now.getTime() - 12 * 60 * 1000),
-    },
-    {
-      id: "001",
-      title: "Мой блог о ООП",
-      createdOn: new Date(now.getTime() - 19 ** 1000),
-    },
-    {
-      id: "002",
-      title: "Мой блок о Socket",
-      createdOn: new Date(now.getTime() - 12 * 60 * 1000),
-    },
-  ]);
-  const [societyDocs, setSocietyDocs] = useState<Doc[]>([
-    {
-      id: "003",
-      title: "Об языке Typescript",
-      createdOn: new Date(now.getTime() - 10 * 60 * 1000),
-    },
-    {
-      id: "004",
-      title: "Отличия мутекса от семафора",
-      createdOn: new Date(now.getTime() - 11 * 60 * 1000),
-    },
-    {
-      id: "005",
-      title: "Как поступить в ВУЦ?",
-      createdOn: new Date(now.getTime() - 14 * 60 * 1000),
-    },
-    {
-      id: "006",
-      title: "Теория струн электрогитары",
-      createdOn: new Date(now.getTime() - 1 * 60 * 60 * 1000),
-    },
-    {
-      id: "007",
-      title: "Как выучить RUST и не перегореть?",
-      createdOn: new Date(now.getTime() - 24 * 60 * 60 * 1000),
-    },
-  ]);
+  const authContext = useContext(AuthContext)
+  if (!authContext) {
+    throw new Error("Auth Context cannot be undefined")
+  }
+  const isAuthenticated = authContext.isAuthenticated
+  const getUserInfo = authContext.getUserInfo
+
+  const getPersonalDocuments = useCallback(async (userId: string) => {
+    console.log("Started Personal loading")
+    const docApi = generateDocumentApi()
+
+    try {
+      const { data } = await docApi.searchDocuments(
+        undefined, // sortBy
+        undefined, // sortAscending
+        1,         // pageNumber
+        5,         // pageSize
+        undefined, // title
+        undefined, // tags
+        undefined, // fromDate
+        undefined, // toDate
+        undefined, // ownerName
+        userId     // ownerId
+      )
+      console.log("Finished Personal loading")
+      setMyDocs(data.items)
+    } catch (err) {
+
+    }
+  }, [])
+
+  const getLatestsDocuments = useCallback(async () => {
+    console.log("Started latests loading")
+    const docApi = generateDocumentApi()
+
+    try {
+      const { data } = await docApi.searchDocuments(
+        undefined, // sortBy
+        undefined, // sortAscending
+        1,         // pageNumber
+        5,         // pageSize
+        undefined, // title
+        undefined, // tags
+        undefined, // fromDate
+        undefined, // toDate
+        undefined, // ownerName
+        undefined  // ownerId
+      )
+      console.log("Finished latests loading")
+      setSocietyDocs(data.items)
+    } catch (err) {
+
+    }
+  }, [])
+
+  useEffect(() => {
+    console.log("Started docs loading")
+    const userInfo = getUserInfo()
+    if (userInfo) {
+      getPersonalDocuments(userInfo.id)
+    }
+    getLatestsDocuments()
+  }, [isAuthenticated, getUserInfo])
 
   return (
     <div className="side-panel-body">
-      {true && (
+      {isAuthenticated && (
         <div className="my-texts">
           <SectionTitle title="Мои документы" />
           <div className="text">
             {myDocs.length === 0 && "Вы еще не создали ни одного документа."}
             {myDocs.map((t) => {
               return (
-                <Link to={"/reader/" + encodeURIComponent(t.id)}>
+                <Link to={"/view/" + encodeURIComponent(t.id)}>
                   <p>{t.title}</p>
-                  <p>{getTimeAgo(t.createdOn)}</p>
+                  <p>{getTimeAgo(new Date(t.createdOn))}</p>
                 </Link>
               );
             })}
@@ -144,9 +149,9 @@ const SidePanel: React.FC = () => {
           {societyDocs.length === 0 && "Еще ни один документ не был создан."}
           {societyDocs.map((t) => {
             return (
-              <Link to={"/reader/" + encodeURIComponent(t.id)}>
+              <Link to={"/view/" + encodeURIComponent(t.id)}>
                 <p>{t.title}</p>
-                <p>{getTimeAgo(t.createdOn)}</p>
+                <p>{getTimeAgo(new Date(t.createdOn))}</p>
               </Link>
             );
           })}

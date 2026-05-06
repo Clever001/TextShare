@@ -93,6 +93,15 @@ public class AccountController : ControllerBase {
         return Ok(result.Value.Convert(u => u.ToUserWithoutTokenDto()));
     }
 
+    [HttpGet("startsWith", Name = "GetAccountsThatStartsWith")]
+    [ProducesResponseType(typeof(UserWithoutTokenDto[]), StatusCodes.Status200OK)]
+    public async Task<IActionResult> FastGet([FromQuery] UsersFastQuery query) {
+        var result = await _accountService.GetUsersThatStartsWith(query.UserName!, query.Take);
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+
+        return Ok(result.Value.Select(u => u.ToUserWithoutTokenDto()).ToArray());
+    }
+
     private bool IsEmail(string input) {
         var emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
         return Regex.IsMatch(input, emailPattern);

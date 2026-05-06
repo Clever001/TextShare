@@ -13,10 +13,12 @@ using DocShareApi.Services;
 using DocShareApi.Models;
 using Microsoft.OpenApi;
 using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options => {
     options.Filters.Add<ValidateModelStateAttribute>();
+    options.ModelMetadataDetailsProviders.Add(new SuppressChildValidationMetadataProvider(typeof(string)));
     if (bool.Parse(builder.Configuration["LogExecutionTime"] ?? ""))
         options.Filters.Add<LogExecutionTimeFilter>();
 }).ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = true; })
@@ -91,6 +93,12 @@ builder.Services.AddCors(options => {
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi("v1", options => {
     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    options.AddSchemaTransformer((schema, context, cancellationToken) => {
+        if (context.JsonTypeInfo.Type == typeof(DateTime) || context.JsonTypeInfo.Type == typeof(DateTime?)) {
+            schema.Format = "date-time";
+        }
+        return Task.CompletedTask;
+    });
     options.AddSchemaTransformer((schema, context, cancellationToken) => {
         if (context.JsonTypeInfo.Type.IsEnum) {
             schema.Type = JsonSchemaType.String;

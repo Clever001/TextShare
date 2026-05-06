@@ -3,7 +3,6 @@ import DocsTable, {
 } from "../../4-Widgets/DocsTable/DocsTable";
 import Pagination from "../../4-Widgets/Pagination/Pagination";
 import Search from "../../4-Widgets/Search/Search";
-import SectionTitle from "../../4-Widgets/SectionTitle/SectionTitle";
 import ValueInput from "../../4-Widgets/ValueInput/ValueInput";
 import "./SearchDocF.css";
 
@@ -47,10 +46,10 @@ export default function SearchDocF({ isProfilePage }: Props) {
   return (
     <div className="doc-search-feature">
       <form className="doc-search-form">
-        <Search formSearchName="doc-search" hint="Название документа" />
+        <Search widgetType="doc-search" formSearchName="doc-search" hint="Название документа" />
         <div className="search-params">
           <ValueInput
-            type="input"
+            widgetType="input"
             hint="тег1 тег2 тег3 тег4"
             keyPosition="left"
             label="Теги"
@@ -58,14 +57,14 @@ export default function SearchDocF({ isProfilePage }: Props) {
             hasRollbackButton={false}
           />
           <ValueInput
-            type="input"
+            widgetType="input"
             keyPosition="left"
             label="Опубликован с даты"
             formSearchName="start-release-date"
             hasRollbackButton={false}
           />
           <ValueInput
-            type="input"
+            widgetType="input"
             keyPosition="left"
             label="Опубликован по дату"
             formSearchName="end-release-date"
@@ -73,7 +72,7 @@ export default function SearchDocF({ isProfilePage }: Props) {
           />
           {!isProfilePage && (
             <ValueInput
-              type="input"
+              widgetType="input"
               keyPosition="left"
               label="Создатель"
               formSearchName="creator"

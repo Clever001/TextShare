@@ -2,13 +2,11 @@ import { useCallback, useContext, useMemo, useState } from "react";
 import CustomButton from "../../4-Widgets/CustomButton/CustomButton";
 import SectionTitle from "../../4-Widgets/SectionTitle/SectionTitle";
 import ValueInput from "../../4-Widgets/ValueInput/ValueInput";
-import { generateAccountApi } from "../../6-Shared/utils";
+import { generateAccountApi, getApiErrors } from "../../6-Shared/utils";
 import "./RegisterF.css";
 import { AuthContext } from "../../1-Processes/AuthContext";
-import type { ExceptionDto, RegisterDto } from "../../6-Shared/ApiClient";
-import axios, { AxiosError } from "axios";
+import type { RegisterDto } from "../../6-Shared/ApiClient";
 import { useNavigate } from "react-router-dom";
-import { translateException } from "../../6-Shared/errorTranslator";
 
 type Props = {
   onLoginClick: () => void;
@@ -27,7 +25,7 @@ export default function RegisterF({ onLoginClick }: Props) {
   const setUserInfo = authContext.setUserInfo
 
   const onRegisterSubmit = useCallback(async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
 
     const formData = new FormData(e.currentTarget)
     const registerDto: RegisterDto = {
@@ -36,8 +34,6 @@ export default function RegisterF({ onLoginClick }: Props) {
       password: formData.get("password")?.toString() ?? ""
     }
     const passwordRepeat = formData.get("confirm-password")?.toString() ?? ""
-    console.log(registerDto)
-    console.log(passwordRepeat)
 
     if (passwordRepeat !== registerDto.password) {
       setErrors(["Пароли должны совпадать"]);
@@ -45,56 +41,42 @@ export default function RegisterF({ onLoginClick }: Props) {
     }
 
     try {
-      const { status, data } = await authApi.register(registerDto);
+      const { status, data } = await authApi.register(registerDto)
       setUserInfo(data)
       navigate("/")
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const error = err as AxiosError;
-        if (error.response) {
-          if (error.response.status == 400) {
-            const exception = translateException(error.response.data as ExceptionDto)
-
-            if (exception.details && exception.details.length > 0) {
-              setErrors(exception.details);
-            } else {
-              setErrors([exception.description]);
-            }
-          } else {
-            setErrors(["Ошибка на сервере"])
-          }
-        }
-      }
+      const errors = getApiErrors(err)
+      setErrors(errors)
     }
-  }, [])
+  }, [authApi])
 
   return (
     <div className="register-feature">
       <SectionTitle title="Регистрация" />
       <form className="auth-form" onSubmit={onRegisterSubmit}>
         <ValueInput
-          type="input"
+          widgetType="input"
           keyPosition="right"
           label="Имя пользователя"
           formSearchName="username"
           hasRollbackButton={false}
         />
         <ValueInput
-          type="input"
+          widgetType="input"
           keyPosition="right"
           label="Электронная почта"
           formSearchName="email"
           hasRollbackButton={false}
         />
         <ValueInput
-          type="password"
+          widgetType="password"
           keyPosition="right"
           label="Пароль"
           formSearchName="password"
           hasRollbackButton={false}
         />
         <ValueInput
-          type="password"
+          widgetType="password"
           keyPosition="right"
           label="Повтор пароля"
           formSearchName="confirm-password"

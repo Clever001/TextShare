@@ -10,4 +10,5 @@ public interface IAccountService {
     Task<Result<(AppUser, string)>> Login(string nameOrEmail, string password);
     Task<Result<(AppUser, string)>> Update(string userName, UpdateUserDto update);
     Task<Result<PaginatedResponseDto<AppUser>>> GetUsers(PaginationDto pagination, string? userName);
+    Task<Result<AppUser[]>> GetUsersThatStartsWith(string userName, int take);
 }

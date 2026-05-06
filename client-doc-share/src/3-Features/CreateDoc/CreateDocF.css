@@ -25,3 +25,17 @@
 .create-doc-feature > .custom-button {
   width: fit-content;
 }
+
+.create-doc-feature .errors {
+  width: 100%;
+  max-width: 425px;
+}
+
+.create-doc-feature .errors p {
+  color: var(--error);
+  text-align: center;
+}
+
+.create-doc-feature .settings-container .input-container {
+  flex: 3;
+}

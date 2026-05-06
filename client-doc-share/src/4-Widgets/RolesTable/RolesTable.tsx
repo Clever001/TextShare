@@ -1,23 +1,32 @@
 import { Link } from "react-router-dom";
 import "./RolesTable.css";
+import { UserDevRole, type UserWithoutTokenDto } from "../../6-Shared/ApiClient";
 
 type Props = {
-  userNames: string[];
-  onDelete: (userName: string) => void;
+  users: {user: UserWithoutTokenDto, role: UserDevRole}[];
+  onRoleChange: (userId: string, newRole: UserDevRole) => void;
+  onDelete: (userId: string) => void;
 };
 
-export default function RolesTable({ userNames, onDelete }: Props) {
-  type Role = {
-    htmlValue: string;
-    presentValue: string;
-  };
+export default function RolesTable({ users, onRoleChange, onDelete }: Props) {
+  // type Role = {
+  //   htmlValue: string;
+  //   presentValue: string;
+  // };
 
-  const possibleRoles: Role[] = [
-    { htmlValue: "none", presentValue: "-" },
-    { htmlValue: "writer", presentValue: "Редактор" },
-    { htmlValue: "commentator", presentValue: "Комментатор" },
-    { htmlValue: "reader", presentValue: "Читатель" },
-  ];
+  // const possibleRoles: Role[] = [
+  //   { htmlValue: "none", presentValue: "-" },
+  //   { htmlValue: "writer", presentValue: "Редактор" },
+  //   { htmlValue: "commentator", presentValue: "Комментатор" },
+  //   { htmlValue: "reader", presentValue: "Читатель" },
+  // ];
+
+  const possibleRoles = [
+    {role: UserDevRole.Reader, presentValue: "Читатель"},
+    {role: UserDevRole.Commentor, presentValue: "Комментатор"},
+    {role: UserDevRole.Editor, presentValue: "Редактор"},
+    {role: UserDevRole.Administrator, presentValue: "Администратор"}
+  ]
 
   return (
     <div className="roles-table-container">
@@ -30,17 +39,18 @@ export default function RolesTable({ userNames, onDelete }: Props) {
           </tr>
         </thead>
         <tbody>
-          {userNames.map((userName) => {
+          {users.map((u) => {
             return (
-              <tr>
+              <tr key={u.user.id}>
                 <td>
-                  <Link to="/">{userName}</Link>
+                  <Link to="/">{u.user.userName}</Link>
                 </td>
                 <td>
-                  <select>
+                  <select value={u.role}
+                  onChange={(e) => {onRoleChange(u.user.id, e.target.value as UserDevRole)}}>
                     {possibleRoles.map((r) => {
                       return (
-                        <option value={r.htmlValue}>{r.presentValue}</option>
+                        <option value={r.role}>{r.presentValue}</option>
                       );
                     })}
                   </select>
@@ -49,7 +59,7 @@ export default function RolesTable({ userNames, onDelete }: Props) {
                   <button
                     type="button"
                     onClick={() => {
-                      onDelete(userName);
+                      onDelete(u.user.id);
                     }}
                   >
                     <img src="/img/delete.svg" alt="delete" />

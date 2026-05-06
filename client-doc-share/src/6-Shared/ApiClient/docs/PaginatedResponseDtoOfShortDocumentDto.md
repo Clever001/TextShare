@@ -1,11 +1,11 @@
-# PaginatedResponseDtoOfCommentDto
+# PaginatedResponseDtoOfShortDocumentDto
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**items** | [**Array&lt;CommentDto&gt;**](CommentDto.md) |  | [default to undefined]
+**items** | [**Array&lt;ShortDocumentDto&gt;**](ShortDocumentDto.md) |  | [default to undefined]
 **totalItems** | [**GetAccountsThatStartsWithTakeParameter**](GetAccountsThatStartsWithTakeParameter.md) |  | [default to undefined]
 **totalPages** | [**GetAccountsThatStartsWithTakeParameter**](GetAccountsThatStartsWithTakeParameter.md) |  | [default to undefined]
 **currentPage** | [**GetAccountsThatStartsWithTakeParameter**](GetAccountsThatStartsWithTakeParameter.md) |  | [default to undefined]
@@ -14,9 +14,9 @@ Name | Type | Description | Notes
 ## Example
 
 ```typescript
-import { PaginatedResponseDtoOfCommentDto } from './api';
+import { PaginatedResponseDtoOfShortDocumentDto } from './api';
 
-const instance: PaginatedResponseDtoOfCommentDto = {
+const instance: PaginatedResponseDtoOfShortDocumentDto = {
     items,
     totalItems,
     totalPages,

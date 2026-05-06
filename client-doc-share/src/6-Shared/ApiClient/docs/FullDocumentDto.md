@@ -1,4 +1,4 @@
-# DocumentDto
+# FullDocumentDto
 
 
 ## Properties
@@ -16,9 +16,9 @@ Name | Type | Description | Notes
 ## Example
 
 ```typescript
-import { DocumentDto } from './api';
+import { FullDocumentDto } from './api';
 
-const instance: DocumentDto = {
+const instance: FullDocumentDto = {
     id,
     title,
     description,

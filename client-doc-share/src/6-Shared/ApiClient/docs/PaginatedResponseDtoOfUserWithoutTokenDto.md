@@ -6,10 +6,10 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **items** | [**Array&lt;UserWithoutTokenDto&gt;**](UserWithoutTokenDto.md) |  | [default to undefined]
-**totalItems** | [**PaginatedResponseDtoOfCommentDtoTotalItems**](PaginatedResponseDtoOfCommentDtoTotalItems.md) |  | [default to undefined]
-**totalPages** | [**PaginatedResponseDtoOfCommentDtoTotalItems**](PaginatedResponseDtoOfCommentDtoTotalItems.md) |  | [default to undefined]
-**currentPage** | [**PaginatedResponseDtoOfCommentDtoTotalItems**](PaginatedResponseDtoOfCommentDtoTotalItems.md) |  | [default to undefined]
-**pageSize** | [**PaginatedResponseDtoOfCommentDtoTotalItems**](PaginatedResponseDtoOfCommentDtoTotalItems.md) |  | [default to undefined]
+**totalItems** | [**GetAccountsThatStartsWithTakeParameter**](GetAccountsThatStartsWithTakeParameter.md) |  | [default to undefined]
+**totalPages** | [**GetAccountsThatStartsWithTakeParameter**](GetAccountsThatStartsWithTakeParameter.md) |  | [default to undefined]
+**currentPage** | [**GetAccountsThatStartsWithTakeParameter**](GetAccountsThatStartsWithTakeParameter.md) |  | [default to undefined]
+**pageSize** | [**GetAccountsThatStartsWithTakeParameter**](GetAccountsThatStartsWithTakeParameter.md) |  | [default to undefined]
 
 ## Example
 

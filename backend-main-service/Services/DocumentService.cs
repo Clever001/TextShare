@@ -90,6 +90,9 @@ public class DocumentService(
         if (filter.OwnerName != null) {
             predicates.Add(d => d.Owner.UserName!.ToLower().Contains(filter.OwnerName.ToLower()));
         }
+        if (filter.OwnerId != null) {
+            predicates.Add(d => d.OwnerId == filter.OwnerId);
+        }
 
         // Sorting
         FilterResult<Document> filterResult;

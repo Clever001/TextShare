@@ -43,11 +43,16 @@ export interface CreateCommentDto {
 }
 export interface CreateUpdateDocDto {
     'title': string;
-    'description': string;
+    'description'?: string | null;
     'tags': Array<string>;
     'roles': { [key: string]: UserDevRole; };
 }
-export interface DocumentDto {
+export interface ExceptionDto {
+    'code': string;
+    'description': string;
+    'details': Array<string> | null;
+}
+export interface FullDocumentDto {
     'id': string;
     'title': string;
     'description': string;
@@ -56,10 +61,7 @@ export interface DocumentDto {
     'tags': Array<string>;
     'userNamesToRoles': { [key: string]: UserDevRole; };
 }
-export interface ExceptionDto {
-    'code': string;
-    'description': string;
-    'details': Array<string> | null;
+export interface GetAccountsThatStartsWithTakeParameter {
 }
 export interface LoginDto {
     'userNameOrEmail': string;
@@ -67,26 +69,24 @@ export interface LoginDto {
 }
 export interface PaginatedResponseDtoOfCommentDto {
     'items': Array<CommentDto>;
-    'totalItems': PaginatedResponseDtoOfCommentDtoTotalItems;
-    'totalPages': PaginatedResponseDtoOfCommentDtoTotalItems;
-    'currentPage': PaginatedResponseDtoOfCommentDtoTotalItems;
-    'pageSize': PaginatedResponseDtoOfCommentDtoTotalItems;
+    'totalItems': GetAccountsThatStartsWithTakeParameter;
+    'totalPages': GetAccountsThatStartsWithTakeParameter;
+    'currentPage': GetAccountsThatStartsWithTakeParameter;
+    'pageSize': GetAccountsThatStartsWithTakeParameter;
 }
-export interface PaginatedResponseDtoOfCommentDtoTotalItems {
-}
-export interface PaginatedResponseDtoOfDocumentDto {
-    'items': Array<DocumentDto>;
-    'totalItems': PaginatedResponseDtoOfCommentDtoTotalItems;
-    'totalPages': PaginatedResponseDtoOfCommentDtoTotalItems;
-    'currentPage': PaginatedResponseDtoOfCommentDtoTotalItems;
-    'pageSize': PaginatedResponseDtoOfCommentDtoTotalItems;
+export interface PaginatedResponseDtoOfShortDocumentDto {
+    'items': Array<ShortDocumentDto>;
+    'totalItems': GetAccountsThatStartsWithTakeParameter;
+    'totalPages': GetAccountsThatStartsWithTakeParameter;
+    'currentPage': GetAccountsThatStartsWithTakeParameter;
+    'pageSize': GetAccountsThatStartsWithTakeParameter;
 }
 export interface PaginatedResponseDtoOfUserWithoutTokenDto {
     'items': Array<UserWithoutTokenDto>;
-    'totalItems': PaginatedResponseDtoOfCommentDtoTotalItems;
-    'totalPages': PaginatedResponseDtoOfCommentDtoTotalItems;
-    'currentPage': PaginatedResponseDtoOfCommentDtoTotalItems;
-    'pageSize': PaginatedResponseDtoOfCommentDtoTotalItems;
+    'totalItems': GetAccountsThatStartsWithTakeParameter;
+    'totalPages': GetAccountsThatStartsWithTakeParameter;
+    'currentPage': GetAccountsThatStartsWithTakeParameter;
+    'pageSize': GetAccountsThatStartsWithTakeParameter;
 }
 export interface RegisterDto {
     'userName': string;
@@ -98,6 +98,14 @@ export interface SearchAccountsPageNumberParameter {
 export interface SearchAccountsPageSizeParameter {
 }
 export interface SearchCommentsParentIdParameter {
+}
+export interface ShortDocumentDto {
+    'id': string;
+    'title': string;
+    'description': string;
+    'createdOn': string;
+    'ownerName': string;
+    'tags': Array<string>;
 }
 export interface UpdateCommentDto {
     'content': string;
@@ -135,6 +143,49 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
     return {
         /**
          * 
+         * @param {GetAccountsThatStartsWithTakeParameter} [take] 
+         * @param {string} [userName] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAccountsThatStartsWith: async (take?: GetAccountsThatStartsWithTakeParameter, userName?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/accounts/startsWith`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (take !== undefined) {
+                localVarQueryParameter['Take'] = take;
+            }
+
+            if (userName !== undefined) {
+                localVarQueryParameter['UserName'] = userName;
+            }
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {LoginDto} loginDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -153,6 +204,10 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -188,6 +243,10 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -221,6 +280,10 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             if (pageNumber !== undefined) {
                 localVarQueryParameter['PageNumber'] = pageNumber;
@@ -266,6 +329,10 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -288,6 +355,19 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
 export const AccountApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AccountApiAxiosParamCreator(configuration)
     return {
+        /**
+         * 
+         * @param {GetAccountsThatStartsWithTakeParameter} [take] 
+         * @param {string} [userName] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAccountsThatStartsWith(take?: GetAccountsThatStartsWithTakeParameter, userName?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserWithoutTokenDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountsThatStartsWith(take, userName, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AccountApi.getAccountsThatStartsWith']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
         /**
          * 
          * @param {LoginDto} loginDto 
@@ -349,6 +429,16 @@ export const AccountApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * 
+         * @param {GetAccountsThatStartsWithTakeParameter} [take] 
+         * @param {string} [userName] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAccountsThatStartsWith(take?: GetAccountsThatStartsWithTakeParameter, userName?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserWithoutTokenDto>> {
+            return localVarFp.getAccountsThatStartsWith(take, userName, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {LoginDto} loginDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -392,6 +482,17 @@ export const AccountApiFactory = function (configuration?: Configuration, basePa
  * AccountApi - object-oriented interface
  */
 export class AccountApi extends BaseAPI {
+    /**
+     * 
+     * @param {GetAccountsThatStartsWithTakeParameter} [take] 
+     * @param {string} [userName] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public getAccountsThatStartsWith(take?: GetAccountsThatStartsWithTakeParameter, userName?: string, options?: RawAxiosRequestConfig) {
+        return AccountApiFp(this.configuration).getAccountsThatStartsWith(take, userName, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @param {LoginDto} loginDto 
@@ -464,6 +565,10 @@ export const CommentsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -495,6 +600,10 @@ export const CommentsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -531,6 +640,10 @@ export const CommentsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -563,6 +676,10 @@ export const CommentsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             if (pageNumber !== undefined) {
                 localVarQueryParameter['PageNumber'] = pageNumber;
@@ -615,6 +732,10 @@ export const CommentsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -850,6 +971,10 @@ export const DocumentApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -885,6 +1010,10 @@ export const DocumentApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -918,6 +1047,10 @@ export const DocumentApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -940,10 +1073,11 @@ export const DocumentApiAxiosParamCreator = function (configuration?: Configurat
          * @param {string} [fromDate] 
          * @param {string} [toDate] 
          * @param {string} [ownerName] 
+         * @param {string} [ownerId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchDocuments: async (sortBy?: string, sortAscending?: boolean, pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        searchDocuments: async (sortBy?: string, sortAscending?: boolean, pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, ownerId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/documents`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -955,6 +1089,10 @@ export const DocumentApiAxiosParamCreator = function (configuration?: Configurat
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
             if (sortBy !== undefined) {
                 localVarQueryParameter['SortBy'] = sortBy;
@@ -996,6 +1134,10 @@ export const DocumentApiAxiosParamCreator = function (configuration?: Configurat
                 localVarQueryParameter['OwnerName'] = ownerName;
             }
 
+            if (ownerId !== undefined) {
+                localVarQueryParameter['OwnerId'] = ownerId;
+            }
+
             localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1032,6 +1174,10 @@ export const DocumentApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -1060,7 +1206,7 @@ export const DocumentApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createDocument(createUpdateDocDto: CreateUpdateDocDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DocumentDto>> {
+        async createDocument(createUpdateDocDto: CreateUpdateDocDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FullDocumentDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createDocument(createUpdateDocDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DocumentApi.createDocument']?.[localVarOperationServerIndex]?.url;
@@ -1084,7 +1230,7 @@ export const DocumentApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getDocumentById(docId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DocumentDto>> {
+        async getDocumentById(docId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FullDocumentDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getDocumentById(docId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DocumentApi.getDocumentById']?.[localVarOperationServerIndex]?.url;
@@ -1101,11 +1247,12 @@ export const DocumentApiFp = function(configuration?: Configuration) {
          * @param {string} [fromDate] 
          * @param {string} [toDate] 
          * @param {string} [ownerName] 
+         * @param {string} [ownerId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async searchDocuments(sortBy?: string, sortAscending?: boolean, pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseDtoOfDocumentDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.searchDocuments(sortBy, sortAscending, pageNumber, pageSize, title, tags, fromDate, toDate, ownerName, options);
+        async searchDocuments(sortBy?: string, sortAscending?: boolean, pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, ownerId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseDtoOfShortDocumentDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.searchDocuments(sortBy, sortAscending, pageNumber, pageSize, title, tags, fromDate, toDate, ownerName, ownerId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DocumentApi.searchDocuments']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1117,7 +1264,7 @@ export const DocumentApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateDocument(docId: string, createUpdateDocDto: CreateUpdateDocDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DocumentDto>> {
+        async updateDocument(docId: string, createUpdateDocDto: CreateUpdateDocDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FullDocumentDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateDocument(docId, createUpdateDocDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DocumentApi.updateDocument']?.[localVarOperationServerIndex]?.url;
@@ -1138,7 +1285,7 @@ export const DocumentApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createDocument(createUpdateDocDto: CreateUpdateDocDto, options?: RawAxiosRequestConfig): AxiosPromise<DocumentDto> {
+        createDocument(createUpdateDocDto: CreateUpdateDocDto, options?: RawAxiosRequestConfig): AxiosPromise<FullDocumentDto> {
             return localVarFp.createDocument(createUpdateDocDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1156,7 +1303,7 @@ export const DocumentApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getDocumentById(docId: string, options?: RawAxiosRequestConfig): AxiosPromise<DocumentDto> {
+        getDocumentById(docId: string, options?: RawAxiosRequestConfig): AxiosPromise<FullDocumentDto> {
             return localVarFp.getDocumentById(docId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1170,11 +1317,12 @@ export const DocumentApiFactory = function (configuration?: Configuration, baseP
          * @param {string} [fromDate] 
          * @param {string} [toDate] 
          * @param {string} [ownerName] 
+         * @param {string} [ownerId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchDocuments(sortBy?: string, sortAscending?: boolean, pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseDtoOfDocumentDto> {
-            return localVarFp.searchDocuments(sortBy, sortAscending, pageNumber, pageSize, title, tags, fromDate, toDate, ownerName, options).then((request) => request(axios, basePath));
+        searchDocuments(sortBy?: string, sortAscending?: boolean, pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, ownerId?: string, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseDtoOfShortDocumentDto> {
+            return localVarFp.searchDocuments(sortBy, sortAscending, pageNumber, pageSize, title, tags, fromDate, toDate, ownerName, ownerId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1183,7 +1331,7 @@ export const DocumentApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateDocument(docId: string, createUpdateDocDto: CreateUpdateDocDto, options?: RawAxiosRequestConfig): AxiosPromise<DocumentDto> {
+        updateDocument(docId: string, createUpdateDocDto: CreateUpdateDocDto, options?: RawAxiosRequestConfig): AxiosPromise<FullDocumentDto> {
             return localVarFp.updateDocument(docId, createUpdateDocDto, options).then((request) => request(axios, basePath));
         },
     };
@@ -1234,11 +1382,12 @@ export class DocumentApi extends BaseAPI {
      * @param {string} [fromDate] 
      * @param {string} [toDate] 
      * @param {string} [ownerName] 
+     * @param {string} [ownerId] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public searchDocuments(sortBy?: string, sortAscending?: boolean, pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, options?: RawAxiosRequestConfig) {
-        return DocumentApiFp(this.configuration).searchDocuments(sortBy, sortAscending, pageNumber, pageSize, title, tags, fromDate, toDate, ownerName, options).then((request) => request(this.axios, this.basePath));
+    public searchDocuments(sortBy?: string, sortAscending?: boolean, pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, ownerId?: string, options?: RawAxiosRequestConfig) {
+        return DocumentApiFp(this.configuration).searchDocuments(sortBy, sortAscending, pageNumber, pageSize, title, tags, fromDate, toDate, ownerName, ownerId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -11,7 +11,7 @@ All URIs are relative to *http://127.0.0.1:7285*
 |[**updateDocument**](#updatedocument) | **PUT** /api/documents/{docId} | |
 
 # **createDocument**
-> DocumentDto createDocument(createUpdateDocDto)
+> FullDocumentDto createDocument(createUpdateDocDto)
 
 
 ### Example
@@ -42,11 +42,11 @@ const { status, data } = await apiInstance.createDocument(
 
 ### Return type
 
-**DocumentDto**
+**FullDocumentDto**
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -98,7 +98,7 @@ void (empty response body)
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -118,7 +118,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **getDocumentById**
-> DocumentDto getDocumentById()
+> FullDocumentDto getDocumentById()
 
 
 ### Example
@@ -148,11 +148,11 @@ const { status, data } = await apiInstance.getDocumentById(
 
 ### Return type
 
-**DocumentDto**
+**FullDocumentDto**
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -170,7 +170,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **searchDocuments**
-> PaginatedResponseDtoOfDocumentDto searchDocuments()
+> PaginatedResponseDtoOfShortDocumentDto searchDocuments()
 
 
 ### Example
@@ -195,6 +195,7 @@ let tags: Array<string>; // (optional) (default to undefined)
 let fromDate: string; // (optional) (default to undefined)
 let toDate: string; // (optional) (default to undefined)
 let ownerName: string; // (optional) (default to undefined)
+let ownerId: string; // (optional) (default to undefined)
 
 const { status, data } = await apiInstance.searchDocuments(
     sortBy,
@@ -205,7 +206,8 @@ const { status, data } = await apiInstance.searchDocuments(
     tags,
     fromDate,
     toDate,
-    ownerName
+    ownerName,
+    ownerId
 );
 ```
 
@@ -222,15 +224,16 @@ const { status, data } = await apiInstance.searchDocuments(
 | **fromDate** | [**string**] |  | (optional) defaults to undefined|
 | **toDate** | [**string**] |  | (optional) defaults to undefined|
 | **ownerName** | [**string**] |  | (optional) defaults to undefined|
+| **ownerId** | [**string**] |  | (optional) defaults to undefined|
 
 
 ### Return type
 
-**PaginatedResponseDtoOfDocumentDto**
+**PaginatedResponseDtoOfShortDocumentDto**
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -247,7 +250,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **updateDocument**
-> DocumentDto updateDocument(createUpdateDocDto)
+> FullDocumentDto updateDocument(createUpdateDocDto)
 
 
 ### Example
@@ -281,11 +284,11 @@ const { status, data } = await apiInstance.updateDocument(
 
 ### Return type
 
-**DocumentDto**
+**FullDocumentDto**
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 

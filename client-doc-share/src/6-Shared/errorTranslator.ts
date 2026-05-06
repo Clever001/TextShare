@@ -5,6 +5,8 @@ let staticTranslates : Map<string, string> = new Map<string, string>()
 // staticTranslates.set("example", "пример")
 staticTranslates.set("Request contains client error.", 
   "Запрос был составлен неверно")
+staticTranslates.set("The UserNameOrEmail field is required.",
+  "Заполните имя пользователя или почту")
 staticTranslates.set("The field UserName must be a string or collection type with a minimum length of '3' and maximum length of '25'.",
   "Имя пользователя должно иметь длину от 3 до 25 символов")
 staticTranslates.set("The Email field is not a valid e-mail address.",
@@ -54,6 +56,11 @@ staticTranslates.set("Provided nickname does not represent valid nickname.",
   "Псевдоним должен иметь следующий формат: 'ozon-book' или например 'книга-из-озона'. Перепроверьте, пожалуйста, псведоним на соответствие")
 staticTranslates.set("The authorization time has expired. New authorization needed.", 
   "Было просрочено время авторизации. Требуется повторная авторизация")
+
+staticTranslates.set("The Title field is required.", "Введите название документа")
+staticTranslates.set("The field Title must be a string or collection type with a minimum length of '1' and maximum length of '70'.",
+  "Поле названия документа должно быть строкой длоной от 1 до 70 символов")
+staticTranslates.set("The Description field is required.", "Введите описание документа")
 
 staticTranslates.set("Service is unavaliable for the current moment", 
   "Сервис на текущий момент недоступен. Повторите попытку позже")

@@ -12,7 +12,7 @@ export default function ProfileSettingsF({ defaultName, defaultEmail }: Props) {
     <form className="profile-settings-feature">
       <div className="settings-container">
         <ValueInput
-          type={"input"}
+          widgetType={"input"}
           keyPosition={"left"}
           label="Имя пользователя"
           formSearchName="username"
@@ -20,7 +20,7 @@ export default function ProfileSettingsF({ defaultName, defaultEmail }: Props) {
           hasRollbackButton={true}
         />
         <ValueInput
-          type={"input"}
+          widgetType={"input"}
           keyPosition={"left"}
           label="Электронная почта"
           formSearchName="email"
