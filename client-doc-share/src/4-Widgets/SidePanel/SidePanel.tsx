@@ -73,16 +73,16 @@ const SidePanel: React.FC = () => {
 
     try {
       const { data } = await docApi.searchDocuments(
-        undefined, // sortBy
-        undefined, // sortAscending
-        1,         // pageNumber
-        5,         // pageSize
-        undefined, // title
-        undefined, // tags
-        undefined, // fromDate
-        undefined, // toDate
-        undefined, // ownerName
-        userId     // ownerId
+        "created_on", // sortBy
+        false,        // sortAscending
+        1,            // pageNumber
+        5,            // pageSize
+        undefined,    // title
+        undefined,    // tags
+        undefined,    // fromDate
+        undefined,    // toDate
+        undefined,    // ownerName
+        userId        // ownerId
       )
       console.log("Finished Personal loading")
       setMyDocs(data.items)
@@ -97,16 +97,16 @@ const SidePanel: React.FC = () => {
 
     try {
       const { data } = await docApi.searchDocuments(
-        undefined, // sortBy
-        undefined, // sortAscending
-        1,         // pageNumber
-        5,         // pageSize
-        undefined, // title
-        undefined, // tags
-        undefined, // fromDate
-        undefined, // toDate
-        undefined, // ownerName
-        undefined  // ownerId
+        "created_on", // sortBy
+        false,        // sortAscending
+        1,            // pageNumber
+        5,            // pageSize
+        undefined,    // title
+        undefined,    // tags
+        undefined,    // fromDate
+        undefined,    // toDate
+        undefined,    // ownerName
+        undefined     // ownerId
       )
       console.log("Finished latests loading")
       setSocietyDocs(data.items)

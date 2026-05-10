@@ -4,11 +4,64 @@ All URIs are relative to *http://127.0.0.1:7285*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
+|[**getAccountByUserName**](#getaccountbyusername) | **GET** /api/accounts/{userName} | |
 |[**getAccountsThatStartsWith**](#getaccountsthatstartswith) | **GET** /api/accounts/startsWith | |
 |[**login**](#login) | **POST** /api/accounts/login | |
 |[**register**](#register) | **POST** /api/accounts/register | |
 |[**searchAccounts**](#searchaccounts) | **GET** /api/accounts | |
 |[**updateAccountInfo**](#updateaccountinfo) | **PUT** /api/accounts | |
+
+# **getAccountByUserName**
+> FullUserDto getAccountByUserName()
+
+
+### Example
+
+```typescript
+import {
+    AccountApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AccountApi(configuration);
+
+let userName: string; // (default to undefined)
+
+const { status, data } = await apiInstance.getAccountByUserName(
+    userName
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **userName** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**FullUserDto**
+
+### Authorization
+
+[Bearer](../README.md#Bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**400** | Bad Request |  -  |
+|**404** | Not Found |  -  |
+|**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **getAccountsThatStartsWith**
 > Array<UserWithoutTokenDto> getAccountsThatStartsWith()

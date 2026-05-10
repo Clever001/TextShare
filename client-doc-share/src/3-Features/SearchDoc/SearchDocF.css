@@ -30,3 +30,8 @@
   flex-wrap: nowrap;
   align-items: center;
 }
+
+
+.doc-search-feature .errors>* {
+  color: var(--error);
+}

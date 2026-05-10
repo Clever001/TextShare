@@ -21,7 +21,7 @@ public class CommentService(
     ILogger<CommentService> logger
 ) : ICommentService {
     public async Task<RC> CreateComment(string callerId, CreateCommentDto dto) {
-        if (!await accRepo.ContainsAccountById(callerId)) {
+        if (!await accRepo.ContainsById(callerId)) {
             return RC.Failure(
                 new BadRequestException("User with such id does not exist")
             );
@@ -93,7 +93,7 @@ public class CommentService(
     }
 
     public async Task<RC> UpdateComment(string callerId, long commentId, UpdateCommentDto dto) {
-        if (!await accRepo.ContainsAccountById(callerId)) {
+        if (!await accRepo.ContainsById(callerId)) {
             return RC.Failure(
                 new BadRequestException("User with such id does not exist")
             );
@@ -121,7 +121,7 @@ public class CommentService(
     }
 
     public async Task<R> ClearComment(string callerId, long commentId) {
-        if (!await accRepo.ContainsAccountById(callerId)) {
+        if (!await accRepo.ContainsById(callerId)) {
             return R.Failure(
                 new BadRequestException("User with such id does not exist")
             );

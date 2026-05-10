@@ -63,24 +63,24 @@ export default function DocsTable({ docinfos, showCreators }: Props) {
             return (
               <tr>
                 <td>
-                  <Link to="/" title={di.description}>
+                  <Link to={`/view/${di.id}`} title={di.description}>
                     {di.title}
                   </Link>
                 </td>
                 <td>
-                  <Link to="/" title={di.createdOn}>
+                  <Link to={`/view/${di.id}`} title={di.createdOn}>
                     {dateToString(new Date(di.createdOn))}
                   </Link>
                 </td>
                 {showCreators && (
                   <td>
-                    <Link to="/" title={di.ownerName}>
+                    <Link to={`/view/${di.id}`} title={di.ownerName}>
                       {di.ownerName}
                     </Link>
                   </td>
                 )}
                 <td>
-                  <Link to="/" title={di.tags.join(" ")}>
+                  <Link to={`/view/${di.id}`} title={di.tags.join(" ")}>
                     {tagsToShortTags(di.tags)}
                   </Link>
                 </td>

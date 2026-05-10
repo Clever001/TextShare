@@ -1,112 +1,57 @@
-import { useReducer } from "react";
+import { useCallback, useReducer } from "react";
 import "./Pagination.css";
 
 type Props = {
   totalPages: number;
-  initialPage: number;
+  curPage: number;
   onChangePage: (newPage: number) => void;
 };
 
-export default function Pagination(props: Props) {
-  type State = {
-    curPage: number;
-  };
-
-  type Action =
-    | { type: "SetCurPage"; payload: number }
-    | { type: "PrevPage" }
-    | { type: "NextPage" };
-
-  const reducer = (state: State, action: Action): State => {
-    var newPage: number;
-    switch (action.type) {
-      case "SetCurPage":
-        if (action.payload < 1 || action.payload > props.totalPages) {
-          return { ...state };
-        } else {
-          newPage = action.payload;
-        }
-        break;
-      case "PrevPage":
-        if (canGoToPage(1)) {
-          newPage = state.curPage - 1;
-        } else {
-          return { ...state };
-        }
-        break;
-      case "NextPage":
-        if (canGoToPage(props.totalPages)) {
-          newPage = state.curPage + 1;
-        } else {
-          return { ...state };
-        }
-        break;
-      default:
-        return { ...state };
-    }
-
-    props.onChangePage(newPage);
-    return {
-      curPage: newPage,
-    };
-  };
-
-  const canGoToPage = (newPage: number) => {
-    return newPage >= 1 && newPage <= props.totalPages;
-  };
-
-  const [pagState, pagDispatch] = useReducer(reducer, {
-    curPage: props.initialPage,
-  });
+export default function Pagination({
+  totalPages, curPage, onChangePage
+}: Props) {
+  const canGoToPage = useCallback((newPage: number) => {
+    return newPage >= 1 && newPage <= totalPages;
+  }, [totalPages])
 
   return (
     <nav className="pagination" aria-label="Search navigation">
       <button
         type="button"
-        onClick={() => pagDispatch({ type: "PrevPage" })}
-        disabled={!canGoToPage(pagState.curPage - 1)}
+        onClick={() => onChangePage(curPage - 1)}
+        disabled={!canGoToPage(curPage - 1)}
       >
         <img src="/img/left_arrow.svg" alt="left_arrow" />
       </button>
       <ul className="page-list">
-        {pagState.curPage >= 2 && (
+        {curPage >= 2 && (
           <li>
             <button
               type="button"
-              onClick={() => pagDispatch({ type: "SetCurPage", payload: 1 })}
+              onClick={() => onChangePage(1)}
             >
               1
             </button>
           </li>
         )}
-        {pagState.curPage >= 5 && <li className="dots">...</li>}
-        {pagState.curPage >= 4 && (
+        {curPage >= 5 && <li className="dots">...</li>}
+        {curPage >= 4 && (
           <li>
             <button
               type="button"
-              onClick={() =>
-                pagDispatch({
-                  type: "SetCurPage",
-                  payload: pagState.curPage - 2,
-                })
-              }
+              onClick={() => onChangePage(curPage - 2)}
             >
-              {pagState.curPage - 2}
+              {curPage - 2}
             </button>
           </li>
         )}
-        {pagState.curPage >= 3 && (
+        {curPage >= 3 && (
           <li>
             <button
               type="button"
-              onClick={() =>
-                pagDispatch({
-                  type: "SetCurPage",
-                  payload: pagState.curPage - 1,
-                })
-              }
+              onClick={() => onChangePage(curPage - 1)}
             >
-              {pagState.curPage - 1}
+              {curPage - 1}
             </button>
           </li>
         )}
@@ -117,60 +62,48 @@ export default function Pagination(props: Props) {
             style={{ cursor: "default" }}
           >
             <b>
-              <u>{pagState.curPage}</u>
+              <u>{curPage}</u>
             </b>
           </button>
         </li>
-        {pagState.curPage <= props.totalPages - 2 && (
+        {curPage <= totalPages - 2 && (
           <li>
             <button
               type="button"
-              onClick={() =>
-                pagDispatch({
-                  type: "SetCurPage",
-                  payload: pagState.curPage + 1,
-                })
-              }
+              onClick={() => onChangePage(curPage + 1)}
             >
-              {pagState.curPage + 1}
+              {curPage + 1}
             </button>
           </li>
         )}
-        {pagState.curPage <= props.totalPages - 3 && (
+        {curPage <= totalPages - 3 && (
           <li>
             <button
               type="button"
-              onClick={() =>
-                pagDispatch({
-                  type: "SetCurPage",
-                  payload: pagState.curPage + 2,
-                })
-              }
+              onClick={() => onChangePage(curPage + 2)}
             >
-              {pagState.curPage + 2}
+              {curPage + 2}
             </button>
           </li>
         )}
-        {pagState.curPage <= props.totalPages - 4 && (
+        {curPage <= totalPages - 4 && (
           <li className="dots">...</li>
         )}
-        {pagState.curPage <= props.totalPages - 1 && (
+        {curPage <= totalPages - 1 && (
           <li>
             <button
               type="button"
-              onClick={() =>
-                pagDispatch({ type: "SetCurPage", payload: props.totalPages })
-              }
+              onClick={() => onChangePage(totalPages)}
             >
-              {props.totalPages}
+              {totalPages}
             </button>
           </li>
         )}
       </ul>
       <button
         type="button"
-        onClick={() => pagDispatch({ type: "NextPage" })}
-        disabled={!canGoToPage(pagState.curPage + 1)}
+        onClick={() => onChangePage(curPage + 1)}
+        disabled={!canGoToPage(curPage + 1)}
       >
         <img src="/img/right_arrow.svg" alt="right_arrow" />
       </button>

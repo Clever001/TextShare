@@ -41,7 +41,7 @@ export interface CreateCommentDto {
 }
 export interface CreateUpdateDocDto {
     'title': string;
-    'description'?: string | null;
+    'description': string | null;
     'tags': Array<string>;
     'roles': { [key: string]: UserDevRole; };
 }
@@ -58,6 +58,12 @@ export interface FullDocumentDto {
     'ownerName': string;
     'tags': Array<string>;
     'userNamesToRoles': { [key: string]: UserDevRole; };
+}
+export interface FullUserDto {
+    'id': string;
+    'userName': string;
+    'email': string;
+    'createdOn': string;
 }
 export interface LoginDto {
     'userNameOrEmail': string;
@@ -101,8 +107,8 @@ export interface UpdateCommentDto {
     'content': string;
 }
 export interface UpdateUserDto {
-    'userName'?: string | null;
-    'email'?: string | null;
+    'userName': string | null;
+    'email': string | null;
 }
 
 export const UserDevRole = {
@@ -131,6 +137,43 @@ export interface UserWithoutTokenDto {
  */
 export const AccountApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * 
+         * @param {string} userName 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAccountByUserName: async (userName: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userName' is not null or undefined
+            assertParamExists('getAccountByUserName', 'userName', userName)
+            const localVarPath = `/api/accounts/{userName}`
+                .replace('{userName}', encodeURIComponent(String(userName)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 
          * @param {number} [take] 
@@ -347,6 +390,18 @@ export const AccountApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {string} userName 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAccountByUserName(userName: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FullUserDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountByUserName(userName, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AccountApi.getAccountByUserName']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {number} [take] 
          * @param {string} [userName] 
          * @param {*} [options] Override http request option.
@@ -419,6 +474,15 @@ export const AccountApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * 
+         * @param {string} userName 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAccountByUserName(userName: string, options?: RawAxiosRequestConfig): AxiosPromise<FullUserDto> {
+            return localVarFp.getAccountByUserName(userName, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {number} [take] 
          * @param {string} [userName] 
          * @param {*} [options] Override http request option.
@@ -472,6 +536,16 @@ export const AccountApiFactory = function (configuration?: Configuration, basePa
  * AccountApi - object-oriented interface
  */
 export class AccountApi extends BaseAPI {
+    /**
+     * 
+     * @param {string} userName 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public getAccountByUserName(userName: string, options?: RawAxiosRequestConfig) {
+        return AccountApiFp(this.configuration).getAccountByUserName(userName, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @param {number} [take] 

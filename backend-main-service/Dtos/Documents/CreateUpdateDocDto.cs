@@ -7,6 +7,7 @@ public class CreateUpdateDocDto {
     [Required]
     [Length(1, 70)]
     public string Title { get; init; } = "";
+    [Required(AllowEmptyStrings = true)]
     [MaxLength(250)]
     public string? Description { get; init; } = "";
     [Required]

@@ -1,21 +1,25 @@
-# UpdateUserDto
+# FullUserDto
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**id** | **string** |  | [default to undefined]
 **userName** | **string** |  | [default to undefined]
 **email** | **string** |  | [default to undefined]
+**createdOn** | **string** |  | [default to undefined]
 
 ## Example
 
 ```typescript
-import { UpdateUserDto } from './api';
+import { FullUserDto } from './api';
 
-const instance: UpdateUserDto = {
+const instance: FullUserDto = {
+    id,
     userName,
     email,
+    createdOn,
 };
 ```
 

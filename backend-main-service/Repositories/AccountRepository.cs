@@ -16,20 +16,22 @@ public class AccountRepository : IAccountRepository {
         _context = context;
     }
 
-    public async Task<string?> GetAccountId(string userName) {
+    public async Task<string?> GetId(string userName) {
         return await _context.Users.Where(u => u.NormalizedUserName == userName.ToUpper()).Select(u => u.Id)
             .FirstOrDefaultAsync();
     }
 
-    public async Task<(string?, string?)> GetAccountIds(string firstUserName, string secondUserName) {
-        var senderId = await GetAccountId(firstUserName);
-        var recipientId = await GetAccountId(secondUserName);
+    public async Task<(string?, string?)> GetIds(string firstUserName, string secondUserName) {
+        var senderId = await GetId(firstUserName);
+        var recipientId = await GetId(secondUserName);
 
         return (senderId, recipientId);
     }
 
-    public async Task<AppUser?> GetAccountByName(string userName) {
-        return await _userManager.FindByNameAsync(userName);
+    public async Task<AppUser?> GetByName(string userName) {
+        return await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.NormalizedUserName == userName.ToUpper());
     }
 
     public async Task<FilterResult<AppUser>> GetAllAccounts<OrderT>(QueryFilter<AppUser, OrderT> filter) {
@@ -78,17 +80,21 @@ public class AccountRepository : IAccountRepository {
         }).ToArrayAsync();
     }
 
-    public async Task<bool> ContainsAccountByName(string userName) {
+    public async Task<bool> ContainsByNameCaseIndep(string userName) {
         var upperName = userName.ToUpper();
         return await _context.Users.AnyAsync(u => u.NormalizedUserName == upperName);
     }
 
-    public async Task<bool> ContainsAccountByEmail(string email) {
+    public async Task<bool> ContainsByNameCaseDep(string userName) {
+        return await _context.Users.AnyAsync(u => u.UserName == userName);
+    }
+
+    public async Task<bool> ContainsByEmail(string email) {
         var upperEmail = email.ToUpper();
         return await _context.Users.AnyAsync(u => u.NormalizedEmail == upperEmail);
     }
 
-    public async Task<bool> ContainsAccountById(string id) {
+    public async Task<bool> ContainsById(string id) {
         return await _context.Users.AnyAsync(u => u.Id == id);
     }
 }

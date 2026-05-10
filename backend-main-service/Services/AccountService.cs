@@ -8,6 +8,7 @@ using DocShareApi.Repositories;
 using DocShareApi.Mappers;
 using DocShareApi.Models;
 using DocShareApi.Dtos.QueryOptions.Filters;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace DocShareApi.Services;
 
@@ -27,7 +28,8 @@ public class AccountService : IAccountService {
         try {
             var user = new AppUser {
                 UserName = userName,
-                Email = email
+                Email = email,
+                CreatedOn = DateTime.UtcNow
             };
             var createResult = await _userManager.CreateAsync(user, password);
             if (createResult.Succeeded) {
@@ -63,12 +65,20 @@ public class AccountService : IAccountService {
         return Result<(AppUser, string)>.Success((user, token));
     }
 
+    public async Task<Result<AppUser>> GetByName(string userName) {
+        var user = await _accountRepository.GetByName(userName);
+        if (user == null) {
+            return Result<AppUser>.Failure(new NotFoundException());
+        }
+        return Result<AppUser>.Success(user);
+    }
+
     public async Task<Result<(AppUser, string)>> Update(string userName, UpdateUserDto update) {
         var user = await _userManager.FindByNameAsync(userName);
         if (user == null) return Result<(AppUser, string)>.Failure(new ServerException());
 
         if (update.UserName != null && update.UserName != user.UserName) {
-            var exists = await _accountRepository.ContainsAccountByName(update.UserName);
+            var exists = await _accountRepository.ContainsByNameCaseDep(update.UserName);
             if (exists)
                 return Result<(AppUser, string)>.Failure(
                     new BadRequestException("Account with such userName already exists."));
@@ -77,7 +87,7 @@ public class AccountService : IAccountService {
         }
 
         if (update.Email != null && update.Email != user.Email) {
-            var exists = await _accountRepository.ContainsAccountByEmail(update.Email);
+            var exists = await _accountRepository.ContainsByEmail(update.Email);
             if (exists)
                 return Result<(AppUser, string)>.Failure(
                     new BadRequestException("Account with such email already exists."));

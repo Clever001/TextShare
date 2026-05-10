@@ -4,6 +4,7 @@ import type { UserWithTokenDto } from '../6-Shared/ApiClient';
 
 type AuthContextType = {
   isAuthenticated: boolean,
+  user: UserWithTokenDto | null,
   getUserInfo: () => UserWithTokenDto | null,
   setUserInfo: (userInfo: UserWithTokenDto | null) => void,
   handleUnauthorized: () => void
@@ -12,6 +13,18 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<UserWithTokenDto | null>(() => {
+    const id = Cookies.get("userId");
+    const userName = Cookies.get("userName");
+    const email = Cookies.get("email");
+    const token = Cookies.get("token");
+
+    if (id && userName && email && token) {
+      return { id, userName, email, token };
+    }
+    return null;
+  });
+
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     const userName = Cookies.get("userName")
     const token = Cookies.get("token")
@@ -46,6 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       Cookies.remove("email")
       Cookies.remove("token")
       setIsAuthenticated(false)
+      setUser(null)
       return
     }
     if (!userInfo.userName || !userInfo.token) {
@@ -56,6 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     Cookies.set("email", userInfo.email)
     Cookies.set("token", userInfo.token)
     setIsAuthenticated(true)
+    setUser(userInfo)
   }
 
   const handleUnauthorized = () => {
@@ -64,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, getUserInfo, setUserInfo, handleUnauthorized }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, getUserInfo, setUserInfo, handleUnauthorized }}>
       {children}
     </AuthContext.Provider>
   );

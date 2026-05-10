@@ -23,7 +23,7 @@ public class DocumentService(
     ILogger<DocumentRepo> logger
 ) : IDocumentService {
     public async Task<RD> CreateDocument(string callerId, CreateUpdateDocDto dto) {
-        if (!await accRepo.ContainsAccountById(callerId)) {
+        if (!await accRepo.ContainsById(callerId)) {
             return RD.Failure(
                 new BadRequestException("User with such id does not exist")
             );
@@ -129,7 +129,7 @@ public class DocumentService(
     public async Task<RD> UpdateDocumentInfo(
         string callerId, string documentId, CreateUpdateDocDto dto
     ) {
-        if (!await accRepo.ContainsAccountById(callerId)) {
+        if (!await accRepo.ContainsById(callerId)) {
             return RD.Failure(
                 new BadRequestException("User with such id does not exist")
             );
@@ -164,7 +164,7 @@ public class DocumentService(
     }
 
     public async Task<R> DeleteDocument(string callerId, string documentId) {
-        if (!await accRepo.ContainsAccountById(callerId)) {
+        if (!await accRepo.ContainsById(callerId)) {
             return R.Failure(
                 new BadRequestException("User with such id does not exist")
             );

@@ -95,6 +95,7 @@ export default function ValueInput(props: Props) {
         <button
           type="button"
           className="rollback"
+          title="Откатить"
           onClick={() => {
             props.onRollback && props.onRollback();
           }}

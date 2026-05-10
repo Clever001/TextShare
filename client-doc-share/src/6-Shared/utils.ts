@@ -7,7 +7,7 @@ function toStringWithPad(num: number): string {
 }
 
 export function dateToString(d: Date): string {
-  const days: string = toStringWithPad(d.getDay());
+  const days: string = toStringWithPad(d.getDate());
   const months: string = toStringWithPad(d.getMonth() + 1);
 
   return `${days}.${months}.${d.getFullYear()}`;
@@ -21,32 +21,36 @@ export function dateToStringWithTime(d: Date): string {
   return `${dateToString(d)} ${hours}:${minutes}:${seconds}`;
 }
 
-function getDefaultApiConf() : Configuration {
+function getDefaultApiConf(): Configuration {
   return new Configuration({
     basePath: import.meta.env.VITE_API_URL
   })
 }
 
-function getAuthApiConf(token: string) : Configuration {
+function getAuthApiConf(token: string): Configuration {
   return new Configuration({
     basePath: import.meta.env.VITE_API_URL,
     accessToken: token
   })
 }
 
-export function generateAccountApi() : AccountApi {
+export function generateAccountApi(): AccountApi {
   return new AccountApi(getDefaultApiConf())
 }
 
-export function generateDocumentApiAuth(token: string) : DocumentApi {
+export function generateAccountApiAuth(token: string): AccountApi {
+  return new AccountApi(getAuthApiConf(token))
+}
+
+export function generateDocumentApiAuth(token: string): DocumentApi {
   return new DocumentApi(getAuthApiConf(token))
 }
 
-export function generateDocumentApi() : DocumentApi {
+export function generateDocumentApi(): DocumentApi {
   return new DocumentApi(getDefaultApiConf())
 }
 
-export function isUnauthError(err: any) : boolean {
+export function isUnauthError(err: any): boolean {
   if (!axios.isAxiosError(err)) {
     return false
   }
@@ -56,9 +60,9 @@ export function isUnauthError(err: any) : boolean {
   } else {
     return err.response!.status === 401
   }
-} 
+}
 
-export function getApiErrors(err: any) : string[] {
+export function getApiErrors(err: any): string[] {
   if (!axios.isAxiosError(err)) {
     return ["Произошла неизвестная ошибка"]
   }
@@ -76,5 +80,47 @@ export function getApiErrors(err: any) : string[] {
     } else {
       return [exception.description]
     }
+  }
+}
+
+export function toDate(data: string | null): Date | undefined {
+  try {
+    if (data) {
+      return new Date(data)
+    }
+    return undefined
+  } catch {
+    return undefined
+  }
+}
+
+export function toNumberOrDefault(data: string | null, defaultValue: number): number {
+  if (data) {
+    try {
+      return Number.parseInt(data)
+    } catch {
+      return defaultValue
+    }
+  }
+  return defaultValue
+}
+
+export function assignFormInputFromSearch(form: HTMLFormElement, searchParams: URLSearchParams, formName: string, paramName: string) {
+  const namedItem = form.elements.namedItem(formName) as HTMLInputElement
+  if (namedItem) {
+    const value = searchParams.get(paramName) ?? ""
+
+    if (namedItem.type === "date" && value) {
+      namedItem.value = value.split("T")[0]
+    } else {
+      namedItem.value = value
+    }
+  }
+}
+
+export function assignFormInput(form: HTMLFormElement, formName: string, assingValue: string) {
+  const namedItem = form.elements.namedItem(formName) as HTMLInputElement
+  if (namedItem) {
+    namedItem.value = assingValue
   }
 }

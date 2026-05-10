@@ -4,9 +4,9 @@ using DocShareApi.Models;
 namespace DocShareApi.Repositories;
 
 public interface IAccountRepository {
-    Task<string?> GetAccountId(string userName);
-    Task<(string?, string?)> GetAccountIds(string firstUserName, string secondUserName);
-    Task<AppUser?> GetAccountByName(string userName);
+    Task<string?> GetId(string userName);
+    Task<(string?, string?)> GetIds(string firstUserName, string secondUserName);
+    Task<AppUser?> GetByName(string userName);
 
     Task<FilterResult<AppUser>> GetAllAccounts<OrderT>(
         QueryFilter<AppUser, OrderT> filter
@@ -15,7 +15,8 @@ public interface IAccountRepository {
         QueryFilter<AppUser, OrderT> filter
     );
 
-    Task<bool> ContainsAccountByName(string userName);
-    Task<bool> ContainsAccountByEmail(string email);
-    Task<bool> ContainsAccountById(string id);
+    Task<bool> ContainsByNameCaseIndep(string userName);
+    Task<bool> ContainsByNameCaseDep(string userName);
+    Task<bool> ContainsByEmail(string email);
+    Task<bool> ContainsById(string id);
 }

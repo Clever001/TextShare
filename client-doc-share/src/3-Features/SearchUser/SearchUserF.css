@@ -6,3 +6,7 @@
   align-items: center;
   margin-top: 16px;
 }
+
+.search-user-feature .errors>* {
+  color: var(--error)
+}

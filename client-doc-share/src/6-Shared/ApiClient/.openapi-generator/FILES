@@ -13,6 +13,7 @@ docs/CreateUpdateDocDto.md
 docs/DocumentApi.md
 docs/ExceptionDto.md
 docs/FullDocumentDto.md
+docs/FullUserDto.md
 docs/LoginDto.md
 docs/PaginatedResponseDtoOfCommentDto.md
 docs/PaginatedResponseDtoOfShortDocumentDto.md

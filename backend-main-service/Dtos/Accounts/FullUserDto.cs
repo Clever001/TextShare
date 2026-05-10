@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DocShareApi.Dtos.Accounts;
 
-public record UserWithTokenDto(
+public record FullUserDto(
     [Required]
     string Id,
     [Required]
@@ -10,5 +10,5 @@ public record UserWithTokenDto(
     [Required]
     string Email,
     [Required]
-    string Token
+    DateTime CreatedOn
 );

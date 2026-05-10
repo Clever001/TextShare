@@ -5,18 +5,27 @@ namespace DocShareApi.Mappers;
 
 public static class UserMapper {
     public static UserWithTokenDto ToUserWithTokenDto(this AppUser user, string token) {
-        return new UserWithTokenDto {
-            Id = user.Id,
-            UserName = user.UserName!,
-            Email = user.Email!,
-            Token = token
-        };
+        return new UserWithTokenDto(
+            Id: user.Id,
+            UserName: user.UserName!,
+            Email: user.Email!,
+            Token: token
+        );
     }
 
     public static UserWithoutTokenDto ToUserWithoutTokenDto(this AppUser user) {
-        return new UserWithoutTokenDto {
-            Id = user.Id,
-            UserName = user.UserName!
-        };
+        return new UserWithoutTokenDto(
+            Id: user.Id,
+            UserName: user.UserName!
+        );
+    }
+
+    public static FullUserDto ToFullUserDto(this AppUser user) {
+        return new FullUserDto(
+            Id: user.Id,
+            UserName: user.UserName!,
+            Email: user.Email!,
+            CreatedOn: user.CreatedOn
+        );
     }
 }

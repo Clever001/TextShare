@@ -48,11 +48,19 @@ public class DocumentController(
     }
 
     [HttpGet(Name = "SearchDocuments")]
+    [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Client)]
     [ProducesResponseType(typeof(PaginatedResponseDto<ShortDocumentDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Search(
         [FromQuery] SortDto sortDto, [FromQuery] PaginationDto paginationDto,
         [FromQuery] DocumentFilterDto filterDto
     ) {
+        if (filterDto.FromDate.HasValue) {
+            filterDto.FromDate = filterDto.FromDate.Value.Date;
+        }
+        if (filterDto.ToDate.HasValue) {
+            filterDto.ToDate = filterDto.ToDate.Value.Date.AddDays(1).AddTicks(-1);
+        }
+
         var result = await docServ.SearchDocuments(sortDto, paginationDto, filterDto);
         if (!result.IsSuccess) return this.ToActionResult(result.Exception);
 

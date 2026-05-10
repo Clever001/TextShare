@@ -37,6 +37,7 @@ export default function Header() {
   const isAuthenticated = authContext.isAuthenticated
   const getUserInfo = authContext.getUserInfo
   const setUserInfo = authContext.setUserInfo
+  const user = authContext.user
   
   const [userName, setUserName] = useState<string>("")
   useEffect(() => {
@@ -46,16 +47,27 @@ export default function Header() {
     } else {
       setUserName("")
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, user])
 
   const redirectToUserProfile = useCallback(() => {
     if (userName !== "") {
       navigate("/profile/" + encodeURIComponent(userName))
     }
+    setDropoutHidden(true)
   }, [userName])
 
   const logout = useCallback(() => {
     setUserInfo(null)
+    setDropoutHidden(true)
+  }, [])
+
+  const onSearchSubmit = useCallback((e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.currentTarget)
+    const title = formData.get("title")?.toString() ?? ""
+
+    navigate(`/?title=${encodeURIComponent(title)}`)
   }, [])
 
   return (
@@ -81,12 +93,12 @@ export default function Header() {
           />
         </div>
         <div className="search-text">
-          <form onSubmit={() => {}} className="search-bar">
+          <form onSubmit={onSearchSubmit} className="search-bar">
             <input
               type="text"
               placeholder="поиск"
-              onChange={() => {}}
               className="search-input"
+              name="title"
             />
             <button type="submit" className="search-button">
               <img src="/img/search.svg" alt="" />
@@ -131,13 +143,13 @@ export default function Header() {
               </div>
             )}
             <div>
-              <Link to="/">
+              <Link to="/" onClick={() => {setDropoutHidden(true)}}>
                 <img src="/img/search_white.svg" alt="" />
                 <div className="menu-value">Поиск текстов</div>
               </Link>
             </div>
             <div>
-              <Link to="/searchUser">
+              <Link to="/searchUser" onClick={() => {setDropoutHidden(true)}}>
                 <img src="/img/users.svg" alt="" />
                 <div className="menu-value">Поиск пользователей</div>
               </Link>

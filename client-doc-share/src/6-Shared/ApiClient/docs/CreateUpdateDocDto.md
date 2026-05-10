@@ -6,7 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **title** | **string** |  | [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
+**description** | **string** |  | [default to undefined]
 **tags** | **Array&lt;string&gt;** |  | [default to undefined]
 **roles** | [**{ [key: string]: UserDevRole; }**](UserDevRole.md) |  | [default to undefined]
 

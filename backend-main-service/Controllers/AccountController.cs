@@ -61,6 +61,15 @@ public class AccountController : ControllerBase {
         return Ok(user.ToUserWithTokenDto(token));
     }
 
+    [HttpGet("{userName}", Name = "GetAccountByUserName")]
+    [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(FullUserDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetByUserName([FromRoute] string userName) {
+        var result = await _accountService.GetByName(userName);
+        if (!result.IsSuccess) return this.ToActionResult(result.Exception);
+        return Ok(result.Value.ToFullUserDto());
+    }
+
     [HttpPut(Name = "UpdateAccountInfo")]
     [Authorize]
     [ProducesResponseType(typeof(ExceptionDto), StatusCodes.Status500InternalServerError)]
@@ -83,6 +92,7 @@ public class AccountController : ControllerBase {
     }
 
     [HttpGet(Name = "SearchAccounts")]
+    [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Client)]
     [ProducesResponseType(typeof(PaginatedResponseDto<UserWithoutTokenDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromQuery] PaginationDto pagination,
         [FromQuery] string? userName
@@ -94,6 +104,7 @@ public class AccountController : ControllerBase {
     }
 
     [HttpGet("startsWith", Name = "GetAccountsThatStartsWith")]
+    [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Client)]
     [ProducesResponseType(typeof(UserWithoutTokenDto[]), StatusCodes.Status200OK)]
     public async Task<IActionResult> FastGet([FromQuery] UsersFastQuery query) {
         var result = await _accountService.GetUsersThatStartsWith(query.UserName!, query.Take);

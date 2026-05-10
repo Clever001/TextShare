@@ -26,6 +26,17 @@ public class AppDbContext : IdentityDbContext<AppUser> {
     protected override void OnModelCreating(ModelBuilder builder) {
         base.OnModelCreating(builder);
 
+        foreach (var entityType in builder.Model.GetEntityTypes()) {
+            var properties = entityType.GetProperties()
+                .Where(p => p.ClrType == typeof(DateTime) || p.ClrType == typeof(DateTime?));
+
+            foreach (var property in properties) {
+                property.SetValueConverter(new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
+                    v => v.Kind == DateTimeKind.Utc ? v : DateTime.SpecifyKind(v, DateTimeKind.Utc),
+                    v => v));
+            }
+        }
+
         builder.Entity<IdentityRole>().HasData(SeedRoles);
         builder.Entity<Document>(e => {
             e.HasKey(d => d.Id);
