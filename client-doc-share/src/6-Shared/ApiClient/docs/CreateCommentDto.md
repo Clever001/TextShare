@@ -6,7 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **content** | **string** |  | [default to undefined]
-**parentId** | [**CommentDtoParentId**](CommentDtoParentId.md) |  | [default to undefined]
+**parentId** | **number** |  | [default to undefined]
 **documentId** | **string** |  | [default to undefined]
 
 ## Example

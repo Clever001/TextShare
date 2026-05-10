@@ -19,14 +19,13 @@ All URIs are relative to *http://127.0.0.1:7285*
 ```typescript
 import {
     AccountApi,
-    Configuration,
-    GetAccountsThatStartsWithTakeParameter
+    Configuration
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new AccountApi(configuration);
 
-let take: GetAccountsThatStartsWithTakeParameter; // (optional) (default to undefined)
+let take: number; // (optional) (default to undefined)
 let userName: string; // (optional) (default to undefined)
 
 const { status, data } = await apiInstance.getAccountsThatStartsWith(
@@ -39,7 +38,7 @@ const { status, data } = await apiInstance.getAccountsThatStartsWith(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **take** | [**GetAccountsThatStartsWithTakeParameter**] |  | (optional) defaults to undefined|
+| **take** | [**number**] |  | (optional) defaults to undefined|
 | **userName** | [**string**] |  | (optional) defaults to undefined|
 
 
@@ -180,16 +179,14 @@ const { status, data } = await apiInstance.register(
 ```typescript
 import {
     AccountApi,
-    Configuration,
-    SearchAccountsPageNumberParameter,
-    SearchAccountsPageSizeParameter
+    Configuration
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new AccountApi(configuration);
 
-let pageNumber: SearchAccountsPageNumberParameter; // (optional) (default to undefined)
-let pageSize: SearchAccountsPageSizeParameter; // (optional) (default to undefined)
+let pageNumber: number; // (optional) (default to undefined)
+let pageSize: number; // (optional) (default to undefined)
 let userName: string; // (optional) (default to undefined)
 
 const { status, data } = await apiInstance.searchAccounts(
@@ -203,8 +200,8 @@ const { status, data } = await apiInstance.searchAccounts(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **pageNumber** | [**SearchAccountsPageNumberParameter**] |  | (optional) defaults to undefined|
-| **pageSize** | [**SearchAccountsPageSizeParameter**] |  | (optional) defaults to undefined|
+| **pageNumber** | [**number**] |  | (optional) defaults to undefined|
+| **pageSize** | [**number**] |  | (optional) defaults to undefined|
 | **userName** | [**string**] |  | (optional) defaults to undefined|
 
 

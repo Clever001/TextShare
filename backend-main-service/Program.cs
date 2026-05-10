@@ -110,6 +110,17 @@ builder.Services.AddOpenApi("v1", options => {
         }
         return Task.CompletedTask;
     });
+    options.AddSchemaTransformer((schema, context, cancellationToken) => {
+        var type = context.JsonTypeInfo.Type;
+        if (type == typeof(int) || type == typeof(int?) ||
+            type == typeof(long) || type == typeof(long?)) {
+            schema.Type = JsonSchemaType.Integer;
+
+            schema.Pattern = null;
+        }
+        return Task.CompletedTask;
+    });
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
 });
 var app = builder.Build();
 

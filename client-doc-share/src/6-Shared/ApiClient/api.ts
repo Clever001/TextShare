@@ -24,9 +24,9 @@ import type { RequestArgs } from './base';
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
 export interface CommentDto {
-    'id': SearchCommentsParentIdParameter;
+    'id': number;
     'content': string | null;
-    'parentId': CommentDtoParentId | null;
+    'parentId': number;
     'documentId': string;
     'authorId': string | null;
     'authorName': string | null;
@@ -34,11 +34,9 @@ export interface CommentDto {
     'isDevelopmentComment': boolean;
     'createdOn': string;
 }
-export interface CommentDtoParentId {
-}
 export interface CreateCommentDto {
     'content': string;
-    'parentId': CommentDtoParentId | null;
+    'parentId': number;
     'documentId': string;
 }
 export interface CreateUpdateDocDto {
@@ -61,43 +59,35 @@ export interface FullDocumentDto {
     'tags': Array<string>;
     'userNamesToRoles': { [key: string]: UserDevRole; };
 }
-export interface GetAccountsThatStartsWithTakeParameter {
-}
 export interface LoginDto {
     'userNameOrEmail': string;
     'password': string;
 }
 export interface PaginatedResponseDtoOfCommentDto {
     'items': Array<CommentDto>;
-    'totalItems': GetAccountsThatStartsWithTakeParameter;
-    'totalPages': GetAccountsThatStartsWithTakeParameter;
-    'currentPage': GetAccountsThatStartsWithTakeParameter;
-    'pageSize': GetAccountsThatStartsWithTakeParameter;
+    'totalItems': number;
+    'totalPages': number;
+    'currentPage': number;
+    'pageSize': number;
 }
 export interface PaginatedResponseDtoOfShortDocumentDto {
     'items': Array<ShortDocumentDto>;
-    'totalItems': GetAccountsThatStartsWithTakeParameter;
-    'totalPages': GetAccountsThatStartsWithTakeParameter;
-    'currentPage': GetAccountsThatStartsWithTakeParameter;
-    'pageSize': GetAccountsThatStartsWithTakeParameter;
+    'totalItems': number;
+    'totalPages': number;
+    'currentPage': number;
+    'pageSize': number;
 }
 export interface PaginatedResponseDtoOfUserWithoutTokenDto {
     'items': Array<UserWithoutTokenDto>;
-    'totalItems': GetAccountsThatStartsWithTakeParameter;
-    'totalPages': GetAccountsThatStartsWithTakeParameter;
-    'currentPage': GetAccountsThatStartsWithTakeParameter;
-    'pageSize': GetAccountsThatStartsWithTakeParameter;
+    'totalItems': number;
+    'totalPages': number;
+    'currentPage': number;
+    'pageSize': number;
 }
 export interface RegisterDto {
     'userName': string;
     'email': string;
     'password': string;
-}
-export interface SearchAccountsPageNumberParameter {
-}
-export interface SearchAccountsPageSizeParameter {
-}
-export interface SearchCommentsParentIdParameter {
 }
 export interface ShortDocumentDto {
     'id': string;
@@ -143,12 +133,12 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
     return {
         /**
          * 
-         * @param {GetAccountsThatStartsWithTakeParameter} [take] 
+         * @param {number} [take] 
          * @param {string} [userName] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccountsThatStartsWith: async (take?: GetAccountsThatStartsWithTakeParameter, userName?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAccountsThatStartsWith: async (take?: number, userName?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/accounts/startsWith`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -262,13 +252,13 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @param {SearchAccountsPageNumberParameter} [pageNumber] 
-         * @param {SearchAccountsPageSizeParameter} [pageSize] 
+         * @param {number} [pageNumber] 
+         * @param {number} [pageSize] 
          * @param {string} [userName] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchAccounts: async (pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, userName?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        searchAccounts: async (pageNumber?: number, pageSize?: number, userName?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/accounts`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -357,12 +347,12 @@ export const AccountApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {GetAccountsThatStartsWithTakeParameter} [take] 
+         * @param {number} [take] 
          * @param {string} [userName] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAccountsThatStartsWith(take?: GetAccountsThatStartsWithTakeParameter, userName?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserWithoutTokenDto>>> {
+        async getAccountsThatStartsWith(take?: number, userName?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserWithoutTokenDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAccountsThatStartsWith(take, userName, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AccountApi.getAccountsThatStartsWith']?.[localVarOperationServerIndex]?.url;
@@ -394,13 +384,13 @@ export const AccountApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {SearchAccountsPageNumberParameter} [pageNumber] 
-         * @param {SearchAccountsPageSizeParameter} [pageSize] 
+         * @param {number} [pageNumber] 
+         * @param {number} [pageSize] 
          * @param {string} [userName] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async searchAccounts(pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, userName?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseDtoOfUserWithoutTokenDto>> {
+        async searchAccounts(pageNumber?: number, pageSize?: number, userName?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseDtoOfUserWithoutTokenDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.searchAccounts(pageNumber, pageSize, userName, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AccountApi.searchAccounts']?.[localVarOperationServerIndex]?.url;
@@ -429,12 +419,12 @@ export const AccountApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * 
-         * @param {GetAccountsThatStartsWithTakeParameter} [take] 
+         * @param {number} [take] 
          * @param {string} [userName] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAccountsThatStartsWith(take?: GetAccountsThatStartsWithTakeParameter, userName?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserWithoutTokenDto>> {
+        getAccountsThatStartsWith(take?: number, userName?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserWithoutTokenDto>> {
             return localVarFp.getAccountsThatStartsWith(take, userName, options).then((request) => request(axios, basePath));
         },
         /**
@@ -457,13 +447,13 @@ export const AccountApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @param {SearchAccountsPageNumberParameter} [pageNumber] 
-         * @param {SearchAccountsPageSizeParameter} [pageSize] 
+         * @param {number} [pageNumber] 
+         * @param {number} [pageSize] 
          * @param {string} [userName] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchAccounts(pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, userName?: string, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseDtoOfUserWithoutTokenDto> {
+        searchAccounts(pageNumber?: number, pageSize?: number, userName?: string, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseDtoOfUserWithoutTokenDto> {
             return localVarFp.searchAccounts(pageNumber, pageSize, userName, options).then((request) => request(axios, basePath));
         },
         /**
@@ -484,12 +474,12 @@ export const AccountApiFactory = function (configuration?: Configuration, basePa
 export class AccountApi extends BaseAPI {
     /**
      * 
-     * @param {GetAccountsThatStartsWithTakeParameter} [take] 
+     * @param {number} [take] 
      * @param {string} [userName] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getAccountsThatStartsWith(take?: GetAccountsThatStartsWithTakeParameter, userName?: string, options?: RawAxiosRequestConfig) {
+    public getAccountsThatStartsWith(take?: number, userName?: string, options?: RawAxiosRequestConfig) {
         return AccountApiFp(this.configuration).getAccountsThatStartsWith(take, userName, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -515,13 +505,13 @@ export class AccountApi extends BaseAPI {
 
     /**
      * 
-     * @param {SearchAccountsPageNumberParameter} [pageNumber] 
-     * @param {SearchAccountsPageSizeParameter} [pageSize] 
+     * @param {number} [pageNumber] 
+     * @param {number} [pageSize] 
      * @param {string} [userName] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public searchAccounts(pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, userName?: string, options?: RawAxiosRequestConfig) {
+    public searchAccounts(pageNumber?: number, pageSize?: number, userName?: string, options?: RawAxiosRequestConfig) {
         return AccountApiFp(this.configuration).searchAccounts(pageNumber, pageSize, userName, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -545,11 +535,11 @@ export const CommentsApiAxiosParamCreator = function (configuration?: Configurat
     return {
         /**
          * 
-         * @param {SearchCommentsParentIdParameter} commentId 
+         * @param {number} commentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        clearComment: async (commentId: SearchCommentsParentIdParameter, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        clearComment: async (commentId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'commentId' is not null or undefined
             assertParamExists('clearComment', 'commentId', commentId)
             const localVarPath = `/api/comments/{commentId}`
@@ -620,11 +610,11 @@ export const CommentsApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {SearchCommentsParentIdParameter} commentId 
+         * @param {number} commentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getCommentById: async (commentId: SearchCommentsParentIdParameter, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getCommentById: async (commentId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'commentId' is not null or undefined
             assertParamExists('getCommentById', 'commentId', commentId)
             const localVarPath = `/api/comments/{commentId}`
@@ -657,14 +647,14 @@ export const CommentsApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {SearchAccountsPageNumberParameter} [pageNumber] 
-         * @param {SearchAccountsPageSizeParameter} [pageSize] 
-         * @param {SearchCommentsParentIdParameter} [parentId] 
+         * @param {number} [pageNumber] 
+         * @param {number} [pageSize] 
+         * @param {number} [parentId] 
          * @param {string} [documentId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchComments: async (pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, parentId?: SearchCommentsParentIdParameter, documentId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        searchComments: async (pageNumber?: number, pageSize?: number, parentId?: number, documentId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/comments`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -710,12 +700,12 @@ export const CommentsApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {SearchCommentsParentIdParameter} commentId 
+         * @param {number} commentId 
          * @param {UpdateCommentDto} updateCommentDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateComment: async (commentId: SearchCommentsParentIdParameter, updateCommentDto: UpdateCommentDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateComment: async (commentId: number, updateCommentDto: UpdateCommentDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'commentId' is not null or undefined
             assertParamExists('updateComment', 'commentId', commentId)
             // verify required parameter 'updateCommentDto' is not null or undefined
@@ -761,11 +751,11 @@ export const CommentsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {SearchCommentsParentIdParameter} commentId 
+         * @param {number} commentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async clearComment(commentId: SearchCommentsParentIdParameter, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async clearComment(commentId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.clearComment(commentId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['CommentsApi.clearComment']?.[localVarOperationServerIndex]?.url;
@@ -785,11 +775,11 @@ export const CommentsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {SearchCommentsParentIdParameter} commentId 
+         * @param {number} commentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getCommentById(commentId: SearchCommentsParentIdParameter, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommentDto>> {
+        async getCommentById(commentId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommentDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getCommentById(commentId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['CommentsApi.getCommentById']?.[localVarOperationServerIndex]?.url;
@@ -797,14 +787,14 @@ export const CommentsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {SearchAccountsPageNumberParameter} [pageNumber] 
-         * @param {SearchAccountsPageSizeParameter} [pageSize] 
-         * @param {SearchCommentsParentIdParameter} [parentId] 
+         * @param {number} [pageNumber] 
+         * @param {number} [pageSize] 
+         * @param {number} [parentId] 
          * @param {string} [documentId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async searchComments(pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, parentId?: SearchCommentsParentIdParameter, documentId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseDtoOfCommentDto>> {
+        async searchComments(pageNumber?: number, pageSize?: number, parentId?: number, documentId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseDtoOfCommentDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.searchComments(pageNumber, pageSize, parentId, documentId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['CommentsApi.searchComments']?.[localVarOperationServerIndex]?.url;
@@ -812,12 +802,12 @@ export const CommentsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {SearchCommentsParentIdParameter} commentId 
+         * @param {number} commentId 
          * @param {UpdateCommentDto} updateCommentDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateComment(commentId: SearchCommentsParentIdParameter, updateCommentDto: UpdateCommentDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommentDto>> {
+        async updateComment(commentId: number, updateCommentDto: UpdateCommentDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommentDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateComment(commentId, updateCommentDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['CommentsApi.updateComment']?.[localVarOperationServerIndex]?.url;
@@ -834,11 +824,11 @@ export const CommentsApiFactory = function (configuration?: Configuration, baseP
     return {
         /**
          * 
-         * @param {SearchCommentsParentIdParameter} commentId 
+         * @param {number} commentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        clearComment(commentId: SearchCommentsParentIdParameter, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        clearComment(commentId: number, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.clearComment(commentId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -852,33 +842,33 @@ export const CommentsApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * 
-         * @param {SearchCommentsParentIdParameter} commentId 
+         * @param {number} commentId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getCommentById(commentId: SearchCommentsParentIdParameter, options?: RawAxiosRequestConfig): AxiosPromise<CommentDto> {
+        getCommentById(commentId: number, options?: RawAxiosRequestConfig): AxiosPromise<CommentDto> {
             return localVarFp.getCommentById(commentId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {SearchAccountsPageNumberParameter} [pageNumber] 
-         * @param {SearchAccountsPageSizeParameter} [pageSize] 
-         * @param {SearchCommentsParentIdParameter} [parentId] 
+         * @param {number} [pageNumber] 
+         * @param {number} [pageSize] 
+         * @param {number} [parentId] 
          * @param {string} [documentId] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchComments(pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, parentId?: SearchCommentsParentIdParameter, documentId?: string, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseDtoOfCommentDto> {
+        searchComments(pageNumber?: number, pageSize?: number, parentId?: number, documentId?: string, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseDtoOfCommentDto> {
             return localVarFp.searchComments(pageNumber, pageSize, parentId, documentId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {SearchCommentsParentIdParameter} commentId 
+         * @param {number} commentId 
          * @param {UpdateCommentDto} updateCommentDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateComment(commentId: SearchCommentsParentIdParameter, updateCommentDto: UpdateCommentDto, options?: RawAxiosRequestConfig): AxiosPromise<CommentDto> {
+        updateComment(commentId: number, updateCommentDto: UpdateCommentDto, options?: RawAxiosRequestConfig): AxiosPromise<CommentDto> {
             return localVarFp.updateComment(commentId, updateCommentDto, options).then((request) => request(axios, basePath));
         },
     };
@@ -890,11 +880,11 @@ export const CommentsApiFactory = function (configuration?: Configuration, baseP
 export class CommentsApi extends BaseAPI {
     /**
      * 
-     * @param {SearchCommentsParentIdParameter} commentId 
+     * @param {number} commentId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public clearComment(commentId: SearchCommentsParentIdParameter, options?: RawAxiosRequestConfig) {
+    public clearComment(commentId: number, options?: RawAxiosRequestConfig) {
         return CommentsApiFp(this.configuration).clearComment(commentId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -910,35 +900,35 @@ export class CommentsApi extends BaseAPI {
 
     /**
      * 
-     * @param {SearchCommentsParentIdParameter} commentId 
+     * @param {number} commentId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getCommentById(commentId: SearchCommentsParentIdParameter, options?: RawAxiosRequestConfig) {
+    public getCommentById(commentId: number, options?: RawAxiosRequestConfig) {
         return CommentsApiFp(this.configuration).getCommentById(commentId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {SearchAccountsPageNumberParameter} [pageNumber] 
-     * @param {SearchAccountsPageSizeParameter} [pageSize] 
-     * @param {SearchCommentsParentIdParameter} [parentId] 
+     * @param {number} [pageNumber] 
+     * @param {number} [pageSize] 
+     * @param {number} [parentId] 
      * @param {string} [documentId] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public searchComments(pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, parentId?: SearchCommentsParentIdParameter, documentId?: string, options?: RawAxiosRequestConfig) {
+    public searchComments(pageNumber?: number, pageSize?: number, parentId?: number, documentId?: string, options?: RawAxiosRequestConfig) {
         return CommentsApiFp(this.configuration).searchComments(pageNumber, pageSize, parentId, documentId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {SearchCommentsParentIdParameter} commentId 
+     * @param {number} commentId 
      * @param {UpdateCommentDto} updateCommentDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public updateComment(commentId: SearchCommentsParentIdParameter, updateCommentDto: UpdateCommentDto, options?: RawAxiosRequestConfig) {
+    public updateComment(commentId: number, updateCommentDto: UpdateCommentDto, options?: RawAxiosRequestConfig) {
         return CommentsApiFp(this.configuration).updateComment(commentId, updateCommentDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -1066,8 +1056,8 @@ export const DocumentApiAxiosParamCreator = function (configuration?: Configurat
          * 
          * @param {string} [sortBy] 
          * @param {boolean} [sortAscending] 
-         * @param {SearchAccountsPageNumberParameter} [pageNumber] 
-         * @param {SearchAccountsPageSizeParameter} [pageSize] 
+         * @param {number} [pageNumber] 
+         * @param {number} [pageSize] 
          * @param {string} [title] 
          * @param {Array<string>} [tags] 
          * @param {string} [fromDate] 
@@ -1077,7 +1067,7 @@ export const DocumentApiAxiosParamCreator = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchDocuments: async (sortBy?: string, sortAscending?: boolean, pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, ownerId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        searchDocuments: async (sortBy?: string, sortAscending?: boolean, pageNumber?: number, pageSize?: number, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, ownerId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/documents`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1240,8 +1230,8 @@ export const DocumentApiFp = function(configuration?: Configuration) {
          * 
          * @param {string} [sortBy] 
          * @param {boolean} [sortAscending] 
-         * @param {SearchAccountsPageNumberParameter} [pageNumber] 
-         * @param {SearchAccountsPageSizeParameter} [pageSize] 
+         * @param {number} [pageNumber] 
+         * @param {number} [pageSize] 
          * @param {string} [title] 
          * @param {Array<string>} [tags] 
          * @param {string} [fromDate] 
@@ -1251,7 +1241,7 @@ export const DocumentApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async searchDocuments(sortBy?: string, sortAscending?: boolean, pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, ownerId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseDtoOfShortDocumentDto>> {
+        async searchDocuments(sortBy?: string, sortAscending?: boolean, pageNumber?: number, pageSize?: number, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, ownerId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseDtoOfShortDocumentDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.searchDocuments(sortBy, sortAscending, pageNumber, pageSize, title, tags, fromDate, toDate, ownerName, ownerId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DocumentApi.searchDocuments']?.[localVarOperationServerIndex]?.url;
@@ -1310,8 +1300,8 @@ export const DocumentApiFactory = function (configuration?: Configuration, baseP
          * 
          * @param {string} [sortBy] 
          * @param {boolean} [sortAscending] 
-         * @param {SearchAccountsPageNumberParameter} [pageNumber] 
-         * @param {SearchAccountsPageSizeParameter} [pageSize] 
+         * @param {number} [pageNumber] 
+         * @param {number} [pageSize] 
          * @param {string} [title] 
          * @param {Array<string>} [tags] 
          * @param {string} [fromDate] 
@@ -1321,7 +1311,7 @@ export const DocumentApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        searchDocuments(sortBy?: string, sortAscending?: boolean, pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, ownerId?: string, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseDtoOfShortDocumentDto> {
+        searchDocuments(sortBy?: string, sortAscending?: boolean, pageNumber?: number, pageSize?: number, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, ownerId?: string, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseDtoOfShortDocumentDto> {
             return localVarFp.searchDocuments(sortBy, sortAscending, pageNumber, pageSize, title, tags, fromDate, toDate, ownerName, ownerId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1375,8 +1365,8 @@ export class DocumentApi extends BaseAPI {
      * 
      * @param {string} [sortBy] 
      * @param {boolean} [sortAscending] 
-     * @param {SearchAccountsPageNumberParameter} [pageNumber] 
-     * @param {SearchAccountsPageSizeParameter} [pageSize] 
+     * @param {number} [pageNumber] 
+     * @param {number} [pageSize] 
      * @param {string} [title] 
      * @param {Array<string>} [tags] 
      * @param {string} [fromDate] 
@@ -1386,7 +1376,7 @@ export class DocumentApi extends BaseAPI {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public searchDocuments(sortBy?: string, sortAscending?: boolean, pageNumber?: SearchAccountsPageNumberParameter, pageSize?: SearchAccountsPageSizeParameter, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, ownerId?: string, options?: RawAxiosRequestConfig) {
+    public searchDocuments(sortBy?: string, sortAscending?: boolean, pageNumber?: number, pageSize?: number, title?: string, tags?: Array<string>, fromDate?: string, toDate?: string, ownerName?: string, ownerId?: string, options?: RawAxiosRequestConfig) {
         return DocumentApiFp(this.configuration).searchDocuments(sortBy, sortAscending, pageNumber, pageSize, title, tags, fromDate, toDate, ownerName, ownerId, options).then((request) => request(this.axios, this.basePath));
     }
 

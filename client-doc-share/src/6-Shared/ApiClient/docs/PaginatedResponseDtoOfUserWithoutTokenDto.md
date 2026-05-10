@@ -6,10 +6,10 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **items** | [**Array&lt;UserWithoutTokenDto&gt;**](UserWithoutTokenDto.md) |  | [default to undefined]
-**totalItems** | [**GetAccountsThatStartsWithTakeParameter**](GetAccountsThatStartsWithTakeParameter.md) |  | [default to undefined]
-**totalPages** | [**GetAccountsThatStartsWithTakeParameter**](GetAccountsThatStartsWithTakeParameter.md) |  | [default to undefined]
-**currentPage** | [**GetAccountsThatStartsWithTakeParameter**](GetAccountsThatStartsWithTakeParameter.md) |  | [default to undefined]
-**pageSize** | [**GetAccountsThatStartsWithTakeParameter**](GetAccountsThatStartsWithTakeParameter.md) |  | [default to undefined]
+**totalItems** | **number** |  | [default to undefined]
+**totalPages** | **number** |  | [default to undefined]
+**currentPage** | **number** |  | [default to undefined]
+**pageSize** | **number** |  | [default to undefined]
 
 ## Example
 

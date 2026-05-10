@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | [**SearchCommentsParentIdParameter**](SearchCommentsParentIdParameter.md) |  | [default to undefined]
+**id** | **number** |  | [default to undefined]
 **content** | **string** |  | [default to undefined]
-**parentId** | [**CommentDtoParentId**](CommentDtoParentId.md) |  | [default to undefined]
+**parentId** | **number** |  | [default to undefined]
 **documentId** | **string** |  | [default to undefined]
 **authorId** | **string** |  | [default to undefined]
 **authorName** | **string** |  | [default to undefined]

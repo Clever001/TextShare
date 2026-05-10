@@ -178,9 +178,7 @@ const { status, data } = await apiInstance.getDocumentById(
 ```typescript
 import {
     DocumentApi,
-    Configuration,
-    SearchAccountsPageNumberParameter,
-    SearchAccountsPageSizeParameter
+    Configuration
 } from './api';
 
 const configuration = new Configuration();
@@ -188,8 +186,8 @@ const apiInstance = new DocumentApi(configuration);
 
 let sortBy: string; // (optional) (default to undefined)
 let sortAscending: boolean; // (optional) (default to undefined)
-let pageNumber: SearchAccountsPageNumberParameter; // (optional) (default to undefined)
-let pageSize: SearchAccountsPageSizeParameter; // (optional) (default to undefined)
+let pageNumber: number; // (optional) (default to undefined)
+let pageSize: number; // (optional) (default to undefined)
 let title: string; // (optional) (default to undefined)
 let tags: Array<string>; // (optional) (default to undefined)
 let fromDate: string; // (optional) (default to undefined)
@@ -217,8 +215,8 @@ const { status, data } = await apiInstance.searchDocuments(
 |------------- | ------------- | ------------- | -------------|
 | **sortBy** | [**string**] |  | (optional) defaults to undefined|
 | **sortAscending** | [**boolean**] |  | (optional) defaults to undefined|
-| **pageNumber** | [**SearchAccountsPageNumberParameter**] |  | (optional) defaults to undefined|
-| **pageSize** | [**SearchAccountsPageSizeParameter**] |  | (optional) defaults to undefined|
+| **pageNumber** | [**number**] |  | (optional) defaults to undefined|
+| **pageSize** | [**number**] |  | (optional) defaults to undefined|
 | **title** | [**string**] |  | (optional) defaults to undefined|
 | **tags** | **Array&lt;string&gt;** |  | (optional) defaults to undefined|
 | **fromDate** | [**string**] |  | (optional) defaults to undefined|

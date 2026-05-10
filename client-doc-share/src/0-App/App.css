@@ -44,7 +44,8 @@ a {
 html,
 body,
 textarea,
-button {
+button,
+input {
   height: 100%;
   font-family:
     "Inter",

@@ -1,17 +1,10 @@
 import { Link } from "react-router-dom";
 import "./DocsTable.css";
+import type { ShortDocumentDto } from "../../6-Shared/ApiClient";
 
 type Props = {
-  docinfos: DocumentInfo[];
+  docinfos: ShortDocumentDto[];
   showCreators: boolean;
-};
-
-export type DocumentInfo = {
-  title: string;
-  createdOn: Date;
-  creator: string;
-  tags: string[];
-  discription: string;
 };
 
 export default function DocsTable({ docinfos, showCreators }: Props) {
@@ -70,19 +63,19 @@ export default function DocsTable({ docinfos, showCreators }: Props) {
             return (
               <tr>
                 <td>
-                  <Link to="/" title={di.discription}>
+                  <Link to="/" title={di.description}>
                     {di.title}
                   </Link>
                 </td>
                 <td>
-                  <Link to="/" title={di.createdOn.toDateString()}>
-                    {dateToString(di.createdOn)}
+                  <Link to="/" title={di.createdOn}>
+                    {dateToString(new Date(di.createdOn))}
                   </Link>
                 </td>
                 {showCreators && (
                   <td>
-                    <Link to="/" title={di.creator}>
-                      {di.creator}
+                    <Link to="/" title={di.ownerName}>
+                      {di.ownerName}
                     </Link>
                   </td>
                 )}

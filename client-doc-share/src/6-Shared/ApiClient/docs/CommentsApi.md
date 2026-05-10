@@ -19,14 +19,13 @@ All URIs are relative to *http://127.0.0.1:7285*
 ```typescript
 import {
     CommentsApi,
-    Configuration,
-    SearchCommentsParentIdParameter
+    Configuration
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new CommentsApi(configuration);
 
-let commentId: SearchCommentsParentIdParameter; // (default to undefined)
+let commentId: number; // (default to undefined)
 
 const { status, data } = await apiInstance.clearComment(
     commentId
@@ -37,7 +36,7 @@ const { status, data } = await apiInstance.clearComment(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **commentId** | [**SearchCommentsParentIdParameter**] |  | defaults to undefined|
+| **commentId** | [**number**] |  | defaults to undefined|
 
 
 ### Return type
@@ -127,14 +126,13 @@ const { status, data } = await apiInstance.createComment(
 ```typescript
 import {
     CommentsApi,
-    Configuration,
-    SearchCommentsParentIdParameter
+    Configuration
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new CommentsApi(configuration);
 
-let commentId: SearchCommentsParentIdParameter; // (default to undefined)
+let commentId: number; // (default to undefined)
 
 const { status, data } = await apiInstance.getCommentById(
     commentId
@@ -145,7 +143,7 @@ const { status, data } = await apiInstance.getCommentById(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **commentId** | [**SearchCommentsParentIdParameter**] |  | defaults to undefined|
+| **commentId** | [**number**] |  | defaults to undefined|
 
 
 ### Return type
@@ -180,18 +178,15 @@ const { status, data } = await apiInstance.getCommentById(
 ```typescript
 import {
     CommentsApi,
-    Configuration,
-    SearchAccountsPageNumberParameter,
-    SearchAccountsPageSizeParameter,
-    SearchCommentsParentIdParameter
+    Configuration
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new CommentsApi(configuration);
 
-let pageNumber: SearchAccountsPageNumberParameter; // (optional) (default to undefined)
-let pageSize: SearchAccountsPageSizeParameter; // (optional) (default to undefined)
-let parentId: SearchCommentsParentIdParameter; // (optional) (default to undefined)
+let pageNumber: number; // (optional) (default to undefined)
+let pageSize: number; // (optional) (default to undefined)
+let parentId: number; // (optional) (default to undefined)
 let documentId: string; // (optional) (default to undefined)
 
 const { status, data } = await apiInstance.searchComments(
@@ -206,9 +201,9 @@ const { status, data } = await apiInstance.searchComments(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **pageNumber** | [**SearchAccountsPageNumberParameter**] |  | (optional) defaults to undefined|
-| **pageSize** | [**SearchAccountsPageSizeParameter**] |  | (optional) defaults to undefined|
-| **parentId** | [**SearchCommentsParentIdParameter**] |  | (optional) defaults to undefined|
+| **pageNumber** | [**number**] |  | (optional) defaults to undefined|
+| **pageSize** | [**number**] |  | (optional) defaults to undefined|
+| **parentId** | [**number**] |  | (optional) defaults to undefined|
 | **documentId** | [**string**] |  | (optional) defaults to undefined|
 
 
@@ -244,14 +239,13 @@ const { status, data } = await apiInstance.searchComments(
 import {
     CommentsApi,
     Configuration,
-    SearchCommentsParentIdParameter,
     UpdateCommentDto
 } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new CommentsApi(configuration);
 
-let commentId: SearchCommentsParentIdParameter; // (default to undefined)
+let commentId: number; // (default to undefined)
 let updateCommentDto: UpdateCommentDto; //
 
 const { status, data } = await apiInstance.updateComment(
@@ -265,7 +259,7 @@ const { status, data } = await apiInstance.updateComment(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **updateCommentDto** | **UpdateCommentDto**|  | |
-| **commentId** | [**SearchCommentsParentIdParameter**] |  | defaults to undefined|
+| **commentId** | [**number**] |  | defaults to undefined|
 
 
 ### Return type

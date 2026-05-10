@@ -19,6 +19,8 @@ type Props = BaseProps & (
   } | {
     widgetType: "checkbox",
     defaultValue: string,
+  } | {
+    widgetType: "date",
   }
 )
 
@@ -75,6 +77,19 @@ export default function ValueInput(props: Props) {
             defaultValue={props.defaultValue}
           />
         </div>
+      )}
+      {props.widgetType === "date" && (
+        <div className="input-container">
+          <input 
+            className="value" 
+            type="date" 
+            name={props.formSearchName}
+            id={props.formSearchName}
+            lang="ru"
+            placeholder="дд.мм.гггг"
+
+          />
+          </div>
       )}
       {props.hasRollbackButton && (
         <button
